@@ -18,7 +18,7 @@ public static partial class CharacterCreation
 
     // ponytail: one fixed spawn — client still renders the city page, server sends/uses only this
     public static readonly CityInfo StartingCity =
-        new("Britain", "Sweet Dreams Inn", 1075074, 1496, 1628, 10, Map.Trammel);
+        new("Britain", "Sweet Dreams Inn", 1075074, 1496, 1628, 10, Map.Felucca);
 
     private static readonly CityInfo[] _startingCities = [StartingCity];
 
