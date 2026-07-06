@@ -494,6 +494,11 @@ namespace Server.Misc
 
             if (bcTarg?.InitialInnocent != true)
             {
+                if (IsAttackOnSight(bcTarg, source))
+                {
+                    return Notoriety.Murderer;
+                }
+
                 if (!target.Body.IsHuman && !target.Body.IsGhost && !IsPet(bcTarg) && pmTarg == null ||
                     !Core.ML && !target.CanBeginAction<PolymorphSpell>())
                 {
@@ -529,6 +534,21 @@ namespace Server.Misc
             }
 
             return Notoriety.Innocent;
+        }
+
+        private static bool IsAttackOnSight(BaseCreature creature, Mobile source)
+        {
+            if (creature == null || IsPet(creature) || IsSummoned(creature))
+            {
+                return false;
+            }
+
+            return creature.FightMode switch
+            {
+                FightMode.Closest or FightMode.Strongest or FightMode.Weakest => true,
+                FightMode.Evil => ((source as BaseCreature)?.GetMaster()?.Karma ?? source.Karma) < 0,
+                _ => false
+            };
         }
 
         public static bool CheckHouseFlag(Mobile from, Mobile m, Point3D p, Map map)
