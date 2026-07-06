@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using ModernUO.Serialization;
 using Server.Collections;
 using Server.Engines.Craft;
+using Server.Engines.Rarity;
 using Server.Engines.Virtues;
 using Server.Ethics;
 using Server.Factions;
@@ -27,9 +28,9 @@ public interface ISlayer
     SlayerName Slayer2 { get; set; }
 }
 
-[SerializationGenerator(10, false)]
+[SerializationGenerator(11, false)]
 public abstract partial class BaseWeapon
-    : Item, IWeapon, IFactionItem, ICraftable, ISlayer, IDurability, IAosItem, IIdentifiable
+    : Item, IWeapon, IFactionItem, ICraftable, ISlayer, IDurability, IAosItem, IIdentifiable, IRarity
 {
     private static bool _enableInstaHit;
 
@@ -190,6 +191,15 @@ public abstract partial class BaseWeapon
     [SerializableFieldSaveFlag(30)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool ShouldSerializeEngravedText() => !string.IsNullOrEmpty(_engravedText);
+
+    // No SerializableFieldSaveFlag: BaseWeapon already uses save-flag bits 0-30 (its 31 fields);
+    // bit 31 overflows the generator's int-backed SaveFlag enum. Rarity serializes unconditionally.
+    [InvalidateProperties]
+    [SerializableField(31)]
+    [SerializedCommandProperty(AccessLevel.GameMaster)]
+    private ItemRarity _rarity;
+
+    public virtual ItemRarity MaxRarity => ItemRarity.Legendary;
 
     private FactionItem m_FactionState;
     private SkillMod m_SkillMod, m_MageMod;
@@ -2927,6 +2937,8 @@ public abstract partial class BaseWeapon
     {
         base.GetProperties(list);
 
+        RaritySystem.AddRarityProperty(list, _rarity);
+
         if (_crafter != null)
         {
             list.Add(1050043, _crafter); // crafted by ~1_NAME~
@@ -3450,7 +3462,7 @@ public abstract partial class BaseWeapon
 
         if (isMagicItem && !_identified)
         {
-            LabelTo(from, $"an unidentified {Name ?? Localization.GetText(LabelNumber).ToLowerInvariant()}");
+            LabelTo(from, $"an unidentified {Name ?? Localization.GetText(LabelNumber).ToLowerInvariant()}{RarityConfig.GetSuffix(_rarity)}");
             return;
         }
 
@@ -3500,6 +3512,11 @@ public abstract partial class BaseWeapon
 
             // TODO: Spells (of Ghoul's Touch)
 
+            if (_rarity != ItemRarity.Common)
+            {
+                builder.Append(RarityConfig.GetSuffix(_rarity));
+            }
+
             LabelTo(from, builder.ToString());
             LabelSingleClickWeaponDetails(from);
             builder.Dispose();
@@ -3508,19 +3525,24 @@ public abstract partial class BaseWeapon
 
         name ??= $"{(articleAnName ? "an" : "a")} {Localization.GetText(LabelNumber).ToLowerInvariant()}";
 
+        string label;
         if (Crafter == null)
         {
-            LabelTo(from, Quality == WeaponQuality.Exceptional ? $"{name} of exceptional quality" : name);
-            LabelSingleClickWeaponDetails(from);
-            return;
+            label = Quality == WeaponQuality.Exceptional ? $"{name} of exceptional quality" : name;
+        }
+        else
+        {
+            label = Quality == WeaponQuality.Exceptional
+                ? $"{name} crafted with exceptional quality by {Crafter}"
+                : $"{name} crafted by {Crafter}";
         }
 
-        LabelTo(
-            from,
-            Quality == WeaponQuality.Exceptional
-                ? $"{name} crafted with exceptional quality by {Crafter}"
-                : $"{name} crafted by {Crafter}"
-        );
+        if (_rarity != ItemRarity.Common)
+        {
+            label = $"{label}{RarityConfig.GetSuffix(_rarity)}";
+        }
+
+        LabelTo(from, label);
         LabelSingleClickWeaponDetails(from);
     }
 
@@ -3798,6 +3820,42 @@ public abstract partial class BaseWeapon
     }
 
     private static bool GetSaveFlag(OldSaveFlag flags, OldSaveFlag toGet) => (flags & toGet) != 0;
+
+    private void MigrateFrom(V10Content content)
+    {
+        _damageLevel = content.DamageLevel ?? WeaponDamageLevel.Regular;
+        _accuracyLevel = content.AccuracyLevel ?? WeaponAccuracyLevel.Regular;
+        _durabilityLevel = content.DurabilityLevel ?? WeaponDurabilityLevel.Regular;
+        _quality = content.Quality ?? WeaponQuality.Regular;
+        _hitPoints = content.HitPoints ?? 0;
+        _maxHitPoints = content.MaxHitPoints ?? 0;
+        _slayer = content.Slayer ?? SlayerName.None;
+        _poison = content.Poison;
+        _poisonCharges = content.PoisonCharges ?? 0;
+        _crafter = content.Crafter;
+        _identified = content.Identified;
+        _strRequirement = content.StrRequirement ?? -1;
+        _dexRequirement = content.DexRequirement ?? -1;
+        _intRequirement = content.IntRequirement ?? -1;
+        _minDamage = content.MinDamage ?? -1;
+        _maxDamage = content.MaxDamage ?? -1;
+        _hitSound = content.HitSound ?? -1;
+        _missSound = content.MissSound ?? -1;
+        _speed = content.Speed ?? -1f;
+        _maxRange = content.MaxRange ?? -1;
+        _skill = content.Skill ?? (SkillName)(-1);
+        _type = content.Type ?? (WeaponType)(-1);
+        _animation = content.Animation ?? (WeaponAnimation)(-1);
+        _resource = content.Resource ?? CraftResource.Iron;
+        _attributes = content.Attributes ?? AttributesDefaultValue();
+        _weaponAttributes = content.WeaponAttributes ?? WeaponAttributesDefaultValue();
+        _playerConstructed = content.PlayerConstructed;
+        _skillBonuses = content.SkillBonuses ?? SkillBonusesDefaultValue();
+        _slayer2 = content.Slayer2 ?? SlayerName.None;
+        _aosElementDamages = content.AosElementDamages ?? AosElementAttributesDefaultValue();
+        _engravedText = content.EngravedText;
+        // _rarity stays default (Common)
+    }
 
     private void Deserialize(IGenericReader reader, int version)
     {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using ModernUO.Serialization;
 using Server.Engines.Craft;
+using Server.Engines.Rarity;
 using Server.Ethics;
 using Server.Factions;
 using Server.Network;
@@ -12,9 +13,9 @@ using AMT = Server.Items.ArmorMaterialType;
 
 namespace Server.Items
 {
-    [SerializationGenerator(9, false)]
+    [SerializationGenerator(10, false)]
     public abstract partial class BaseArmor
-        : Item, IScissorable, IFactionItem, ICraftable, IWearableDurability, IAosItem, IIdentifiable
+        : Item, IScissorable, IFactionItem, ICraftable, IWearableDurability, IAosItem, IIdentifiable, IRarity
     {
         [SerializedIgnoreDupe]
         [SerializableField(0, setter: "private")]
@@ -150,6 +151,19 @@ namespace Server.Items
 
         [SerializableFieldSaveFlag(24)]
         private bool ShouldSerializePlayerConstructed() => _playerConstructed;
+
+        [InvalidateProperties]
+        [SerializableField(25)]
+        [SerializedCommandProperty(AccessLevel.GameMaster)]
+        private ItemRarity _rarity;
+
+        [SerializableFieldSaveFlag(25)]
+        private bool ShouldSerializeRarity() => _rarity != ItemRarity.Common;
+
+        [SerializableFieldDefault(25)]
+        private ItemRarity RarityDefaultValue() => ItemRarity.Common;
+
+        public virtual ItemRarity MaxRarity => ItemRarity.Legendary;
 
         private FactionItem m_FactionState;
 
@@ -1294,6 +1308,8 @@ namespace Server.Items
         {
             base.GetProperties(list);
 
+            RaritySystem.AddRarityProperty(list, _rarity);
+
             if (_crafter != null)
             {
                 list.Add(1050043, _crafter); // crafted by ~1_NAME~
@@ -1560,7 +1576,7 @@ namespace Server.Items
 
             if (isMagicItem && !_identified)
             {
-                LabelTo(from, $"an unidentified {Name ?? Localization.GetText(LabelNumber).ToLowerInvariant()}");
+                LabelTo(from, $"an unidentified {Name ?? Localization.GetText(LabelNumber).ToLowerInvariant()}{RarityConfig.GetSuffix(_rarity)}");
                 return;
             }
 
@@ -1596,6 +1612,11 @@ namespace Server.Items
                     builder.Append($" of {protectionText}");
                 }
 
+                if (_rarity != ItemRarity.Common)
+                {
+                    builder.Append(RarityConfig.GetSuffix(_rarity));
+                }
+
                 LabelTo(from, builder.ToString());
                 builder.Dispose();
                 LabelSingleClickItemDetails(from);
@@ -1604,19 +1625,24 @@ namespace Server.Items
 
             name ??= $"{(articleAnName ? "an" : "a")} {Localization.GetText(LabelNumber).ToLowerInvariant()}";
 
+            string label;
             if (Crafter == null)
             {
-                LabelTo(from, Quality == ArmorQuality.Exceptional ? $"{name} of exceptional quality" : name);
-                LabelSingleClickItemDetails(from);
-                return;
+                label = Quality == ArmorQuality.Exceptional ? $"{name} of exceptional quality" : name;
+            }
+            else
+            {
+                label = Quality == ArmorQuality.Exceptional
+                    ? $"{name} crafted with exceptional quality by {Crafter}"
+                    : $"{name} crafted by {Crafter}";
             }
 
-            LabelTo(
-                from,
-                Quality == ArmorQuality.Exceptional
-                    ? $"{name} crafted with exceptional quality by {Crafter}"
-                    : $"{name} crafted by {Crafter}"
-            );
+            if (_rarity != ItemRarity.Common)
+            {
+                label = $"{label}{RarityConfig.GetSuffix(_rarity)}";
+            }
+
+            LabelTo(from, label);
             LabelSingleClickItemDetails(from);
         }
 
