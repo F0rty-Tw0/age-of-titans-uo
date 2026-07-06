@@ -51,7 +51,8 @@ public static class FloatingCombatText
     {
         if (amount > 0)
         {
-            Show(target, from, '-', amount, _contextHue, IncomingDamageHue, _contextLabel);
+            var incomingHue = _contextHue == DamageHue ? IncomingDamageHue : _contextHue;
+            Show(target, from, '-', amount, _contextHue, incomingHue, _contextLabel);
         }
     }
 
