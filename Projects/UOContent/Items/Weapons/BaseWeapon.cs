@@ -194,10 +194,23 @@ public abstract partial class BaseWeapon
 
     // No SerializableFieldSaveFlag: BaseWeapon already uses save-flag bits 0-30 (its 31 fields);
     // bit 31 overflows the generator's int-backed SaveFlag enum. Rarity serializes unconditionally.
-    [InvalidateProperties]
-    [SerializableField(31)]
-    [SerializedCommandProperty(AccessLevel.GameMaster)]
-    private ItemRarity _rarity;
+    [SerializableProperty(31)]
+    [CommandProperty(AccessLevel.GameMaster)]
+    public ItemRarity Rarity
+    {
+        get => _rarity;
+        set
+        {
+            var clamped = RaritySystem.Clamp(value, MaxRarity);
+
+            if (_rarity != clamped)
+            {
+                _rarity = clamped;
+                InvalidateProperties();
+                this.MarkDirty();
+            }
+        }
+    }
 
     public virtual ItemRarity MaxRarity => ItemRarity.Legendary;
 

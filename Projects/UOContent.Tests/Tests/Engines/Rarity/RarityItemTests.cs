@@ -107,4 +107,43 @@ public class RarityItemTests
             item.Delete();
         }
     }
+
+    [Fact]
+    public void RareCappedKatana_SetRarityAboveMaxRarity_ClampsToMaxRarity()
+    {
+        var item = new RareCappedKatana();
+
+        try
+        {
+            item.Rarity = ItemRarity.Legendary;
+
+            Assert.Equal(ItemRarity.Rare, item.Rarity);
+        }
+        finally
+        {
+            item.Delete();
+        }
+    }
+
+    [Fact]
+    public void Katana_SetRarityToNegativeValue_ClampsToCommon()
+    {
+        var item = new Katana();
+
+        try
+        {
+            item.Rarity = (ItemRarity)(-1);
+
+            Assert.Equal(ItemRarity.Common, item.Rarity);
+        }
+        finally
+        {
+            item.Delete();
+        }
+    }
+
+    private class RareCappedKatana : Katana
+    {
+        public override ItemRarity MaxRarity => ItemRarity.Rare;
+    }
 }

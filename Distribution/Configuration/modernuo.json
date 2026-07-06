@@ -1,9 +1,6 @@
 {
   "assemblyDirectories": ["./Assemblies"],
-  "dataDirectories": [
-    "D:\\Games\\Electronic Arts\\UO Launcher\\ClassicUO",
-    "D:\\Games\\Electronic Arts\\UO"
-  ],
+  "dataDirectories": ["D:\\UO Launcher\\ClassicUO", "F:\\UO"],
   "listeners": ["0.0.0.0:2593"],
   "settings": {
     "accountHandler.enableAutoAccountCreation": "True",

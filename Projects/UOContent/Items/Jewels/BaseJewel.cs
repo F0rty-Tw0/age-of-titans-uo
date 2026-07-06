@@ -53,10 +53,23 @@ public abstract partial class BaseJewel : Item, ICraftable, IAosItem, IRarity
     [SerializedCommandProperty(AccessLevel.GameMaster)]
     private int _gemCount;
 
-    [InvalidateProperties]
-    [SerializableField(8)]
-    [SerializedCommandProperty(AccessLevel.GameMaster)]
-    private ItemRarity _rarity;
+    [SerializableProperty(8)]
+    [CommandProperty(AccessLevel.GameMaster)]
+    public ItemRarity Rarity
+    {
+        get => _rarity;
+        set
+        {
+            var clamped = RaritySystem.Clamp(value, MaxRarity);
+
+            if (_rarity != clamped)
+            {
+                _rarity = clamped;
+                InvalidateProperties();
+                this.MarkDirty();
+            }
+        }
+    }
 
     [SerializableFieldSaveFlag(8)]
     private bool ShouldSerializeRarity() => _rarity != ItemRarity.Common;
