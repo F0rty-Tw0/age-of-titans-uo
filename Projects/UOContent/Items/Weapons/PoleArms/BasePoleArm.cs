@@ -33,19 +33,17 @@ namespace Server.Items
 
         public override void OnDoubleClick(Mobile from)
         {
+            if (Parent != from && !DoubleClickEquip.TryEquip(from, this))
+            {
+                return; // couldn't equip (not in pack / pack full / requirements) — no action
+            }
+
             if (HarvestSystem == null)
             {
                 return;
             }
 
-            if (IsChildOf(from.Backpack) || Parent == from)
-            {
-                HarvestSystem.BeginHarvesting(from, this);
-            }
-            else
-            {
-                from.SendLocalizedMessage(1042001); // That must be in your pack for you to use it.
-            }
+            HarvestSystem.BeginHarvesting(from, this);
         }
 
         public override void GetContextMenuEntries(Mobile from, ref PooledRefList<ContextMenuEntry> list)

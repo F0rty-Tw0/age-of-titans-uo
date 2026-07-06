@@ -52,7 +52,7 @@ namespace Server.Spells
         public virtual SkillName DamageSkill => SkillName.EvalInt;
 
         public virtual bool RevealOnCast => true;
-        public virtual bool ClearHandsOnCast => true;
+        public virtual bool ClearHandsOnCast => false;
         public virtual bool ShowHandMovement => true;
 
         public virtual bool DelayedDamage => false;

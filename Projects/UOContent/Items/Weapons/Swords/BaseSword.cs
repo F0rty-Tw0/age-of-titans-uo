@@ -16,6 +16,11 @@ namespace Server.Items
 
         public override void OnDoubleClick(Mobile from)
         {
+            if (Parent != from && !DoubleClickEquip.TryEquip(from, this))
+            {
+                return; // couldn't equip (not in pack / pack full / requirements) — no action
+            }
+
             from.SendLocalizedMessage(1010018); // What do you want to use this item on?
 
             from.Target = new BladedItemTarget(this);
