@@ -3501,6 +3501,7 @@ public abstract partial class BaseWeapon
             // TODO: Spells (of Ghoul's Touch)
 
             LabelTo(from, builder.ToString());
+            LabelSingleClickWeaponDetails(from);
             builder.Dispose();
             return;
         }
@@ -3510,6 +3511,7 @@ public abstract partial class BaseWeapon
         if (Crafter == null)
         {
             LabelTo(from, Quality == WeaponQuality.Exceptional ? $"{name} of exceptional quality" : name);
+            LabelSingleClickWeaponDetails(from);
             return;
         }
 
@@ -3519,6 +3521,34 @@ public abstract partial class BaseWeapon
                 ? $"{name} crafted with exceptional quality by {Crafter}"
                 : $"{name} crafted by {Crafter}"
         );
+        LabelSingleClickWeaponDetails(from);
+    }
+
+    private void LabelSingleClickWeaponDetails(Mobile from)
+    {
+        if (!ItemInfoConfiguration.SingleClickDetails)
+        {
+            return;
+        }
+
+        LabelTo(from, $"Damage: {MinDamage}-{MaxDamage}");
+        LabelTo(from, $"Speed: {Speed:0.##}");
+
+        if (_hitPoints >= 0 && _maxHitPoints > 0)
+        {
+            LabelTo(from, $"Durability: {_hitPoints}/{_maxHitPoints}");
+        }
+
+        var skill = Skill switch
+        {
+            SkillName.Swords => "Swordsmanship",
+            SkillName.Macing => "Mace Fighting",
+            SkillName.Fencing => "Fencing",
+            SkillName.Archery => "Archery",
+            _ => Skill.ToString()
+        };
+
+        LabelTo(from, $"Skill: {skill}");
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -17,14 +17,13 @@ namespace Server
 
             Mobile.ActionDelay = ServerConfiguration.GetSetting("actionDelay", Core.AOS ? 1000 : 500);
 
+            // T2A item-info labels use the old OnSingleClick path. Only route single-clicks
+            // through OPL when explicitly enabled, or by default on true AOS cores.
+            IncomingEntityPackets.SingleClickProps = ObjectPropertyList.Enabled &&
+                                                    ServerConfiguration.GetSetting("opl.singleClickProps", Core.AOS);
+
             if (Core.AOS)
             {
-                if (ObjectPropertyList.Enabled)
-                {
-                    // single click for everything is overridden to check object property list
-                    IncomingEntityPackets.SingleClickProps = true;
-                }
-
                 Mobile.AOSStatusHandler = AOS.GetStatus;
             }
         }
