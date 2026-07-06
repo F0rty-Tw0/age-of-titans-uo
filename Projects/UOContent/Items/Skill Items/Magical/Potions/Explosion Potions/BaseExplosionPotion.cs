@@ -199,7 +199,9 @@ public abstract partial class BaseExplosionPotion : BasePotion
                     damage /= toDamage - 1;
                 }
 
+                Misc.FloatingCombatText.SetSpellContext("Explosion");
                 AOS.Damage(m, from, damage, 0, 100, 0, 0, 0);
+                Misc.FloatingCombatText.ClearContext();
             }
             else if (entity is BaseExplosionPotion pot)
             {

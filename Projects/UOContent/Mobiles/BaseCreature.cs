@@ -1628,7 +1628,16 @@ namespace Server.Mobiles
                 CheckDistracted(from);
             }
 
+            FloatingCombatText.ShowDamage(this, from, amount);
+
             base.OnDamage(amount, from, willKill);
+        }
+
+        public override void OnHeal(ref int amount, Mobile from)
+        {
+            base.OnHeal(ref amount, from);
+
+            FloatingCombatText.ShowHeal(this, from, amount);
         }
 
         public virtual void OnDamagedBySpell(Mobile from, int damage)

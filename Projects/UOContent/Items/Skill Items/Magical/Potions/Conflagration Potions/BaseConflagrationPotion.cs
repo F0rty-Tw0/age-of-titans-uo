@@ -255,7 +255,9 @@ public abstract partial class BaseConflagrationPotion : BasePotion
             {
                 From.DoHarmful(m);
 
+                Misc.FloatingCombatText.SetSpellContext("Conflagration");
                 AOS.Damage(m, From, GetDamage(), 0, 100, 0, 0, 0);
+                Misc.FloatingCombatText.ClearContext();
                 m.PlaySound(0x208);
             }
 
@@ -309,7 +311,9 @@ public abstract partial class BaseConflagrationPotion : BasePotion
                     var m = queue.Dequeue();
 
                     from.DoHarmful(m);
+                    Misc.FloatingCombatText.SetSpellContext("Conflagration");
                     AOS.Damage(m, from, _item.GetDamage(), 0, 100, 0, 0, 0);
+                    Misc.FloatingCombatText.ClearContext();
                     m.PlaySound(0x208);
                 }
             }

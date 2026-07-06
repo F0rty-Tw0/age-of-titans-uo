@@ -136,7 +136,9 @@ public class PoisonImpl : Poison
 
             (_mobile as IHonorTarget)?.ReceivedHonorContext?.OnTargetPoisoned();
 
+            Misc.FloatingCombatText.SetPoisonContext();
             AOS.Damage(_mobile, From, damage, 0, 0, 0, 100, 0);
+            Misc.FloatingCombatText.ClearContext();
 
             // Parasitic: heals attacker for damage dealt when within 1 tile
             if (_poison.Family == PoisonFamily.Parasitic && From != null && From.Map == _mobile.Map &&

@@ -2379,7 +2379,16 @@ namespace Server.Mobiles
             ReceivedHonorContext?.OnTargetDamaged(from, amount);
             SentHonorContext?.OnSourceDamaged(from, amount);
 
+            FloatingCombatText.ShowDamage(this, from, amount);
+
             base.OnDamage(amount, from, willKill);
+        }
+
+        public override void OnHeal(ref int amount, Mobile from)
+        {
+            base.OnHeal(ref amount, from);
+
+            FloatingCombatText.ShowHeal(this, from, amount);
         }
 
         public override void Resurrect()
