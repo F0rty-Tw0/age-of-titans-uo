@@ -13,6 +13,11 @@ public static class SkillCheck
     private static double _primaryStatGainChance;
     private static TimeSpan _statGainDelay;
     private static TimeSpan _petStatGainDelay;
+    private static double _gainBandLowMax = 60.0;
+    private static double _gainBandMidMax = 95.0;
+    private static double _gainChanceLow = 0.90;
+    private static double _gainChanceMid = 0.75;
+    private static double _gainChanceHigh = 0.50;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool RollStatIncreaseChance(double statGain) =>
@@ -25,6 +30,12 @@ public static class SkillCheck
         _primaryStatGainChance = ServerConfiguration.GetSetting("stats.primaryStatGainChance", 0.75);
         _statGainDelay = ServerConfiguration.GetSetting("stats.gainDelay", TimeSpan.FromMinutes(Core.ML ? 0.05 : 10));
         _petStatGainDelay = ServerConfiguration.GetSetting("stats.petGainDelay", TimeSpan.FromMinutes(5.0));
+
+        _gainBandLowMax = ServerConfiguration.GetOrUpdateSetting("skills.gainBandLowMax", 60.0);
+        _gainBandMidMax = ServerConfiguration.GetOrUpdateSetting("skills.gainBandMidMax", 95.0);
+        _gainChanceLow = ServerConfiguration.GetOrUpdateSetting("skills.gainChanceLow", 0.90);
+        _gainChanceMid = ServerConfiguration.GetOrUpdateSetting("skills.gainChanceMid", 0.75);
+        _gainChanceHigh = ServerConfiguration.GetOrUpdateSetting("skills.gainChanceHigh", 0.50);
 
         // Publish 45 - Preparation for UOKR
         _usePub45StatGain = ServerConfiguration.GetSetting("stats.usePub45StatGain", Core.ML);
@@ -109,14 +120,7 @@ public static class SkillCheck
             }
             else if (AllowGain(from, skill, amObj))
             {
-                var gc = (double)(from.Skills.Cap - from.Skills.Total) / from.Skills.Cap;
-                gc += (skill.Cap - skill.Base) / skill.Cap;
-                gc /= 2;
-
-                gc += (1.0 - chance) * (success ? 0.5 : Core.AOS ? 0.0 : 0.2);
-                gc /= 2;
-
-                gc *= skill.Info.GainFactor;
+                var gc = GainChance(skill.Base);
 
                 if (gc < 0.01)
                 {
@@ -279,6 +283,22 @@ public static class SkillCheck
                 GainStat(from, statToGain);
             }
         }
+    }
+
+    // Shard bands: flat gain chance per skill range (fast to 60, moderate to 95, slower to 100)
+    public static double GainChance(double baseSkill)
+    {
+        if (baseSkill < _gainBandLowMax)
+        {
+            return _gainChanceLow;
+        }
+
+        if (baseSkill < _gainBandMidMax)
+        {
+            return _gainChanceMid;
+        }
+
+        return _gainChanceHigh;
     }
 
     public static void LegacyGain(Mobile from, SkillInfo info)
