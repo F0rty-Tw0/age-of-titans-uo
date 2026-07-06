@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ModernUO.Serialization;
 using Server.Engines.Craft;
+using Server.Engines.Rarity;
 using Server.Ethics;
 using Server.Factions;
 using Server.Network;
@@ -22,9 +23,9 @@ namespace Server.Items
         int MaxArcaneCharges { get; set; }
     }
 
-    [SerializationGenerator(7, false)]
+    [SerializationGenerator(8, false)]
     public abstract partial class BaseClothing
-        : Item, IDyable, IScissorable, IFactionItem, ICraftable, IWearableDurability, IAosItem
+        : Item, IDyable, IScissorable, IFactionItem, ICraftable, IWearableDurability, IAosItem, IRarity
     {
         [SerializableFieldSaveFlag(0)]
         private bool ShouldSerializeResource() => _resource != DefaultResource;
@@ -104,6 +105,19 @@ namespace Server.Items
 
         [SerializableFieldSaveFlag(9)]
         private bool ShouldSerializeQuality() => _quality != ClothingQuality.Regular;
+
+        [InvalidateProperties]
+        [SerializableField(11)]
+        [SerializedCommandProperty(AccessLevel.GameMaster)]
+        private ItemRarity _rarity;
+
+        [SerializableFieldSaveFlag(11)]
+        private bool ShouldSerializeRarity() => _rarity != ItemRarity.Common;
+
+        [SerializableFieldDefault(11)]
+        private ItemRarity RarityDefaultValue() => ItemRarity.Common;
+
+        public virtual ItemRarity MaxRarity => ItemRarity.Legendary;
 
         // Field 10
         private int _strReq = -1;
@@ -720,6 +734,8 @@ namespace Server.Items
         {
             base.GetProperties(list);
 
+            RaritySystem.AddRarityProperty(list, _rarity);
+
             if (_crafter != null)
             {
                 list.Add(1050043, _crafter); // crafted by ~1_NAME~
@@ -956,19 +972,24 @@ namespace Server.Items
                 name = $"{(articleAnName ? "an" : "a")} {Localization.GetText(LabelNumber).ToLowerInvariant()}";
             }
 
+            string label;
             if (Crafter == null)
             {
-                LabelTo(from, Quality == ClothingQuality.Exceptional ? $"{name} of exceptional quality" : name);
-                LabelSingleClickItemDetails(from);
-                return;
+                label = Quality == ClothingQuality.Exceptional ? $"{name} of exceptional quality" : name;
+            }
+            else
+            {
+                label = Quality == ClothingQuality.Exceptional
+                    ? $"{name} crafted with exceptional quality by {Crafter}"
+                    : $"{name} crafted by {Crafter}";
             }
 
-            LabelTo(
-                from,
-                Quality == ClothingQuality.Exceptional
-                    ? $"{name} crafted with exceptional quality by {Crafter}"
-                    : $"{name} crafted by {Crafter}"
-            );
+            if (_rarity != ItemRarity.Common)
+            {
+                label = $"{label}{RarityConfig.GetSuffix(_rarity)}";
+            }
+
+            LabelTo(from, label);
             LabelSingleClickItemDetails(from);
         }
 

@@ -16,6 +16,22 @@ public partial class BaseClothing
         _strReq = content.StrRequirement ?? -1;
     }
 
+    private void MigrateFrom(V7Content content)
+    {
+        _resource = content.Resource ?? DefaultResource;
+        _attributes = content.Attributes ?? AttributesDefaultValue();
+        _clothingAttributes = content.ClothingAttributes ?? ClothingAttributesDefaultValue();
+        _skillBonuses = content.SkillBonuses ?? SkillBonusesDefaultValue();
+        _resistances = content.Resistances ?? ResistancesDefaultValue();
+        _maxHitPoints = content.MaxHitPoints ?? 0;
+        _hitPoints = content.HitPoints ?? 0;
+        _playerConstructed = content.PlayerConstructed;
+        _crafter = content.Crafter;
+        _quality = content.Quality ?? ClothingQuality.Regular;
+        _strReq = content.StrRequirement ?? -1;
+        // _rarity stays default (Common)
+    }
+
     // Version 5 (pre-codegen)
     private void Deserialize(IGenericReader reader, int version)
     {

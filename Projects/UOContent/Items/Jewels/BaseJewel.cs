@@ -1,6 +1,7 @@
 using System;
 using ModernUO.Serialization;
 using Server.Engines.Craft;
+using Server.Engines.Rarity;
 
 namespace Server.Items;
 
@@ -18,8 +19,8 @@ public enum GemType
     Diamond
 }
 
-[SerializationGenerator(5, false)]
-public abstract partial class BaseJewel : Item, ICraftable, IAosItem
+[SerializationGenerator(6, false)]
+public abstract partial class BaseJewel : Item, ICraftable, IAosItem, IRarity
 {
     [EncodedInt]
     [InvalidateProperties]
@@ -51,6 +52,19 @@ public abstract partial class BaseJewel : Item, ICraftable, IAosItem
     [SerializableField(7)]
     [SerializedCommandProperty(AccessLevel.GameMaster)]
     private int _gemCount;
+
+    [InvalidateProperties]
+    [SerializableField(8)]
+    [SerializedCommandProperty(AccessLevel.GameMaster)]
+    private ItemRarity _rarity;
+
+    [SerializableFieldSaveFlag(8)]
+    private bool ShouldSerializeRarity() => _rarity != ItemRarity.Common;
+
+    [SerializableFieldDefault(8)]
+    private ItemRarity RarityDefaultValue() => ItemRarity.Common;
+
+    public virtual ItemRarity MaxRarity => ItemRarity.Legendary;
 
     public BaseJewel(int itemID, Layer layer) : base(itemID)
     {
@@ -253,17 +267,25 @@ public abstract partial class BaseJewel : Item, ICraftable, IAosItem
             }
         }
 
+        string label;
         if (_gemType != GemType.None && _gemCount > 0)
         {
             var gemName = GetGemName(_gemType, plural);
-            LabelTo(from, plural
+            label = plural
                 ? $"{name} with {_gemCount} {gemName}"
-                : $"{name} with {gemName}");
+                : $"{name} with {gemName}";
         }
         else
         {
-            LabelTo(from, name);
+            label = name;
         }
+
+        if (_rarity != ItemRarity.Common)
+        {
+            label = $"{label}{RarityConfig.GetSuffix(_rarity)}";
+        }
+
+        LabelTo(from, label);
         LabelSingleClickItemDetails(from);
     }
 
@@ -401,6 +423,8 @@ public abstract partial class BaseJewel : Item, ICraftable, IAosItem
     public override void GetProperties(IPropertyList list)
     {
         base.GetProperties(list);
+
+        RaritySystem.AddRarityProperty(list, _rarity);
 
         SkillBonuses.GetProperties(list);
 
@@ -563,6 +587,19 @@ public abstract partial class BaseJewel : Item, ICraftable, IAosItem
         _resistances = content.Resistances;
         _skillBonuses = content.SkillBonuses;
         // _gemCount defaults to 0
+    }
+
+    private void MigrateFrom(V5Content content)
+    {
+        _maxHitPoints = content.MaxHitPoints;
+        _hitPoints = content.HitPoints;
+        _resource = content.Resource;
+        _gemType = content.GemType;
+        _attributes = content.Attributes;
+        _resistances = content.Resistances;
+        _skillBonuses = content.SkillBonuses;
+        _gemCount = content.GemCount;
+        // _rarity stays default (Common)
     }
 
     [AfterDeserialization]

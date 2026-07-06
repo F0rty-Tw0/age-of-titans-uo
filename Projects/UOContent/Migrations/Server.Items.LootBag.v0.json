@@ -1,0 +1,14 @@
+{
+  "version": 0,
+  "type": "Server.Items.LootBag",
+  "properties": [
+    {
+      "name": "Level",
+      "type": "int",
+      "rule": "PrimitiveTypeMigrationRule",
+      "ruleArguments": [
+        ""
+      ]
+    }
+  ]
+}
