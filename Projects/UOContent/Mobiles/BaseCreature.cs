@@ -3012,6 +3012,16 @@ namespace Server.Mobiles
                             }
                     }
                 }
+
+                if (!Controlled)
+                {
+                    var mobLevel = Engines.Leveling.LevelConfig.GetMobLevel(this);
+
+                    if (Utility.RandomDouble() < Engines.LootBags.LootBagConfig.ChanceForMobLevel(mobLevel))
+                    {
+                        PackItem(new LootBag(mobLevel));
+                    }
+                }
             }
 
             if (!Summoned && !NoKillAwards && !m_HasGeneratedLoot)
