@@ -1,13 +1,11 @@
 using Server;
 using Server.Engines.Leveling;
 using Server.Mobiles;
+using Server.Tests.Maps;
 using Xunit;
 
 namespace UOContent.Tests;
 
-// GetMobLevel_OverrideWinsOverHpHeuristic constructs real BaseCreature instances, which need
-// Map.Internal set up by UOContentFixture (see BaseCreatureSingleClickTests for the same pattern).
-[Collection("Sequential UOContent Tests")]
 public class LevelConfigTests
 {
     [Theory]
@@ -123,6 +121,11 @@ public class LevelConfigTests
     [Fact]
     public void GetMobLevel_OverrideWinsOverHpHeuristic()
     {
+        if (Map.Internal == null)
+        {
+            TestMapDefinitions.ConfigureTestMapDefinitions();
+        }
+
         var dog = new Dog((Serial)0x1);
         var lich = new Lich((Serial)0x2);
 
