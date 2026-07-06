@@ -2948,6 +2948,13 @@ namespace Server.Mobiles
                 PrivateOverheadMessage(MessageType.Regular, 0x3B2, number, from.NetState);
             }
 
+            var mobLevel = Engines.Leveling.LevelConfig.GetMobLevel(this);
+            var levelHue = from is PlayerMobile pm && pm.AccessLevel == AccessLevel.Player
+                ? Engines.Leveling.LevelConfig.GapHue(mobLevel, Engines.Leveling.LevelSystem.GetLevel(pm))
+                : 0x3B2;
+
+            PrivateOverheadMessage(MessageType.Regular, levelHue, true, $"[lvl {mobLevel}]", from.NetState);
+
             base.OnSingleClick(from);
         }
 
