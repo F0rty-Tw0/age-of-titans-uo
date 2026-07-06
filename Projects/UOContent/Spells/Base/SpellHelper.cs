@@ -958,7 +958,9 @@ namespace Server.Spells
                 bcFrom?.AlterSpellDamageTo(target, ref damageGiven);
                 bcTarget?.AlterSpellDamageFrom(from, ref damageGiven);
 
+                FloatingCombatText.SetSpellContext(spell?.Name);
                 target.Damage(damageGiven, from);
+                FloatingCombatText.ClearContext();
 
                 bcFrom?.OnDamageSpell(target, damageGiven);
 
@@ -1034,7 +1036,9 @@ namespace Server.Spells
 
                 StaminaSystem.DFA = dfa;
 
+                FloatingCombatText.SetSpellContext(spell?.Name);
                 var damageGiven = AOS.Damage(target, from, dmg, phys, fire, cold, pois, nrgy, chaos);
+                FloatingCombatText.ClearContext();
                 Mysticism.SpellPlagueSpell.OnMobileDamaged(target);
 
                 StaminaSystem.DFA = DFAlgorithm.Standard;
@@ -1077,10 +1081,12 @@ namespace Server.Spells
                 from.PlaySound(0x44D);
             }
         }
-        public static void Heal(int amount, Mobile target, Mobile from, bool message = true)
+        public static void Heal(int amount, Mobile target, Mobile from, bool message = true, string source = null)
         {
             // TODO: All Healing *spells* go through ArcaneEmpowerment
+            FloatingCombatText.SetHealContext(source);
             target.Heal(amount, from, message);
+            FloatingCombatText.ClearHealContext();
         }
 
         private delegate bool TravelValidator(Map map, Point3D loc);
@@ -1110,7 +1116,9 @@ namespace Server.Spells
                 (m_From as BaseCreature)?.AlterSpellDamageTo(m_Target, ref m_Damage);
                 (m_Target as BaseCreature)?.AlterSpellDamageFrom(m_From, ref m_Damage);
 
+                FloatingCombatText.SetSpellContext(m_Spell?.Name);
                 m_Target.Damage(m_Damage);
+                FloatingCombatText.ClearContext();
                 m_Spell?.RemoveDelayedDamageContext(m_Target);
             }
         }

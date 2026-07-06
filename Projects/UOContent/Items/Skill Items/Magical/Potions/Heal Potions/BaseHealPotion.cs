@@ -19,7 +19,9 @@ public abstract partial class BaseHealPotion : BasePotion
         var min = Scale(from, MinHeal);
         var max = Scale(from, MaxHeal);
 
+        Misc.FloatingCombatText.SetHealContext("Potion");
         from.Heal(Utility.RandomMinMax(min, max));
+        Misc.FloatingCombatText.ClearHealContext();
     }
 
     public override bool CanDrink(Mobile from)

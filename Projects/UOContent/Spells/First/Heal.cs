@@ -64,7 +64,7 @@ namespace Server.Spells.First
                 }
 
                 // m.Heal( toHeal, Caster );
-                SpellHelper.Heal((int)toHeal, m, Caster);
+                SpellHelper.Heal((int)toHeal, m, Caster, source: Name);
 
                 m.FixedParticles(0x376A, 9, 32, 5005, EffectLayer.Waist);
                 m.PlaySound(0x1F2);

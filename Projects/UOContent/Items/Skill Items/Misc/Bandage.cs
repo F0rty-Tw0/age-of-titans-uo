@@ -415,7 +415,9 @@ public class BandageContext : Timer
                     healerNumber = 500968; // You apply the bandages, but they barely help.
                 }
 
+                FloatingCombatText.SetHealContext("Bandages");
                 Patient.Heal((int)toHeal, Healer, false);
+                FloatingCombatText.ClearHealContext();
             }
             else
             {
