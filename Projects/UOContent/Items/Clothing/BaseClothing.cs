@@ -106,10 +106,23 @@ namespace Server.Items
         [SerializableFieldSaveFlag(9)]
         private bool ShouldSerializeQuality() => _quality != ClothingQuality.Regular;
 
-        [InvalidateProperties]
-        [SerializableField(11)]
-        [SerializedCommandProperty(AccessLevel.GameMaster)]
-        private ItemRarity _rarity;
+        [SerializableProperty(11)]
+        [CommandProperty(AccessLevel.GameMaster)]
+        public ItemRarity Rarity
+        {
+            get => _rarity;
+            set
+            {
+                var clamped = RaritySystem.Clamp(value, MaxRarity);
+
+                if (_rarity != clamped)
+                {
+                    _rarity = clamped;
+                    InvalidateProperties();
+                    this.MarkDirty();
+                }
+            }
+        }
 
         [SerializableFieldSaveFlag(11)]
         private bool ShouldSerializeRarity() => _rarity != ItemRarity.Common;

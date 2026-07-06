@@ -3,6 +3,9 @@ namespace Server.Engines.Rarity;
 // Display + announce helpers shared by the rarity-bearing equipment bases.
 public static class RaritySystem
 {
+    public static ItemRarity Clamp(ItemRarity value, ItemRarity max) =>
+        value < ItemRarity.Common ? ItemRarity.Common : value > max ? max : value;
+
     public static void AddRarityProperty(IPropertyList list, ItemRarity rarity)
     {
         if (rarity == ItemRarity.Common)

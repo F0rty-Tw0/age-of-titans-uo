@@ -152,10 +152,23 @@ namespace Server.Items
         [SerializableFieldSaveFlag(24)]
         private bool ShouldSerializePlayerConstructed() => _playerConstructed;
 
-        [InvalidateProperties]
-        [SerializableField(25)]
-        [SerializedCommandProperty(AccessLevel.GameMaster)]
-        private ItemRarity _rarity;
+        [SerializableProperty(25)]
+        [CommandProperty(AccessLevel.GameMaster)]
+        public ItemRarity Rarity
+        {
+            get => _rarity;
+            set
+            {
+                var clamped = RaritySystem.Clamp(value, MaxRarity);
+
+                if (_rarity != clamped)
+                {
+                    _rarity = clamped;
+                    InvalidateProperties();
+                    this.MarkDirty();
+                }
+            }
+        }
 
         [SerializableFieldSaveFlag(25)]
         private bool ShouldSerializeRarity() => _rarity != ItemRarity.Common;
