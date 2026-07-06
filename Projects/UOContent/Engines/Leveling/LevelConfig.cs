@@ -21,16 +21,46 @@ public static class LevelConfig
     // Per-skill Skill.Cap by level 0..5 (100-scale). Level > 5 stays at 100.0.
     private static readonly double[] _skillCaps = { 50.0, 60.0, 70.0, 80.0, 90.0, 100.0 };
 
-    // Hand-tuning hook: shipped empty. When a type is present it wins over the HP
-    // heuristic in GetMobLevel.
-    public static readonly Dictionary<Type, int> MobLevelOverrides = new();
+    // Hand-tuning hook. When a type is present it wins over the HP heuristic in GetMobLevel.
+    public static readonly Dictionary<Type, int> MobLevelOverrides = new()
+    {
+        // Ambient / farm / pack animals: no XP, gray tag. Predators (wolves, bears,
+        // panthers, snakes, scorpions) intentionally stay on the HP curve.
+        [typeof(Bird)] = 0, [typeof(Chicken)] = 0, [typeof(Rabbit)] = 0, [typeof(JackRabbit)] = 0,
+        [typeof(Cat)] = 0, [typeof(Dog)] = 0, [typeof(Rat)] = 0, [typeof(SewerRat)] = 0,
+        [typeof(Goat)] = 0, [typeof(MountainGoat)] = 0, [typeof(Pig)] = 0, [typeof(Sheep)] = 0,
+        [typeof(Cow)] = 0, [typeof(Bull)] = 0, [typeof(Boar)] = 0,
+        [typeof(Horse)] = 0, [typeof(PackHorse)] = 0, [typeof(PackLlama)] = 0,
+        [typeof(Llama)] = 0, [typeof(RidableLlama)] = 0,
+        [typeof(Hind)] = 0, [typeof(GreatHart)] = 0,
+        [typeof(Dolphin)] = 0, [typeof(Walrus)] = 0, [typeof(Squirrel)] = 0, [typeof(Ferret)] = 0,
+        [typeof(Eagle)] = 0, [typeof(DesertOstard)] = 0, [typeof(ForestOstard)] = 0,
+
+        // Casters punch above their HP: +1..2 over the HP curve.
+        [typeof(EvilMage)] = 3, [typeof(EvilMageLord)] = 4,
+        [typeof(SkeletalMage)] = 3, [typeof(BoneMagi)] = 3,
+        [typeof(OrcishMage)] = 4, [typeof(RatmanMage)] = 4,
+        [typeof(Gazer)] = 3, [typeof(ElderGazer)] = 6,
+        [typeof(OphidianMage)] = 5, [typeof(OphidianArchmage)] = 6,
+        [typeof(Lich)] = 5, [typeof(LichLord)] = 7, [typeof(AncientLich)] = 9
+    };
 
     // TESTING knob: first ding after a single kill. Production: delete this constant
-    // and the level == 1 branch below so L1 costs 1000 like the formula says.
+    // and the level == 1 branch below so L1 costs 3750 like the table says.
     public const long FirstLevelXP = 1;
 
-    // Cumulative XP needed to reach the given level. Cost from N-1 to N is N * 1000,
-    // so the cumulative total is 1000 * N(N+1)/2. L1 = 1000 .. L10 = 55000.
+    // Cumulative XP needed to reach each level (index 0 = level 1 .. index 9 = level 10).
+    // Hand-tuned, not a formula: per-level cost = kill target x mob XP one level above the
+    // player, where the +1 level gap applies the 1.25x GapMultiplier bonus and mob XP is
+    // BaseMobXP(mobLevel). Kill targets by level: L1=30, L2=40, L3=60, L4=80, L5=100, L6=120,
+    // L7=140, L8=160, L9=180, L10=200. E.g. L1 = 30 * 100 * 1.25 = 3750; the L10 leg alone is
+    // 200 * 1000 * 1.25 = 250000, on top of the L1..L9 total for a 963750 cumulative.
+    private static readonly long[] _cumulativeXP =
+    {
+        3_750, 13_750, 36_250, 76_250, 138_750, 228_750, 351_250, 511_250, 713_750, 963_750
+    };
+
+    // Cumulative XP needed to reach the given level.
     public static long XPToReach(int level)
     {
         if (level <= 0)
@@ -48,7 +78,7 @@ public static class LevelConfig
             return FirstLevelXP;
         }
 
-        return 1000L * level * (level + 1) / 2;
+        return _cumulativeXP[level - 1];
     }
 
     // Level for a cumulative XP total, clamped to 0..MaxLevel.
@@ -108,20 +138,41 @@ public static class LevelConfig
         };
     }
 
-    // v1 mob level from max hit points.
+    // Overhead-label hue for a mob's [lvl N] tag as seen by a player, keyed on the same
+    // gap brackets as GapMultiplier. Level 0 mobs award no XP, so they always read gray.
+    // Hues are placeholders to tune in-game (same spirit as the loot bag hue table).
+    public static int GapHue(int mobLevel, int playerLevel)
+    {
+        if (mobLevel <= 0)
+        {
+            return 0x3B2; // gray — always 0 XP
+        }
+
+        return (mobLevel - playerLevel) switch
+        {
+            <= -3 => 0x3B2, // gray: trivial, 0x XP
+            -2 or -1 => 0x3F,  // green: easy, reduced XP
+            0 => 0x481, // white: even
+            1 => 0x35,  // yellow: tough, 1.25x
+            _ => 0x22   // red: danger, 1.5x (gap >= +2)
+        };
+    }
+
+    // v2 mob level from real (post-T2A-scaling) max hit points. Minimum HP level is 1;
+    // level 0 exists only via MobLevelOverrides pins (ambient/farm creatures).
     public static int MobLevelFromHits(int hitsMax) =>
         hitsMax switch
         {
-            <= 30   => 1,
-            <= 60   => 2,
-            <= 115  => 3,
-            <= 200  => 4,
-            <= 325  => 5,
-            <= 500  => 6,
-            <= 750  => 7,
-            <= 1100 => 8,
-            <= 1600 => 9,
-            _       => 10
+            <= 65   => 1,  // mongbat, giant rat, slime, headless
+            <= 100  => 2,  // zombie, skeleton, wolves
+            <= 160  => 3,  // orc, ratman, low elementals
+            <= 240  => 4,  // ogre, troll, lich
+            <= 380  => 5,  // ore elementals, elder gazer, efreet
+            <= 550  => 6,  // drake, daemon
+            <= 720  => 7,  // titan, blood elemental, phoenix
+            <= 950  => 8,  // dragon, white wyrm, ogre lord
+            <= 2400 => 9,  // balron, ancient wyrm, hydra
+            _       => 10  // future custom bosses, champion-tier
         };
 
     // Override table wins first; otherwise fall back to the HP heuristic.
