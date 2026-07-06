@@ -3297,6 +3297,7 @@ namespace Server.Mobiles
                 var (totalFame, totalKarma) = Titles.ComputeKillAwards(this, Map);
 
                 var list = GetLootingRights(DamageEntries, HitsMax);
+                Engines.Leveling.LevelSystem.DistributeXP(this, list);
                 using var titles = PooledRefList<Mobile>.Create();
                 var fame = PooledRefList<int>.Create();
                 var karma = PooledRefList<int>.Create();
