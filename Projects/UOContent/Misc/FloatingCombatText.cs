@@ -6,6 +6,7 @@ namespace Server.Misc;
 public static class FloatingCombatText
 {
     private const int DamageHue = 0x21; // red (melee/untyped)
+    private const int IncomingDamageHue = 0x490; // bright pink (victim's own view)
     private const int SpellHue = 0x2B;  // red-orange
     private const int PoisonHue = 0x3F; // dark green
     private const int HealHue = 0x44;   // green
@@ -50,7 +51,7 @@ public static class FloatingCombatText
     {
         if (amount > 0)
         {
-            Show(target, from, '-', amount, _contextHue, _contextLabel);
+            Show(target, from, '-', amount, _contextHue, IncomingDamageHue, _contextLabel);
         }
     }
 
@@ -61,11 +62,11 @@ public static class FloatingCombatText
 
         if (effective > 0)
         {
-            Show(target, from, '+', effective, HealHue, _healLabel);
+            Show(target, from, '+', effective, HealHue, HealHue, _healLabel);
         }
     }
 
-    private static void Show(Mobile target, Mobile source, char sign, int amount, int hue, string label)
+    private static void Show(Mobile target, Mobile source, char sign, int amount, int hue, int incomingHue, string label)
     {
         var ourState = target.NetState ?? target.GetDamageMaster(source)?.NetState;
         var theirState = source?.NetState ?? source?.GetDamageMaster(target)?.NetState;
@@ -95,7 +96,7 @@ public static class FloatingCombatText
 
         if (ourState != null)
         {
-            target.PrivateOverheadMessage(MessageType.Regular, hue, false, span, ourState);
+            target.PrivateOverheadMessage(MessageType.Regular, incomingHue, false, span, ourState);
         }
 
         if (theirState != null && theirState != ourState)
