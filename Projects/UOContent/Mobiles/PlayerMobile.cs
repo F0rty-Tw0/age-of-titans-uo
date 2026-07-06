@@ -2133,6 +2133,16 @@ namespace Server.Mobiles
             return true;
         }
 
+        public override bool EquipItem(Item item)
+        {
+            if (item?.Deleted == false && !DoubleClickEquip.DisplaceConflicts(this, item))
+            {
+                return false;
+            }
+
+            return base.EquipItem(item);
+        }
+
         public override bool CheckTrade(
             Mobile to, Item item, SecureTradeContainer cont, bool message, bool checkItems,
             int plusItems, int plusWeight

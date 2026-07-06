@@ -68,20 +68,14 @@ namespace Server.Items
 
         public override void OnDoubleClick(Mobile from)
         {
+            if (Parent != from && !DoubleClickEquip.TryEquip(from, this))
+            {
+                return; // couldn't equip (not in pack / pack full / requirements) — no action
+            }
+
             if (HarvestSystem == null || Deleted)
             {
                 return;
-            }
-
-            if (!IsChildOf(from))
-            {
-                var loc = GetWorldLocation();
-
-                if (!from.InLOS(loc) || !from.InRange(loc, 2))
-                {
-                    from.LocalOverheadMessage(MessageType.Regular, 0x3E9, 1019045); // I can't reach that
-                    return;
-                }
             }
 
             if (!IsAccessibleTo(from))

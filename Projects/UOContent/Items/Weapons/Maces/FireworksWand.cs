@@ -29,6 +29,11 @@ namespace Server.Items
 
         public override void OnDoubleClick(Mobile from)
         {
+            if (Parent != from && !DoubleClickEquip.TryEquip(from, this))
+            {
+                return; // couldn't equip (not in pack / pack full / requirements) — no action
+            }
+
             BeginLaunch(from, true);
         }
 

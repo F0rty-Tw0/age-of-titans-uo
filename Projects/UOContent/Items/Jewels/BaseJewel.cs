@@ -226,6 +226,14 @@ public abstract partial class BaseJewel : Item, ICraftable, IAosItem
         base.OnSingleClick(from);
     }
 
+    public override void OnDoubleClick(Mobile from)
+    {
+        if (!DoubleClickEquip.TryEquip(from, this))
+        {
+            base.OnDoubleClick(from);
+        }
+    }
+
     public virtual void OnSingleClickPreUOTD(Mobile from)
     {
         var plural = _gemCount > 1;

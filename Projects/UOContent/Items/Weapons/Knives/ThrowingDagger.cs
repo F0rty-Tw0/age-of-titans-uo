@@ -18,15 +18,13 @@ public partial class ThrowingDagger : Item
 
     public override void OnDoubleClick(Mobile from)
     {
-        if (from.Items.Contains(this))
+        if (!from.Items.Contains(this) && !DoubleClickEquip.TryEquip(from, this))
         {
-            var t = new InternalTarget(this);
-            from.Target = t;
+            return; // couldn't equip (not in pack / pack full / requirements) — no action
         }
-        else
-        {
-            from.SendMessage("You must be holding that weapon to use it.");
-        }
+
+        var t = new InternalTarget(this);
+        from.Target = t;
     }
 
     private class InternalTarget : Target

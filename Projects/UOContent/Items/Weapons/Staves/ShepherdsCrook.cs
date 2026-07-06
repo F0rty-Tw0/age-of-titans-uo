@@ -33,6 +33,11 @@ namespace Server.Items
 
         public override void OnDoubleClick(Mobile from)
         {
+            if (Parent != from && !DoubleClickEquip.TryEquip(from, this))
+            {
+                return; // couldn't equip (not in pack / pack full / requirements) — no action
+            }
+
             from.SendLocalizedMessage(502464); // Target the animal you wish to herd.
             from.Target = new HerdingTarget();
         }

@@ -3433,6 +3433,14 @@ public abstract partial class BaseWeapon
         from.NetState.SendDisplayEquipmentInfo(Serial, number, _crafter, false, attrs);
     }
 
+    public override void OnDoubleClick(Mobile from)
+    {
+        if (!DoubleClickEquip.TryEquip(from, this))
+        {
+            base.OnDoubleClick(from);
+        }
+    }
+
     public virtual void OnSingleClickPreUOTD(Mobile from)
     {
         var isMagicItem = _durabilityLevel > WeaponDurabilityLevel.Regular ||

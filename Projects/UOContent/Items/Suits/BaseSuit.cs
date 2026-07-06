@@ -62,7 +62,7 @@ public abstract partial class BaseSuit : Item
 
     public override void OnDoubleClick(Mobile from)
     {
-        if (Validate())
+        if (Validate() && !DoubleClickEquip.TryEquip(from, this))
         {
             base.OnDoubleClick(from);
         }
