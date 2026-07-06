@@ -1,16 +1,31 @@
 using System.Text;
 using Server;
 using Server.Mobiles;
+using Server.Network;
+using Server.Tests.Maps;
 using Server.Tests.Network;
 using Xunit;
 
 namespace UOContent.Tests;
 
-// Mirrors ItemPacketTests' single-click detail assertions but for the mob level
-// overhead line added to BaseCreature.OnSingleClick.
-[Collection("Sequential UOContent Tests")]
 public class BaseCreatureSingleClickTests
 {
+    static BaseCreatureSingleClickTests()
+    {
+        Core.ApplicationAssembly = typeof(BaseCreatureSingleClickTests).Assembly;
+        ServerConfiguration.Load(true);
+        Core.LoopContext = new EventLoopContext();
+        NetState.Configure();
+
+        if (Map.Internal == null)
+        {
+            TestMapDefinitions.ConfigureTestMapDefinitions();
+        }
+
+        World.Configure();
+        Timer.Init(0);
+    }
+
     [Fact]
     public void OnSingleClick_EmitsLevelOverheadLine()
     {

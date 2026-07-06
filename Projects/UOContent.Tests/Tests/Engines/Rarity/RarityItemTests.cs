@@ -1,12 +1,30 @@
+using Server;
 using Server.Engines.Rarity;
 using Server.Items;
+using Server.Tests.Maps;
 using Xunit;
 
 namespace UOContent.Tests;
 
-[Collection("Sequential UOContent Tests")]
 public class RarityItemTests
 {
+    static RarityItemTests()
+    {
+        Core.ApplicationAssembly = typeof(RarityItemTests).Assembly;
+        ServerConfiguration.Load(true);
+        Core.LoopContext = new EventLoopContext();
+
+        if (Map.Internal == null)
+        {
+            TestMapDefinitions.ConfigureTestMapDefinitions();
+        }
+
+        World.Configure();
+        World.Load();
+        DecayScheduler.Configure();
+        Timer.Init(0);
+    }
+
     [Fact]
     public void Katana_DefaultsToCommonWithLegendaryMaxRarity()
     {
