@@ -7,17 +7,10 @@
 /Distribution/Server.*
 /Distribution/Assemblies
 /Distribution/bsdtar
-/Distribution/Configuration/antimacro.json
-/Distribution/Configuration/assistants.json
-/Distribution/Configuration/expansion.json
-/Distribution/Configuration/modernuo.json
-/Distribution/Configuration/email-settings.json
-/Distribution/Configuration/throttles.json
-/Distribution/Configuration/tot.json
-/Distribution/Logs
+/Distribution/Saves/Accounts/
 /Distribution/Archives
 /Distribution/Backups
-/Distribution/Saves
+/Distribution/Data/Pathfinding/
 /Distribution/docs
 /Distribution/temp
 /Distribution/*.dylib
@@ -34,7 +27,6 @@
 /Projects/*/Generated
 
 *.swp
-*.log
 *.user
 /.idea
 /.vs
@@ -44,7 +36,6 @@
 .DS_Store
 
 /packages/*
-/Distribution/Configuration/server-access.json
 
 # BuildTool native binaries (downloaded from GitHub Releases)
 /tools/
