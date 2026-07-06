@@ -47,3 +47,4 @@
 
 # BuildTool native binaries (downloaded from GitHub Releases)
 /tools/
+artifacts
