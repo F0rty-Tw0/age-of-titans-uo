@@ -1598,6 +1598,7 @@ namespace Server.Items
 
                 LabelTo(from, builder.ToString());
                 builder.Dispose();
+                LabelSingleClickItemDetails(from);
                 return;
             }
 
@@ -1606,6 +1607,7 @@ namespace Server.Items
             if (Crafter == null)
             {
                 LabelTo(from, Quality == ArmorQuality.Exceptional ? $"{name} of exceptional quality" : name);
+                LabelSingleClickItemDetails(from);
                 return;
             }
 
@@ -1615,6 +1617,22 @@ namespace Server.Items
                     ? $"{name} crafted with exceptional quality by {Crafter}"
                     : $"{name} crafted by {Crafter}"
             );
+            LabelSingleClickItemDetails(from);
+        }
+
+        private void LabelSingleClickItemDetails(Mobile from)
+        {
+            if (!ItemInfoConfiguration.SingleClickDetails)
+            {
+                return;
+            }
+
+            LabelTo(from, $"Armor Rating: {ArmorRating:0.#}");
+
+            if (_hitPoints >= 0 && _maxHitPoints > 0)
+            {
+                LabelTo(from, $"Durability: {_hitPoints}/{_maxHitPoints}");
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

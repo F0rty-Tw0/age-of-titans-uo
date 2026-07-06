@@ -959,6 +959,7 @@ namespace Server.Items
             if (Crafter == null)
             {
                 LabelTo(from, Quality == ClothingQuality.Exceptional ? $"{name} of exceptional quality" : name);
+                LabelSingleClickItemDetails(from);
                 return;
             }
 
@@ -968,6 +969,20 @@ namespace Server.Items
                     ? $"{name} crafted with exceptional quality by {Crafter}"
                     : $"{name} crafted by {Crafter}"
             );
+            LabelSingleClickItemDetails(from);
+        }
+
+        private void LabelSingleClickItemDetails(Mobile from)
+        {
+            if (!ItemInfoConfiguration.SingleClickDetails)
+            {
+                return;
+            }
+
+            if (_hitPoints >= 0 && _maxHitPoints > 0)
+            {
+                LabelTo(from, $"Durability: {_hitPoints}/{_maxHitPoints}");
+            }
         }
 
         public virtual void AddEquipInfoAttributes(Mobile from, List<EquipInfoAttribute> attrs)

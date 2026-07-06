@@ -264,6 +264,20 @@ public abstract partial class BaseJewel : Item, ICraftable, IAosItem
         {
             LabelTo(from, name);
         }
+        LabelSingleClickItemDetails(from);
+    }
+
+    private void LabelSingleClickItemDetails(Mobile from)
+    {
+        if (!ItemInfoConfiguration.SingleClickDetails)
+        {
+            return;
+        }
+
+        if (_hitPoints >= 0 && _maxHitPoints > 0)
+        {
+            LabelTo(from, $"Durability: {_hitPoints}/{_maxHitPoints}");
+        }
     }
 
 
