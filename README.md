@@ -13,6 +13,91 @@ ModernUO [![Discord](https://img.shields.io/discord/751317910504603701?logo=disc
 [![GitHub build](https://img.shields.io/github/actions/workflow/status/modernuo/ModernUO/build-test.yml?branch=main&logo=github)](https://github.com/modernuo/ModernUO/actions)
 [![Azure Pipelines build](https://dev.azure.com/modernuo/modernuo/_apis/build/status/Build?branchName=main)](https://dev.azure.com/modernuo/modernuo/_build/latest?definitionId=1&branchName=main)
 
+## Age of Titans — Shard Customizations
+
+This repository is a fork of [ModernUO](https://github.com/modernuo/ModernUO) customized for the **Age of Titans** shard: T2A era, Felucca-only. The sections below document the shard systems added on top of upstream (last updated 2026-07-06).
+
+### Player & Mob Leveling — `Projects/UOContent/Engines/Leveling/`
+- 10-level XP progression. Kills award XP to every player with looting rights, scaled by the mob-vs-player level gap (0.25x for easy kills up to 1.5x for mobs 2+ levels above you; mobs 3+ levels below award nothing).
+- Reaching levels 1–5 tops up total stats (100 → 300) one point at a time, round-robin Str/Dex/Int, honoring stat locks and the 200 per-stat cap.
+- Per-skill caps replace the total skill cap as the shard's limiter: 50.0 at level 0 rising to 100.0 at level 5+.
+- Mob level derives from max HP (9 hand-tuned brackets), with an override table pinning ambient/farm animals to level 0 and bumping casters (liches, mages) above their HP bracket.
+- Single-clicking a creature shows a `[lvl N]` tag hued by difficulty: gray (no XP), green (easy), white (even), yellow (tough), red (dangerous).
+- `[level` shows progress; `[levelguide` explains the system; a one-time primer gump appears on first level-up.
+
+### Loot Bags — `Projects/UOContent/Engines/LootBags/`
+- Non-controlled creatures can drop a level-tagged `LootBag` (bag level = mob level). Drop chance scales from 5% at level 1 to 30% at level 10; level-0 ambient creatures never drop one.
+- Bag hue and displayed `[level N]` tag reflect the level. Bag level caps the rarity of future rolled contents.
+
+### Equipment Rarity — `Projects/UOContent/Engines/Rarity/`
+- Five tiers (common, uncommon, rare, epic, legendary) on weapons, armor, clothing, and jewelry. Serialized with versioned migrations, GM-settable via `[props`.
+- Non-common items show `rarity: <tier>` in tooltips and a `[tier]` suffix on T2A single-click labels, including unidentified magic items.
+- Salvage multipliers (1x–16x) and a world-broadcast announcement for epic+ finds are in place for the upcoming loot roller.
+
+### Floating Combat Text — `Projects/UOContent/Misc/FloatingCombatText.cs`
+- Overhead numbers replace the client's raw damage packet: red melee, red-orange spells, green heals, dark-green poison, tagged with the source (e.g. `-19 (Flame Strike)`).
+- Shown to both attacker and target with correct per-perspective hues; zero-allocation stackalloc formatting.
+- Hooked into melee, spells, heal spells, potions, bandages, and poison ticks.
+
+### Double-Click to Equip — `Projects/UOContent/Items/DoubleClickEquip.cs`
+- Double-clicking a wearable in your backpack equips it, swapping whatever occupies the layer (and the conflicting hand for weapons) back into the pack.
+- The same swap logic backs paperdoll drag-equip. Tools (axes, pole arms, fishing pole, crook, throwing dagger, fireworks wand) equip first, then run their use action.
+- Casting no longer clears your hands (`ClearHandsOnCast` off).
+
+### Banded Skill Gain — `Projects/UOContent/Skills/SkillCheck.cs`
+- The compound RunUO gain formula is replaced with a flat chance per band: 90% below 60.0 skill, 75% to 95.0, 50% to 100.0.
+- Band edges and chances are `ServerConfiguration` settings (`skills.gainBand*` / `skills.gainChance*`) — tunable without a rebuild.
+
+### Attack-on-Sight Notoriety — `Projects/UOContent/Misc/Notoriety.cs`
+- Aggressive creatures (FightMode Closest/Strongest/Weakest) always show red. FightMode Evil creatures show red to negative-karma characters. Pets and summons are exempt.
+
+### Shard Setup & Ops
+- T2A expansion, Felucca-only maps, starting city fixed to Felucca; character creation uses a fixed 30/25/25 stat spread with all skills vendor-trained to 30.0.
+- Single-click item detail labels (damage, protection, etc.) controlled by `ItemInfoConfiguration`.
+- Command and network-disconnect audit logs; shard configuration and world saves are tracked in the repository (per-account saves and generated pathfinding data are ignored).
+
+### Tests
+- Each system ships with xUnit coverage under `Projects/UOContent.Tests/`: leveling math, loot bag drops, rarity serialization/labels, combat text, equip swaps, notoriety, skill gain curve, and single-click packets.
+
+## Known Improvements / Tech Debt
+
+Ranked review of the systems above — what to fix and how.
+
+### 1. Testing knob is live on `main` (high priority)
+`LevelConfig.FirstLevelXP = 1` (`Projects/UOContent/Engines/Leveling/LevelConfig.cs`) makes every new character reach level 1 after a single kill instead of the designed 3,750 XP. It exists only for in-game testing.
+
+**Fix:** replace the constant with a `ServerConfiguration` setting (e.g. `leveling.firstLevelXP`, default `3750`) so test shards can override it in `modernuo.json` without code changes, and production can never ship the test value by accident.
+
+### 2. Binary world saves tracked in git (high priority)
+The repository commits binary save files (`Saves/`). Git cannot diff or merge them, every save cycle bloats history permanently, and a bad merge can silently corrupt world state.
+
+**Fix:** move saves to Git LFS, or keep them out of the repo entirely and back them up via a dedicated mechanism (separate backup branch/remote, scheduled archive). Keep only `Configuration/` in git.
+
+### 3. Skill gain bands dropped per-skill difficulty
+The new `SkillCheck.GainChance` ignores `skill.Info.GainFactor`, so hard skills (Taming, Magery) gain exactly as fast as trivial ones (Camping). If uniform speed is the design, document it; otherwise the difficulty signal is lost.
+
+**Fix:** multiply the band chance by `skill.Info.GainFactor` (or a clamped version of it) inside `GainChance`, keeping the bands as the base curve.
+
+### 4. Rarity label logic duplicated four times
+The same "append `[tier]` suffix to the single-click label" pattern is hand-copied into `BaseWeapon`, `BaseArmor`, `BaseClothing`, and `BaseJewel`. The `LootBag` hue table also near-duplicates the `RarityConfig` hue table — two tables to keep in sync when hues get tuned.
+
+**Fix:** extract one shared helper (e.g. `RaritySystem.AppendSuffix(ref ValueStringBuilder, ItemRarity)` plus a label variant) and call it from all four bases; derive the bag hue from `RarityConfig.GetHue(RarityConfig.MaxRarityForBagLevel(level))` instead of a second table.
+
+### 5. `RaritySystem.Announce` is dead code with a per-call config read
+No call sites exist yet, and it reads `rarity.announceMinTier` from `ServerConfiguration` on every invocation instead of once.
+
+**Fix:** either delete it until the loot roller lands, or keep it and cache the tier in a `Configure()` method like `SkillCheck` does.
+
+### 6. ~~`IRarity.MaxRarity` is not enforced~~ (fixed 2026-07-06)
+Every base returned `Legendary` and nothing clamped `Rarity` against it, so the property was decorative — a GM (or future code) could set any tier on any item.
+
+**Fixed:** each base now hand-writes the `Rarity` property (`[SerializableProperty]`, same slot — no version bump) and clamps through a shared `RaritySystem.Clamp(value, MaxRarity)`, covering both out-of-range negatives (→ common) and tiers above the item's cap. Covered by clamp tests in `RarityItemTests`.
+
+### 7. Two git identities in history
+Commits alternate between `Artiom Tofan` and `F0rty_Tw0`. GitHub links only one to the account, which fragments blame/contribution history.
+
+**Fix:** pick one and set it globally (`git config --global user.name` / `user.email`); optionally add a `.mailmap` file so tooling merges the existing history.
+
 ## Requirements
 #### Supported Operating Systems
 [![Windows 10/11/2012/2016/2019/2022/2025](https://img.shields.io/badge/-server%202025-3c78d5?labelColor=222222&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHJvbGU9ImltZyIgdmlld0JveD0iMCAwIDI0IDI0Ij48dGl0bGU+V2luZG93czwvdGl0bGU+PHBhdGggZD0iTTAsMEgxMS4zNzdWMTEuMzcySDBaTTEyLjYyMywwSDI0VjExLjM3MkgxMi42MjNaTTAsMTIuNjIzSDExLjM3N1YyNEgwWm0xMi42MjMsMEgyNFYyNEgxMi42MjMiIGZpbGw9IiMzYzc4ZDUiLz48L3N2Zz4=)](https://www.microsoft.com/en-US/evalcenter/evaluate-windows-server-2022)
