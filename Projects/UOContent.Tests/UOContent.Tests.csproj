@@ -14,7 +14,11 @@
         <ProjectReference Include="..\Server\Server.csproj" />
         <ProjectReference Include="..\UOContent\UOContent.csproj" />
         <ProjectReference Include="..\Server.Tests\Server.Tests.csproj" />
-        <DataFiles Include="$(SolutionDir)\Distribution\Data\**" />
+        <!-- MSBuildThisFileDirectory resolves regardless of how the project is built (single
+             csproj or full .sln); $(SolutionDir) is only defined for a .sln build, so relying on
+             it silently copied nothing under `dotnet test <csproj>`, leaving Data/skills.json
+             absent and the fixture bootstrap NRE-ing in AOS.DisableStatInfluences. -->
+        <DataFiles Include="$(MSBuildThisFileDirectory)..\..\Distribution\Data\**" />
     </ItemGroup>
     <Target Name="CopyData" AfterTargets="AfterBuild">
         <Copy SourceFiles="@(DataFiles)" DestinationFolder="$(OutDir)\Data\%(RecursiveDir)" />
