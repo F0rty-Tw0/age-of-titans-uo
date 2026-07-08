@@ -104,9 +104,90 @@ public class FloatingCombatTextTests
         AssertThat.Equal(ns.SendBuffer.GetReadSpan(), expected);
     }
 
-    private static Mobile CreateMobile(NetState ns)
+    [Fact]
+    public void RestoreFormatsAmountAndUnitOverSelf()
     {
-        var mobile = new Mobile((Serial)0x1024);
+        using var ns = PacketTestUtilities.CreateTestNetState();
+        var self = CreateMobile(ns);
+
+        FloatingCombatText.ShowRestore(self, 'S', 15);
+
+        var expected = new UnicodeMessage(
+            self.Serial,
+            self.Body,
+            MessageType.Regular,
+            FloatingCombatText.StamHue,
+            3,
+            "ENU",
+            self.Name,
+            "+15 Stam"
+        ).Compile();
+
+        AssertThat.Equal(ns.SendBuffer.GetReadSpan(), expected);
+    }
+
+    [Fact]
+    public void RestoreOfZeroShowsNothing()
+    {
+        using var ns = PacketTestUtilities.CreateTestNetState();
+        var self = CreateMobile(ns);
+
+        FloatingCombatText.ShowRestore(self, 'M', 0);
+
+        Assert.Equal(0, ns.SendBuffer.GetReadSpan().Length);
+    }
+
+    [Fact]
+    public void SelfStatusFloatsOverSelfOnly()
+    {
+        using var ns = PacketTestUtilities.CreateTestNetState();
+        var self = CreateMobile(ns);
+
+        FloatingCombatText.ShowSelfStatus(self, "Frenzy");
+
+        var expected = new UnicodeMessage(
+            self.Serial,
+            self.Body,
+            MessageType.Regular,
+            FloatingCombatText.BuffHue,
+            3,
+            "ENU",
+            self.Name,
+            "Frenzy"
+        ).Compile();
+
+        AssertThat.Equal(ns.SendBuffer.GetReadSpan(), expected);
+    }
+
+    [Fact]
+    public void OffensiveStatusFloatsOverTargetForBothParties()
+    {
+        using var attackerNs = PacketTestUtilities.CreateTestNetState();
+        using var defenderNs = PacketTestUtilities.CreateTestNetState();
+        var attacker = CreateMobile(attackerNs, 0x1024);
+        var defender = CreateMobile(defenderNs, 0x1025);
+
+        FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Stunned", FloatingCombatText.DebuffHue);
+
+        // Both the attacker and the defender see the label floating over the DEFENDER.
+        var expected = new UnicodeMessage(
+            defender.Serial,
+            defender.Body,
+            MessageType.Regular,
+            FloatingCombatText.DebuffHue,
+            3,
+            "ENU",
+            defender.Name,
+            "Stunned"
+        ).Compile();
+
+        AssertThat.Equal(defenderNs.SendBuffer.GetReadSpan(), expected);
+        AssertThat.Equal(attackerNs.SendBuffer.GetReadSpan(), expected);
+    }
+
+    private static Mobile CreateMobile(NetState ns, uint serial = 0x1024)
+    {
+        var mobile = new Mobile((Serial)serial);
         mobile.DefaultMobileInit();
         mobile.NetState = ns;
 
