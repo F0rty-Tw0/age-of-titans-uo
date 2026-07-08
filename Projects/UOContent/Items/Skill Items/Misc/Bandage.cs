@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ModernUO.Serialization;
 using Server.Engines.ConPVP;
+using Server.Engines.Rarity;
 using Server.Factions;
 using Server.Gumps;
 using Server.Misc;
@@ -415,8 +416,10 @@ public class BandageContext : Timer
                     healerNumber = 500968; // You apply the bandages, but they barely help.
                 }
 
+                var healAmount = RarityEffects.AdjustHealAmount(Patient, (int)toHeal);
+
                 FloatingCombatText.SetHealContext("Bandages");
-                Patient.Heal((int)toHeal, Healer, false);
+                Patient.Heal(healAmount, Healer, false);
                 FloatingCombatText.ClearHealContext();
             }
             else

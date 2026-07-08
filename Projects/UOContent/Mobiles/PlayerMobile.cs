@@ -16,6 +16,7 @@ using Server.Engines.MLQuests.Gumps;
 using Server.Engines.PartySystem;
 using Server.Engines.PlayerMurderSystem;
 using Server.Engines.Quests;
+using Server.Engines.Rarity;
 using Server.Engines.Virtues;
 using Server.Ethics;
 using Server.Factions;
@@ -4055,7 +4056,8 @@ namespace Server.Mobiles
         }
 
         public override bool CheckPoisonImmunity(Mobile from, Poison poison) =>
-            Young && (DuelContext?.Started != true || DuelContext.Finished) || base.CheckPoisonImmunity(from, poison);
+            Young && (DuelContext?.Started != true || DuelContext.Finished) || base.CheckPoisonImmunity(from, poison) ||
+            RarityEffects.TryResistPoisonApplication(this); // Nyxian/Arachne
 
         public override void OnPoisonImmunity(Mobile from, Poison poison)
         {

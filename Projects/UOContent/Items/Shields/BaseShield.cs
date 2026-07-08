@@ -1,5 +1,6 @@
 using System;
 using ModernUO.Serialization;
+using Server.Engines.Rarity;
 
 namespace Server.Items;
 
@@ -28,7 +29,12 @@ public partial class BaseShield : BaseArmor
         }
     }
 
-    public override int OnHit(BaseWeapon weapon, int damage)
+    public override int OnHit(BaseWeapon weapon, int damage) => OnHit(weapon, weapon.Parent as Mobile, damage);
+
+    // Attacker-aware overload — the pre-AOS Aegis parry package (P3a) needs the attacker to
+    // apply thorns/reflect/stun riders on a successful parry. The interface-facing 2-arg
+    // overload above resolves the attacker from the weapon's wielder for other call sites.
+    public int OnHit(BaseWeapon weapon, Mobile attacker, int damage)
     {
         if (Core.AOS)
         {
@@ -60,9 +66,12 @@ public partial class BaseShield : BaseArmor
             chance = 0.01;
         }
 
+        chance = RarityEffects.AdjustShieldParryChance(owner, chance);
+
         if (owner.CheckSkill(SkillName.Parry, chance))
         {
             damage -= Math.Min(damage, weapon.Skill == SkillName.Archery ? (int)ar : (int)(ar / 2.0));
+            damage = RarityEffects.OnShieldParried(this, attacker, owner, damage);
 
             owner.FixedEffect(0x37B9, 10, 16);
 

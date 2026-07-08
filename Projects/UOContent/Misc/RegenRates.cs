@@ -1,4 +1,5 @@
 using System;
+using Server.Engines.Rarity;
 using Server.Items;
 using Server.Mobiles;
 using Server.Spells;
@@ -18,11 +19,12 @@ namespace Server.Misc
 
             Mobile.ManaRegenRateHandler = Mobile_ManaRegenRate;
 
-            if (Core.AOS)
-            {
-                Mobile.StamRegenRateHandler = Mobile_StamRegenRate;
-                Mobile.HitsRegenRateHandler = Mobile_HitsRegenRate;
-            }
+            // Both handlers are now registered unconditionally (previously AOS-only) so worn
+            // Paean/Talarian regen bonuses take effect on this pre-AOS T2A shard too. Each
+            // function still returns the exact original rate for its era before the rarity
+            // bonus is layered on, so non-AOS regen pacing is unchanged for plain equipment.
+            Mobile.StamRegenRateHandler = Mobile_StamRegenRate;
+            Mobile.HitsRegenRateHandler = Mobile_HitsRegenRate;
         }
 
         private static void CheckBonusSkill(Mobile m, int cur, int max, SkillName skill)
@@ -43,6 +45,11 @@ namespace Server.Misc
 
         private static TimeSpan Mobile_HitsRegenRate(Mobile from)
         {
+            if (!Core.AOS)
+            {
+                return RarityEffects.AdjustHitsRegenRate(from, Mobile.DefaultHitsRate);
+            }
+
             var points = AosAttributes.GetValue(from, AosAttribute.RegenHits);
 
             var bc = from as BaseCreature;
@@ -82,14 +89,19 @@ namespace Server.Misc
                 points += (int)(from.Skills.Ninjitsu.Value / 3);
             }
 
-            return TimeSpan.FromSeconds(10.0 / (1 + points));
+            return RarityEffects.AdjustHitsRegenRate(from, TimeSpan.FromSeconds(10.0 / (1 + points)));
         }
 
         private static TimeSpan Mobile_StamRegenRate(Mobile from)
         {
+            if (!Core.AOS)
+            {
+                return RarityEffects.AdjustStamRegenRate(from, Mobile.DefaultStamRate);
+            }
+
             if (from.Skills == null)
             {
-                return Mobile.DefaultStamRate;
+                return RarityEffects.AdjustStamRegenRate(from, Mobile.DefaultStamRate);
             }
 
             CheckBonusSkill(from, from.Stam, from.StamMax, SkillName.Focus);
@@ -125,14 +137,14 @@ namespace Server.Misc
                 points = -1;
             }
 
-            return TimeSpan.FromSeconds(1.0 / (0.1 * (2 + points)));
+            return RarityEffects.AdjustStamRegenRate(from, TimeSpan.FromSeconds(1.0 / (0.1 * (2 + points))));
         }
 
         private static TimeSpan Mobile_ManaRegenRate(Mobile from)
         {
             if (from.Skills == null)
             {
-                return Mobile.DefaultManaRate;
+                return RarityEffects.AdjustManaRegenRate(from, Mobile.DefaultManaRate);
             }
 
             if (!from.Meditating)
@@ -217,7 +229,7 @@ namespace Server.Misc
                 rate = Math.Clamp(rate, 0.5, 7.0);
             }
 
-            return TimeSpan.FromSeconds(rate);
+            return RarityEffects.AdjustManaRegenRate(from, TimeSpan.FromSeconds(rate));
         }
 
         public static double GetArmorOffset(Mobile from)

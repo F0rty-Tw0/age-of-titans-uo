@@ -1,5 +1,6 @@
 using System;
 using ModernUO.Serialization;
+using Server.Engines.Rarity;
 
 namespace Server.Items;
 
@@ -19,8 +20,10 @@ public abstract partial class BaseHealPotion : BasePotion
         var min = Scale(from, MinHeal);
         var max = Scale(from, MaxHeal);
 
+        var amount = RarityEffects.AdjustPotionHeal(from, Utility.RandomMinMax(min, max)); // Demetrian
+
         Misc.FloatingCombatText.SetHealContext("Potion");
-        from.Heal(Utility.RandomMinMax(min, max));
+        from.Heal(amount);
         Misc.FloatingCombatText.ClearHealContext();
     }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Server.Collections;
 using Server.ContextMenus;
 using Server.Engines.BulkOrders;
+using Server.Engines.Rarity;
 using Server.Factions;
 using Server.Gumps;
 using Server.Items;
@@ -227,6 +228,8 @@ namespace Server.Mobiles
                     }
                 }
             } // foreach
+
+            totalCost = RarityEffects.AdjustVendorBuyPrice(buyer, totalCost); // Charis
 
             if (fullPurchase && validBuy.Count == 0)
             {
@@ -534,6 +537,8 @@ namespace Server.Mobiles
                     break;
                 }
             }
+
+            GiveGold = RarityEffects.AdjustVendorSellPrice(seller, GiveGold); // Charis
 
             if (GiveGold > 0)
             {

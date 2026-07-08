@@ -28,9 +28,9 @@ public interface ISlayer
     SlayerName Slayer2 { get; set; }
 }
 
-[SerializationGenerator(11, false)]
+[SerializationGenerator(13, false)]
 public abstract partial class BaseWeapon
-    : Item, IWeapon, IFactionItem, ICraftable, ISlayer, IDurability, IAosItem, IIdentifiable, IRarity
+    : Item, IWeapon, IFactionItem, ICraftable, ISlayer, IDurability, IAosItem, IIdentifiable, IRarity, IVariantItem
 {
     private static bool _enableInstaHit;
 
@@ -213,6 +213,17 @@ public abstract partial class BaseWeapon
     }
 
     public virtual ItemRarity MaxRarity => ItemRarity.Legendary;
+
+    // Rarity effect variant state. Serialized unconditionally like Rarity: save-flag bits 0-30
+    // are all in use (31 fields), so these append after Rarity without a save flag rather than
+    // overflowing the generator's int-backed SaveFlag enum.
+    [SerializableField(32)]
+    [SerializedCommandProperty(AccessLevel.GameMaster)]
+    private VariantRoot _variantRoot;
+
+    [SerializableField(33)]
+    [SerializedCommandProperty(AccessLevel.GameMaster)]
+    private ushort _legendaryId;
 
     private FactionItem m_FactionState;
     private SkillMod m_SkillMod, m_MageMod;
@@ -1153,6 +1164,8 @@ public abstract partial class BaseWeapon
 
             from.CheckStatTimers();
             from.Delta(MobileDelta.WeaponDamage);
+
+            RarityEffects.OnWornAdded(this, from); // fold a held rarity weapon's worn-side lanes
         }
     }
 
@@ -1197,6 +1210,8 @@ public abstract partial class BaseWeapon
         m.CheckStatTimers();
 
         m.Delta(MobileDelta.WeaponDamage);
+
+        RarityEffects.OnWornRemoved(this, m); // drop a held rarity weapon's worn-side contribution
     }
 
     public virtual SkillName GetUsedSkill(Mobile m, bool checkSkillAttrs)
@@ -1385,7 +1400,27 @@ public abstract partial class BaseWeapon
             chance = 0.02;
         }
 
-        return attacker.CheckSkill(atkSkill.SkillName, chance);
+        RarityEffects.AdjustHitChance(this, attacker, defender, ref chance);
+
+        var hit = attacker.CheckSkill(atkSkill.SkillName, chance);
+
+        if (!hit)
+        {
+            RarityEffects.OnMeleeMiss(attacker, defender);
+
+            // Tychean: a % chance the attacker's own miss re-rolls once.
+            if (RarityEffects.TryRerollMiss(attacker))
+            {
+                hit = attacker.CheckSkill(atkSkill.SkillName, chance);
+
+                if (!hit)
+                {
+                    RarityEffects.OnMissRerollFailed(attacker); // Metis
+                }
+            }
+        }
+
+        return hit;
     }
 
     public virtual TimeSpan GetDelay(Mobile m)
@@ -1520,7 +1555,7 @@ public abstract partial class BaseWeapon
             delayInSeconds = 15000.0 / v;
         }
 
-        return TimeSpan.FromSeconds(delayInSeconds);
+        return TimeSpan.FromSeconds(RarityEffects.AdjustSwingDelay(this, m, delayInSeconds));
     }
 
     public static bool CheckParry(Mobile defender)
@@ -1684,7 +1719,7 @@ public abstract partial class BaseWeapon
 
         if (defender.FindItemOnLayer(Layer.TwoHanded) is BaseShield shield)
         {
-            damage = shield.OnHit(this, damage);
+            damage = shield.OnHit(this, attacker, damage);
         }
 
         var chance = Utility.RandomDouble();
@@ -1699,9 +1734,25 @@ public abstract partial class BaseWeapon
             _      => defender.ChestArmor
         };
 
+        // P27 armor-pen: BeginWeaponHit stashed a pen % for this hit; consuming it here (once,
+        // always — so it can never leak to the next hit) scales the armor-rating absorb below by
+        // (100 - pen)/100. Applies to both worn armor and a creature's virtual armor.
+        var armorPen = RarityEffects.ConsumePendingArmorPen();
+
         if (armorItem is IWearableDurability armor)
         {
+            var beforeArmor = damage;
             damage = armor.OnHit(this, damage);
+
+            if (armorPen > 0)
+            {
+                var absorbed = beforeArmor - damage;
+
+                if (absorbed > 0)
+                {
+                    damage += absorbed * armorPen / 100;
+                }
+            }
         }
 
         var virtualArmor = defender.VirtualArmor + defender.VirtualArmorMod;
@@ -1720,8 +1771,18 @@ public abstract partial class BaseWeapon
             var from = (int)(virtualArmor * scalar) / 2;
             var to = (int)(virtualArmor * scalar);
 
-            damage -= Utility.Random(from, to - from + 1);
+            var absorbed = Utility.Random(from, to - from + 1);
+
+            if (armorPen > 0)
+            {
+                absorbed -= absorbed * armorPen / 100;
+            }
+
+            damage -= absorbed;
         }
+
+        damage = RarityEffects.AbsorbForDefender(attacker, defender, damage);
+        damage = RarityEffects.AbsorbForDefenderArmor(attacker, defender, damage);
 
         return damage;
     }
@@ -1797,6 +1858,8 @@ public abstract partial class BaseWeapon
         defender.PlaySound(GetHitDefendSound(attacker, defender));
 
         var damage = ComputeDamage(attacker, defender);
+
+        var rarityFx = RarityEffects.BeginWeaponHit(this, attacker, defender);
 
         /*
          * The following damage bonuses multiply damage by a factor.
@@ -1894,6 +1957,10 @@ public abstract partial class BaseWeapon
             percentageBonus += talisman.Killer.DamageBonus(defender);
         }
 
+        // Maenad's struck-frenzy damage bonus is wielder-driven (clothing), so it applies
+        // regardless of whether the attacker's own weapon carries a rarity variant.
+        percentageBonus += rarityFx.DamageBonusPercent + CombatFxState.GetFrenzyDamagePct(attacker);
+
         percentageBonus = Math.Min(percentageBonus, 300);
 
         damage = AOS.Scale(damage, 100 + percentageBonus);
@@ -1905,6 +1972,7 @@ public abstract partial class BaseWeapon
         bcAtt?.AlterMeleeDamageTo(defender, ref damage);
         bcDef?.AlterMeleeDamageFrom(attacker, ref damage);
 
+        RarityEffects.SetPendingHitCrit(rarityFx.IsCrit);
         damage = AbsorbDamage(attacker, defender, damage);
 
         if (!Core.AOS && damage < 1)
@@ -2077,17 +2145,23 @@ public abstract partial class BaseWeapon
 
                 if (lifeLeech != 0)
                 {
+                    var before = attacker.Hits;
                     attacker.Hits += AOS.Scale(damageGiven, lifeLeech);
+                    Misc.FloatingCombatText.ShowRestore(attacker, 'L', attacker.Hits - before);
                 }
 
                 if (stamLeech != 0)
                 {
+                    var before = attacker.Stam;
                     attacker.Stam += AOS.Scale(damageGiven, stamLeech);
+                    Misc.FloatingCombatText.ShowRestore(attacker, 'S', attacker.Stam - before);
                 }
 
                 if (manaLeech != 0)
                 {
+                    var before = attacker.Mana;
                     attacker.Mana += AOS.Scale(damageGiven, manaLeech);
+                    Misc.FloatingCombatText.ShowRestore(attacker, 'M', attacker.Mana - before);
                 }
 
                 if (lifeLeech != 0 || stamLeech != 0 || manaLeech != 0)
@@ -2243,6 +2317,8 @@ public abstract partial class BaseWeapon
 
         bcAtt?.OnGaveMeleeAttack(defender, damage);
         bcDef?.OnGotMeleeAttack(attacker, damage);
+
+        RarityEffects.EndWeaponHit(this, attacker, defender, damageGiven, in rarityFx);
 
         a?.OnHit(attacker, defender, damage, defLoc);
         move?.OnHit(attacker, defender, damage);
@@ -2454,6 +2530,8 @@ public abstract partial class BaseWeapon
         PlaySwingAnimation(attacker);
         attacker.PlaySound(GetMissAttackSound(attacker, defender));
         defender.PlaySound(GetMissDefendSound(attacker, defender));
+
+        Misc.FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Miss", Misc.FloatingCombatText.MissHue);
 
         WeaponAbility.GetCurrentAbility(attacker)?.OnMiss(attacker, defender);
         SpecialMove.GetCurrentMove(attacker)?.OnMiss(attacker, defender);
@@ -2951,6 +3029,7 @@ public abstract partial class BaseWeapon
         base.GetProperties(list);
 
         RaritySystem.AddRarityProperty(list, _rarity);
+        RarityEffects.AddVariantProperties(list, this);
 
         if (_crafter != null)
         {
@@ -3532,6 +3611,7 @@ public abstract partial class BaseWeapon
 
             LabelTo(from, builder.ToString());
             LabelSingleClickWeaponDetails(from);
+            RarityEffects.LabelVariantDetails(from, this);
             builder.Dispose();
             return;
         }
@@ -3557,6 +3637,7 @@ public abstract partial class BaseWeapon
 
         LabelTo(from, label);
         LabelSingleClickWeaponDetails(from);
+        RarityEffects.LabelVariantDetails(from, this);
     }
 
     private void LabelSingleClickWeaponDetails(Mobile from)
@@ -3566,13 +3647,7 @@ public abstract partial class BaseWeapon
             return;
         }
 
-        LabelTo(from, $"Damage: {MinDamage}-{MaxDamage}");
-        LabelTo(from, $"Speed: {Speed:0.##}");
-
-        if (_hitPoints >= 0 && _maxHitPoints > 0)
-        {
-            LabelTo(from, $"Durability: {_hitPoints}/{_maxHitPoints}");
-        }
+        LabelTo(from, $"Damage: {MinDamage}-{MaxDamage}, Speed: {Speed:0.##}");
 
         var skill = Skill switch
         {
@@ -3583,7 +3658,14 @@ public abstract partial class BaseWeapon
             _ => Skill.ToString()
         };
 
-        LabelTo(from, $"Skill: {skill}");
+        if (_hitPoints < 0 || _maxHitPoints <= 0)
+        {
+            LabelTo(from, $"Skill: {skill}");
+        }
+        else
+        {
+            LabelTo(from, $"Durability: {_hitPoints}/{_maxHitPoints}, Skill: {skill}");
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -3868,6 +3950,83 @@ public abstract partial class BaseWeapon
         _aosElementDamages = content.AosElementDamages ?? AosElementAttributesDefaultValue();
         _engravedText = content.EngravedText;
         // _rarity stays default (Common)
+    }
+
+    private void MigrateFrom(V11Content content)
+    {
+        _damageLevel = content.DamageLevel ?? WeaponDamageLevel.Regular;
+        _accuracyLevel = content.AccuracyLevel ?? WeaponAccuracyLevel.Regular;
+        _durabilityLevel = content.DurabilityLevel ?? WeaponDurabilityLevel.Regular;
+        _quality = content.Quality ?? WeaponQuality.Regular;
+        _hitPoints = content.HitPoints ?? 0;
+        _maxHitPoints = content.MaxHitPoints ?? 0;
+        _slayer = content.Slayer ?? SlayerName.None;
+        _poison = content.Poison;
+        _poisonCharges = content.PoisonCharges ?? 0;
+        _crafter = content.Crafter;
+        _identified = content.Identified;
+        _strRequirement = content.StrRequirement ?? -1;
+        _dexRequirement = content.DexRequirement ?? -1;
+        _intRequirement = content.IntRequirement ?? -1;
+        _minDamage = content.MinDamage ?? -1;
+        _maxDamage = content.MaxDamage ?? -1;
+        _hitSound = content.HitSound ?? -1;
+        _missSound = content.MissSound ?? -1;
+        _speed = content.Speed ?? -1f;
+        _maxRange = content.MaxRange ?? -1;
+        _skill = content.Skill ?? (SkillName)(-1);
+        _type = content.Type ?? (WeaponType)(-1);
+        _animation = content.Animation ?? (WeaponAnimation)(-1);
+        _resource = content.Resource ?? CraftResource.Iron;
+        _attributes = content.Attributes ?? AttributesDefaultValue();
+        _weaponAttributes = content.WeaponAttributes ?? WeaponAttributesDefaultValue();
+        _playerConstructed = content.PlayerConstructed;
+        _skillBonuses = content.SkillBonuses ?? SkillBonusesDefaultValue();
+        _slayer2 = content.Slayer2 ?? SlayerName.None;
+        _aosElementDamages = content.AosElementDamages ?? AosElementAttributesDefaultValue();
+        _engravedText = content.EngravedText;
+        _rarity = content.Rarity;
+        // _variantRoot / _legendaryId stay default (None / 0)
+    }
+
+    private void MigrateFrom(V12Content content)
+    {
+        _damageLevel = content.DamageLevel ?? WeaponDamageLevel.Regular;
+        _accuracyLevel = content.AccuracyLevel ?? WeaponAccuracyLevel.Regular;
+        _durabilityLevel = content.DurabilityLevel ?? WeaponDurabilityLevel.Regular;
+        _quality = content.Quality ?? WeaponQuality.Regular;
+        _hitPoints = content.HitPoints ?? 0;
+        _maxHitPoints = content.MaxHitPoints ?? 0;
+        _slayer = content.Slayer ?? SlayerName.None;
+        _poison = content.Poison;
+        _poisonCharges = content.PoisonCharges ?? 0;
+        _crafter = content.Crafter;
+        _identified = content.Identified;
+        _strRequirement = content.StrRequirement ?? -1;
+        _dexRequirement = content.DexRequirement ?? -1;
+        _intRequirement = content.IntRequirement ?? -1;
+        _minDamage = content.MinDamage ?? -1;
+        _maxDamage = content.MaxDamage ?? -1;
+        _hitSound = content.HitSound ?? -1;
+        _missSound = content.MissSound ?? -1;
+        _speed = content.Speed ?? -1f;
+        _maxRange = content.MaxRange ?? -1;
+        _skill = content.Skill ?? (SkillName)(-1);
+        _type = content.Type ?? (WeaponType)(-1);
+        _animation = content.Animation ?? (WeaponAnimation)(-1);
+        _resource = content.Resource ?? CraftResource.Iron;
+        _attributes = content.Attributes ?? AttributesDefaultValue();
+        _weaponAttributes = content.WeaponAttributes ?? WeaponAttributesDefaultValue();
+        _playerConstructed = content.PlayerConstructed;
+        _skillBonuses = content.SkillBonuses ?? SkillBonusesDefaultValue();
+        _slayer2 = content.Slayer2 ?? SlayerName.None;
+        _aosElementDamages = content.AosElementDamages ?? AosElementAttributesDefaultValue();
+        _engravedText = content.EngravedText;
+        _rarity = content.Rarity;
+        _legendaryId = content.LegendaryId;
+        // 2026-07-07 per-family re-theme: a non-axe weapon carrying a legacy shared root is
+        // remapped to its family's bespoke root. Legendaries self-heal via the registry regardless.
+        _variantRoot = RethemeMigration.RemapWeaponRoot(content.VariantRoot, this);
     }
 
     private void Deserialize(IGenericReader reader, int version)

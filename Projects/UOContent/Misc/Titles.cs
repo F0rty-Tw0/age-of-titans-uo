@@ -1,5 +1,6 @@
 using System;
 using Server.Engines.CannedEvil;
+using Server.Engines.Rarity;
 using Server.Mobiles;
 using Server.Text;
 
@@ -216,6 +217,8 @@ namespace Server.Misc
         public static void AwardKarma(Mobile m, int offset, bool message)
         {
             var pm = m as PlayerMobile;
+
+            offset = RarityEffects.AdjustKarmaGain(m, offset); // Charis
 
             if (offset > 0)
             {

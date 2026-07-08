@@ -1,3 +1,4 @@
+using Server.Engines.Rarity;
 using AMA = Server.Items.ArmorMeditationAllowance;
 
 namespace Server.Items;
@@ -60,6 +61,71 @@ public partial class BaseArmor
         _skillBonuses = content.SkillBonuses ?? SkillBonusesDefaultValue();
         _playerConstructed = content.PlayerConstructed;
         // _rarity stays default (Common)
+    }
+
+    private void MigrateFrom(V10Content content)
+    {
+        _attributes = content.Attributes ?? AttributesDefaultValue();
+        _armorAttributes = content.ArmorAttributes ?? ArmorAttributesDefaultValue();
+        _physicalBonus = content.PhysicalBonus ?? 0;
+        _fireBonus = content.FireBonus ?? 0;
+        _coldBonus = content.ColdBonus ?? 0;
+        _poisonBonus = content.PoisonBonus ?? 0;
+        _energyBonus = content.EnergyBonus ?? 0;
+        _identified = content.Identified;
+        _maxHitPoints = content.MaxHitPoints ?? 0;
+        _hitPoints = content.HitPoints ?? 0;
+        _crafter = content.Crafter;
+        _quality = content.Quality ?? ArmorQuality.Regular;
+        _durability = content.Durability ?? ArmorDurabilityLevel.Regular;
+        _protectionLevel = content.ProtectionLevel ?? ArmorProtectionLevel.Regular;
+        _resource = content.Resource ?? DefaultResource;
+        _armorBase = content.BaseArmorRating ?? -1;
+        _strBonus = content.StrBonus ?? -1;
+        _dexBonus = content.DexBonus ?? -1;
+        _intBonus = content.IntBonus ?? -1;
+        _strReq = content.StrRequirement ?? -1;
+        _dexReq = content.DexRequirement ?? -1;
+        _intReq = content.IntRequirement ?? -1;
+        _meditate = content.MeditationAllowance ?? (AMA)(-1);
+        _skillBonuses = content.SkillBonuses ?? SkillBonusesDefaultValue();
+        _playerConstructed = content.PlayerConstructed;
+        _rarity = content.Rarity ?? ItemRarity.Common;
+        // _variantRoot / _legendaryId stay default (None / 0)
+    }
+
+    private void MigrateFrom(V11Content content)
+    {
+        _attributes = content.Attributes ?? AttributesDefaultValue();
+        _armorAttributes = content.ArmorAttributes ?? ArmorAttributesDefaultValue();
+        _physicalBonus = content.PhysicalBonus ?? 0;
+        _fireBonus = content.FireBonus ?? 0;
+        _coldBonus = content.ColdBonus ?? 0;
+        _poisonBonus = content.PoisonBonus ?? 0;
+        _energyBonus = content.EnergyBonus ?? 0;
+        _identified = content.Identified;
+        _maxHitPoints = content.MaxHitPoints ?? 0;
+        _hitPoints = content.HitPoints ?? 0;
+        _crafter = content.Crafter;
+        _quality = content.Quality ?? ArmorQuality.Regular;
+        _durability = content.Durability ?? ArmorDurabilityLevel.Regular;
+        _protectionLevel = content.ProtectionLevel ?? ArmorProtectionLevel.Regular;
+        _resource = content.Resource ?? DefaultResource;
+        _armorBase = content.BaseArmorRating ?? -1;
+        _strBonus = content.StrBonus ?? -1;
+        _dexBonus = content.DexBonus ?? -1;
+        _intBonus = content.IntBonus ?? -1;
+        _strReq = content.StrRequirement ?? -1;
+        _dexReq = content.DexRequirement ?? -1;
+        _intReq = content.IntRequirement ?? -1;
+        _meditate = content.MeditationAllowance ?? (AMA)(-1);
+        _skillBonuses = content.SkillBonuses ?? SkillBonusesDefaultValue();
+        _playerConstructed = content.PlayerConstructed;
+        _rarity = content.Rarity ?? ItemRarity.Common;
+        _legendaryId = content.LegendaryId;
+        // 2026-07-07 re-theme: retired shared armor roots remap to the material's lane-equivalent
+        // root (shield set for shields). Legendary items self-heal via the registry regardless.
+        _variantRoot = RethemeMigration.RemapArmorRoot(content.VariantRoot, MaterialType, this is BaseShield);
     }
 
     // Version 7 (pre-codegen)
