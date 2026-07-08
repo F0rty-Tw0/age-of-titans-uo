@@ -30,9 +30,15 @@ public static class ClauseText
             ? $"the first hit of every fight is a guaranteed crit, splashing {p2}% to up to {p3} targets"
             : "the first hit of every fight is a guaranteed crit",
         ClauseType.CritEveryN => $"every {p1}th hit is a guaranteed crit",
-        ClauseType.CritSplash => $"every {p1}th hit crits and splashes {p2}% damage to up to {p3} nearby targets",
-        ClauseType.CritArmorPen => $"every {p1}th hit crits and ignores {p2}% of the target's armor",
-        ClauseType.CritExecuteUnder15 => $"every {p1}th hit crits; crits deal double damage vs targets under 15% health",
+        ClauseType.CritSplash => p1 > 0
+            ? $"every {p1}th hit crits and splashes {p2}% damage to up to {p3} nearby targets"
+            : $"natural crits splash {p2}% damage to up to {p3} nearby targets",
+        ClauseType.CritArmorPen => p1 > 0
+            ? $"every {p1}th hit crits and ignores {p2}% of the target's armor"
+            : $"natural crits ignore {p2}% of the target's armor",
+        ClauseType.CritExecuteUnder15 => p1 > 0
+            ? $"every {p1}th hit crits; crits deal double damage vs targets under 15% health"
+            : "crits deal double damage vs targets under 15% health",
 
         // Mark family (Agrotera)
         ClauseType.MarkFirstHit => "the first hit of every fight marks the target for bonus damage",
@@ -66,8 +72,12 @@ public static class ClauseText
         ClauseType.ExtraSwingStackingHit => $"the first hit grants an extra swing; each later swing gains +{p1}% hit chance, up to {p2}%",
 
         // Crit riders (Phobos / caster lines)
-        ClauseType.CritPoisonTick => $"every {p1}th hit crits and applies a poison tick",
-        ClauseType.CritStagger => $"every {p1}th hit crits and briefly staggers the target",
+        ClauseType.CritPoisonTick => p1 > 0
+            ? $"every {p1}th hit crits and applies a poison tick"
+            : "natural crits apply a poison tick",
+        ClauseType.CritStagger => p1 > 0
+            ? $"every {p1}th hit crits and briefly staggers the target"
+            : "natural crits briefly stagger the target",
         ClauseType.CritElemental => p1 > 0
             ? $"every {p1}th hit crits and procs {Element(p2)}{FirstHitAddendum(p3)}"
             : $"natural crits proc {Element(p2)}{FirstHitAddendum(p3)}",
