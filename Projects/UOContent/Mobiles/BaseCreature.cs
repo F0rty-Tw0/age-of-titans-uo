@@ -8,6 +8,7 @@ using Server.Engines.ConPVP;
 using Server.Engines.MLQuests;
 using Server.Engines.Quests.Doom;
 using Server.Engines.Quests.Haven;
+using Server.Engines.Rarity;
 using Server.Engines.Spawners;
 using Server.Engines.Virtues;
 using Server.Ethics;
@@ -1562,7 +1563,8 @@ namespace Server.Mobiles
 
         public override bool CheckPoisonImmunity(Mobile from, Poison poison) =>
             base.CheckPoisonImmunity(from, poison) ||
-            (m_Paragon ? PoisonImpl.IncreaseLevel(PoisonImmune) : PoisonImmune)?.Level >= poison.Level;
+            (m_Paragon ? PoisonImpl.IncreaseLevel(PoisonImmune) : PoisonImmune)?.Level >= poison.Level ||
+            RarityEffects.TryResistPoisonApplication(this); // Nyxian/Arachne
 
         public void Unpacify()
         {
@@ -3026,7 +3028,16 @@ namespace Server.Mobiles
 
                     if (Utility.RandomDouble() < Engines.LootBags.LootBagConfig.ChanceForMobLevel(mobLevel))
                     {
-                        PackItem(new LootBag(mobLevel));
+                        var lootBag = new LootBag(mobLevel);
+                        var finder = LastKiller;
+
+                        if (finder is BaseCreature finderPet)
+                        {
+                            finder = finderPet.GetMaster();
+                        }
+
+                        lootBag.DropItem(Engines.LootBags.LootRoller.Roll(mobLevel, finder));
+                        PackItem(lootBag);
                     }
                 }
             }

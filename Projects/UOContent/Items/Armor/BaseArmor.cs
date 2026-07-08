@@ -13,9 +13,9 @@ using AMT = Server.Items.ArmorMaterialType;
 
 namespace Server.Items
 {
-    [SerializationGenerator(10, false)]
+    [SerializationGenerator(12, false)]
     public abstract partial class BaseArmor
-        : Item, IScissorable, IFactionItem, ICraftable, IWearableDurability, IAosItem, IIdentifiable, IRarity
+        : Item, IScissorable, IFactionItem, ICraftable, IWearableDurability, IAosItem, IIdentifiable, IRarity, IVariantItem
     {
         [SerializedIgnoreDupe]
         [SerializableField(0, setter: "private")]
@@ -177,6 +177,16 @@ namespace Server.Items
         private ItemRarity RarityDefaultValue() => ItemRarity.Common;
 
         public virtual ItemRarity MaxRarity => ItemRarity.Legendary;
+
+        // Rarity effect variant state (serialized unconditionally). Weapon effects are live in P1;
+        // armor worn-effect magnitudes arrive in P3 (OnWornAdded/OnWornRemoved hooks below).
+        [SerializableField(26)]
+        [SerializedCommandProperty(AccessLevel.GameMaster)]
+        private VariantRoot _variantRoot;
+
+        [SerializableField(27)]
+        [SerializedCommandProperty(AccessLevel.GameMaster)]
+        private ushort _legendaryId;
 
         private FactionItem m_FactionState;
 
@@ -369,6 +379,7 @@ namespace Server.Items
                 }
 
                 ar += 8 * (int)(_quality - 1);
+                ar += RarityEffects.GetBonusArmorRating(this);
                 return ScaleArmorByDurability(ar);
             }
         }
@@ -1032,6 +1043,8 @@ namespace Server.Items
                     SkillBonuses.AddTo(from);
                 }
 
+                RarityEffects.OnWornAdded(this, from);
+
                 from.Delta(MobileDelta.Armor); // Tell them armor rating has changed
             }
         }
@@ -1238,6 +1251,8 @@ namespace Server.Items
                     SkillBonuses.Remove();
                 }
 
+                RarityEffects.OnWornRemoved(this, m);
+
                 m.Delta(MobileDelta.Armor); // Tell them armor rating has changed
                 m.CheckStatTimers();
             }
@@ -1322,6 +1337,7 @@ namespace Server.Items
             base.GetProperties(list);
 
             RaritySystem.AddRarityProperty(list, _rarity);
+        RarityEffects.AddVariantProperties(list, this);
 
             if (_crafter != null)
             {
@@ -1633,6 +1649,7 @@ namespace Server.Items
                 LabelTo(from, builder.ToString());
                 builder.Dispose();
                 LabelSingleClickItemDetails(from);
+                RarityEffects.LabelVariantDetails(from, this);
                 return;
             }
 
@@ -1657,6 +1674,7 @@ namespace Server.Items
 
             LabelTo(from, label);
             LabelSingleClickItemDetails(from);
+            RarityEffects.LabelVariantDetails(from, this);
         }
 
         private void LabelSingleClickItemDetails(Mobile from)
@@ -1666,11 +1684,13 @@ namespace Server.Items
                 return;
             }
 
-            LabelTo(from, $"Armor Rating: {ArmorRating:0.#}");
-
             if (_hitPoints >= 0 && _maxHitPoints > 0)
             {
-                LabelTo(from, $"Durability: {_hitPoints}/{_maxHitPoints}");
+                LabelTo(from, $"Armor Rating: {ArmorRating:0.#}, Durability: {_hitPoints}/{_maxHitPoints}");
+            }
+            else
+            {
+                LabelTo(from, $"Armor Rating: {ArmorRating:0.#}");
             }
         }
 

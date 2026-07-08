@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Server.Engines.CannedEvil;
 using Server.Engines.ConPVP;
 using Server.Engines.PartySystem;
+using Server.Engines.Rarity;
 using Server.Factions;
 using Server.Guilds;
 using Server.Items;
@@ -957,10 +958,13 @@ namespace Server.Spells
 
                 bcFrom?.AlterSpellDamageTo(target, ref damageGiven);
                 bcTarget?.AlterSpellDamageFrom(from, ref damageGiven);
+                damageGiven = RarityEffects.BoostSpellDamage(from, damageGiven);
+                damageGiven = RarityEffects.ReduceSpellDamage(target, damageGiven);
 
                 FloatingCombatText.SetSpellContext(spell?.Name);
                 target.Damage(damageGiven, from);
                 FloatingCombatText.ClearContext();
+                RarityEffects.ApplyHecateanSpellManaLeech(from, target, damageGiven);
 
                 bcFrom?.OnDamageSpell(target, damageGiven);
 
@@ -1034,12 +1038,16 @@ namespace Server.Spells
                     dmg -= dmg * feintReduction / 100;
                 }
 
+                dmg = RarityEffects.BoostSpellDamage(from, dmg);
+                dmg = RarityEffects.ReduceSpellDamage(target, dmg);
+
                 StaminaSystem.DFA = dfa;
 
                 FloatingCombatText.SetSpellContext(spell?.Name);
                 var damageGiven = AOS.Damage(target, from, dmg, phys, fire, cold, pois, nrgy, chaos);
                 FloatingCombatText.ClearContext();
                 Mysticism.SpellPlagueSpell.OnMobileDamaged(target);
+                RarityEffects.ApplyHecateanSpellManaLeech(from, target, damageGiven);
 
                 StaminaSystem.DFA = DFAlgorithm.Standard;
 
@@ -1084,6 +1092,7 @@ namespace Server.Spells
         public static void Heal(int amount, Mobile target, Mobile from, bool message = true, string source = null)
         {
             // TODO: All Healing *spells* go through ArcaneEmpowerment
+            amount = RarityEffects.AdjustHealAmount(target, amount);
             FloatingCombatText.SetHealContext(source);
             target.Heal(amount, from, message);
             FloatingCombatText.ClearHealContext();
@@ -1115,10 +1124,13 @@ namespace Server.Spells
             {
                 (m_From as BaseCreature)?.AlterSpellDamageTo(m_Target, ref m_Damage);
                 (m_Target as BaseCreature)?.AlterSpellDamageFrom(m_From, ref m_Damage);
+                m_Damage = RarityEffects.BoostSpellDamage(m_From, m_Damage);
+                m_Damage = RarityEffects.ReduceSpellDamage(m_Target, m_Damage);
 
                 FloatingCombatText.SetSpellContext(m_Spell?.Name);
                 m_Target.Damage(m_Damage);
                 FloatingCombatText.ClearContext();
+                RarityEffects.ApplyHecateanSpellManaLeech(m_From, m_Target, m_Damage);
                 m_Spell?.RemoveDelayedDamageContext(m_Target);
             }
         }

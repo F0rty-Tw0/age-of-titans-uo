@@ -23,9 +23,9 @@ namespace Server.Items
         int MaxArcaneCharges { get; set; }
     }
 
-    [SerializationGenerator(8, false)]
+    [SerializationGenerator(9, false)]
     public abstract partial class BaseClothing
-        : Item, IDyable, IScissorable, IFactionItem, ICraftable, IWearableDurability, IAosItem, IRarity
+        : Item, IDyable, IScissorable, IFactionItem, ICraftable, IWearableDurability, IAosItem, IRarity, IVariantItem
     {
         [SerializableFieldSaveFlag(0)]
         private bool ShouldSerializeResource() => _resource != DefaultResource;
@@ -131,6 +131,16 @@ namespace Server.Items
         private ItemRarity RarityDefaultValue() => ItemRarity.Common;
 
         public virtual ItemRarity MaxRarity => ItemRarity.Legendary;
+
+        // Rarity effect variant state (serialized unconditionally). Clothing worn-effect
+        // magnitudes arrive in P3b; this only carries the variant identity for now.
+        [SerializableField(12)]
+        [SerializedCommandProperty(AccessLevel.GameMaster)]
+        private VariantRoot _variantRoot;
+
+        [SerializableField(13)]
+        [SerializedCommandProperty(AccessLevel.GameMaster)]
+        private ushort _legendaryId;
 
         // Field 10
         private int _strReq = -1;
@@ -373,7 +383,12 @@ namespace Server.Items
             // Don't go below zero
             damageTaken = Math.Min(absorbed, damageTaken);
 
-            if (Utility.Random(100) < 25) // 25% chance to lower durability
+            // Ariadne (Hestian robe relic): immune to durability loss while worn.
+            var durabilityImmune = this is IVariantItem variant && variant.LegendaryId != 0 &&
+                LegendaryRegistry.TryGet(variant.LegendaryId, out var legendaryEntry) &&
+                legendaryEntry.Clause == ClauseType.DurabilityLossImmunity;
+
+            if (!durabilityImmune && Utility.Random(100) < 25) // 25% chance to lower durability
             {
                 if (Core.AOS && ClothingAttributes.SelfRepair > Utility.Random(10))
                 {
@@ -633,6 +648,8 @@ namespace Server.Items
 
                 AddStatBonuses(mob);
                 mob.CheckStatTimers();
+
+                RarityEffects.OnWornAdded(this, mob);
             }
 
             base.OnAdded(parent);
@@ -654,6 +671,8 @@ namespace Server.Items
                 mob.RemoveStatMod($"{serial}Int");
 
                 mob.CheckStatTimers();
+
+                RarityEffects.OnWornRemoved(this, mob);
             }
 
             base.OnRemoved(parent);
@@ -748,6 +767,7 @@ namespace Server.Items
             base.GetProperties(list);
 
             RaritySystem.AddRarityProperty(list, _rarity);
+        RarityEffects.AddVariantProperties(list, this);
 
             if (_crafter != null)
             {
@@ -1004,6 +1024,7 @@ namespace Server.Items
 
             LabelTo(from, label);
             LabelSingleClickItemDetails(from);
+            RarityEffects.LabelVariantDetails(from, this);
         }
 
         private void LabelSingleClickItemDetails(Mobile from)

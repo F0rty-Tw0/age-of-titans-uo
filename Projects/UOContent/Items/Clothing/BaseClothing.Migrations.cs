@@ -1,3 +1,5 @@
+using Server.Engines.Rarity;
+
 namespace Server.Items;
 
 public partial class BaseClothing
@@ -30,6 +32,23 @@ public partial class BaseClothing
         _quality = content.Quality ?? ClothingQuality.Regular;
         _strReq = content.StrRequirement ?? -1;
         // _rarity stays default (Common)
+    }
+
+    private void MigrateFrom(V8Content content)
+    {
+        _resource = content.Resource ?? DefaultResource;
+        _attributes = content.Attributes ?? AttributesDefaultValue();
+        _clothingAttributes = content.ClothingAttributes ?? ClothingAttributesDefaultValue();
+        _skillBonuses = content.SkillBonuses ?? SkillBonusesDefaultValue();
+        _resistances = content.Resistances ?? ResistancesDefaultValue();
+        _maxHitPoints = content.MaxHitPoints ?? 0;
+        _hitPoints = content.HitPoints ?? 0;
+        _playerConstructed = content.PlayerConstructed;
+        _crafter = content.Crafter;
+        _quality = content.Quality ?? ClothingQuality.Regular;
+        _strReq = content.StrRequirement ?? -1;
+        _rarity = content.Rarity ?? ItemRarity.Common;
+        // _variantRoot / _legendaryId stay default (None / 0)
     }
 
     // Version 5 (pre-codegen)

@@ -19,8 +19,8 @@ public enum GemType
     Diamond
 }
 
-[SerializationGenerator(6, false)]
-public abstract partial class BaseJewel : Item, ICraftable, IAosItem, IRarity
+[SerializationGenerator(8, false)]
+public abstract partial class BaseJewel : Item, ICraftable, IAosItem, IRarity, IVariantItem
 {
     [EncodedInt]
     [InvalidateProperties]
@@ -78,6 +78,24 @@ public abstract partial class BaseJewel : Item, ICraftable, IAosItem, IRarity
     private ItemRarity RarityDefaultValue() => ItemRarity.Common;
 
     public virtual ItemRarity MaxRarity => ItemRarity.Legendary;
+
+    // Rarity effect variant state (serialized unconditionally). Jewelry worn-effect magnitudes
+    // arrive in P3b; the OnWornAdded/OnWornRemoved hooks below register when they do.
+    [SerializableField(9)]
+    [SerializedCommandProperty(AccessLevel.GameMaster)]
+    private VariantRoot _variantRoot;
+
+    [SerializableField(10)]
+    [SerializedCommandProperty(AccessLevel.GameMaster)]
+    private ushort _legendaryId;
+
+    // Olympian jewelry only: the stat (Str/Dex/Int) rolled when the item became an Olympian
+    // variant/legendary (RarityEffects.ApplyVariant/ApplyLegendary) — the same root+rarity
+    // magnitude then applies to whichever stat this holds. Jewelry has no per-base damage/AR
+    // ladder to carry that choice instead (framework §7), so it's persisted here.
+    [SerializableField(11)]
+    [SerializedCommandProperty(AccessLevel.GameMaster)]
+    private StatType _olympianStat;
 
     public BaseJewel(int itemID, Layer layer) : base(itemID)
     {
@@ -300,6 +318,7 @@ public abstract partial class BaseJewel : Item, ICraftable, IAosItem, IRarity
 
         LabelTo(from, label);
         LabelSingleClickItemDetails(from);
+        RarityEffects.LabelVariantDetails(from, this);
     }
 
     private void LabelSingleClickItemDetails(Mobile from)
@@ -385,6 +404,11 @@ public abstract partial class BaseJewel : Item, ICraftable, IAosItem, IRarity
 
     public override void OnAdded(IEntity parent)
     {
+        if (parent is Mobile wearer)
+        {
+            RarityEffects.OnWornAdded(this, wearer);
+        }
+
         if (Core.AOS && parent is Mobile from)
         {
             SkillBonuses.AddTo(from);
@@ -419,6 +443,11 @@ public abstract partial class BaseJewel : Item, ICraftable, IAosItem, IRarity
 
     public override void OnRemoved(IEntity parent)
     {
+        if (parent is Mobile wearer)
+        {
+            RarityEffects.OnWornRemoved(this, wearer);
+        }
+
         if (Core.AOS && parent is Mobile from)
         {
             SkillBonuses.Remove();
@@ -438,6 +467,7 @@ public abstract partial class BaseJewel : Item, ICraftable, IAosItem, IRarity
         base.GetProperties(list);
 
         RaritySystem.AddRarityProperty(list, _rarity);
+        RarityEffects.AddVariantProperties(list, this);
 
         SkillBonuses.GetProperties(list);
 
@@ -613,6 +643,37 @@ public abstract partial class BaseJewel : Item, ICraftable, IAosItem, IRarity
         _skillBonuses = content.SkillBonuses;
         _gemCount = content.GemCount;
         // _rarity stays default (Common)
+    }
+
+    private void MigrateFrom(V6Content content)
+    {
+        _maxHitPoints = content.MaxHitPoints;
+        _hitPoints = content.HitPoints;
+        _resource = content.Resource;
+        _gemType = content.GemType;
+        _attributes = content.Attributes;
+        _resistances = content.Resistances;
+        _skillBonuses = content.SkillBonuses;
+        _gemCount = content.GemCount;
+        _rarity = content.Rarity ?? ItemRarity.Common;
+        // _variantRoot / _legendaryId / _olympianStat stay default (None / 0 / Str-equivalent 0)
+    }
+
+    private void MigrateFrom(V7Content content)
+    {
+        _maxHitPoints = content.MaxHitPoints;
+        _hitPoints = content.HitPoints;
+        _resource = content.Resource;
+        _gemType = content.GemType;
+        _attributes = content.Attributes;
+        _resistances = content.Resistances;
+        _skillBonuses = content.SkillBonuses;
+        _gemCount = content.GemCount;
+        _rarity = content.Rarity ?? ItemRarity.Common;
+        _variantRoot = content.VariantRoot;
+        _legendaryId = content.LegendaryId;
+        // _olympianStat defaults — only meaningful for Olympian-root jewelry, which re-rolls it
+        // on its next ApplyVariant/ApplyLegendary call.
     }
 
     [AfterDeserialization]

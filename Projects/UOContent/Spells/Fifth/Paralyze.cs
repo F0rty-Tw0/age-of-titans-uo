@@ -1,4 +1,5 @@
 using System;
+using Server.Engines.Rarity;
 using Server.Mobiles;
 using Server.Spells.Chivalry;
 using Server.Targeting;
@@ -71,7 +72,17 @@ namespace Server.Spells.Fifth
                     duration = 120;
                 }
 
+                if (RarityEffects.TryResistParalyze(Caster, m))
+                {
+                    // Tritonian para/stun resist (P3a) — the paralysis never lands, but the
+                    // attack still counts as harmful for e.g. guard/notoriety purposes.
+                    HarmfulSpell(m);
+                    return;
+                }
+
                 m.Paralyze(TimeSpan.FromSeconds(duration));
+
+                Misc.FloatingCombatText.ShowOffensiveStatus(m, Caster, "Stunned");
 
                 m.PlaySound(0x204);
                 m.FixedEffect(0x376A, 6, 1);

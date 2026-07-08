@@ -1,4 +1,5 @@
 using System;
+using Server.Engines.Rarity;
 using Server.Multis;
 using Server.Spells.Sixth;
 using Server.Targeting;
@@ -88,6 +89,7 @@ namespace Server.SkillHandlers
                 m.Warmode = false;
                 m.LocalOverheadMessage(MessageType.Regular, 0x1F4, 501240); // You have hidden yourself well.
                 InvisibilitySpell.StopTimer(m);
+                RarityEffects.OnSuccessfulHide(m); // Moros
             }
             else
             {
