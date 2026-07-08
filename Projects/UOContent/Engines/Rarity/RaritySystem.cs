@@ -19,7 +19,7 @@ public static class RaritySystem
     // Hook for the future loot roller — no call sites yet.
     public static void Announce(Mobile finder, Item item)
     {
-        var minTier = ServerConfiguration.GetSetting("rarity.announceMinTier", ItemRarity.Epic);
+        var minTier = ServerConfiguration.GetSetting("rarity.announceMinTier", ItemRarity.Legendary);
 
         if (item is not IRarity r || r.Rarity < minTier)
         {
