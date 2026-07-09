@@ -232,8 +232,12 @@ public static partial class RarityEffects
 
     private static string BuildRootName(Item item, VariantRoot root)
     {
-        var baseName = (item.Name ?? Localization.GetText(item.LabelNumber))?.ToLowerInvariant();
-        var rootName = VariantRootInfo.GetDisplayName(root);
+        // Title-case the base shape ("double axe" -> "Double Axe") so the full name reads as a
+        // title beside the capitalized root, e.g. "Menis Double Axe". ToLower first so a mixed/
+        // upper-case source normalizes before Capitalize title-cases each word.
+        var baseName = (item.Name ?? Localization.GetText(item.LabelNumber))?.ToLowerInvariant().Capitalize();
+        // Root display names are stored lowercase; capitalize so the name reads "Dryas Leather Tunic".
+        var rootName = VariantRootInfo.GetDisplayName(root).Capitalize();
 
         return string.IsNullOrEmpty(baseName) ? rootName : $"{rootName} {baseName}";
     }
@@ -249,6 +253,30 @@ public static partial class RarityEffects
     {
         var v = _pendingHitCrit;
         _pendingHitCrit = false;
+        return v;
+    }
+
+    // Set by AbsorbForDefenderArmor when a hit is shrugged (halved). BaseWeapon.OnHit consumes it
+    // right before the main AOS.Damage to fold "Shrugged" into that hit's damage float (rather than
+    // a separate line) — mirrors the crit-context flow. The shrug riders' own reflect/flame damage
+    // runs earlier inside AbsorbForDefenderArmor, so it never inherits this display context.
+    private static bool _pendingShrugDisplay;
+
+    public static bool ConsumePendingShrugDisplay()
+    {
+        var v = _pendingShrugDisplay;
+        _pendingShrugDisplay = false;
+        return v;
+    }
+
+    // Same flow as shrug, for a successful shield parry (BaseShield.OnHit). Folds "Parried" into
+    // the surviving damage number ("-1 Parried" on a full block, floored to 1 pre-AOS).
+    private static bool _pendingParryDisplay;
+
+    public static bool ConsumePendingParryDisplay()
+    {
+        var v = _pendingParryDisplay;
+        _pendingParryDisplay = false;
         return v;
     }
 

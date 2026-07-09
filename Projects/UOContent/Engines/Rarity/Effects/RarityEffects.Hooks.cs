@@ -384,6 +384,14 @@ public static partial class RarityEffects
         WornEffectState.Evict(m);
     }
 
+    // Worn effects (Olympian stat mods, resist/skill mods, night sight, and the whole defensive
+    // aggregate) are applied via OnWornAdded on equip — but StatMods/SkillMods are transient and a
+    // world save/reload rebuilds the mobile with empty mod lists. OnAdded does NOT fire on
+    // deserialization, so without this hook a relogged player keeps none of it until they re-seat
+    // a piece. Rebuild here (login fires after items are attached) restores the full aggregate.
+    [OnEvent(nameof(PlayerMobile.PlayerLoginEvent))]
+    public static void OnPlayerLogin(PlayerMobile pm) => WornEffectState.Rebuild(pm);
+
     // Laurel's flat on-kill restores + the Klotho/Asteria/Okeanos legendary riders.
     private static void ApplyOnKillEffects(Mobile killer)
     {

@@ -143,14 +143,14 @@ public static partial class RarityEffects
             ? $"{signatureText}; {legendaryText}"
             : string.IsNullOrEmpty(signatureText) ? legendaryText : signatureText;
 
-        LabelIfNotEmpty(from, item, text);
+        LabelIfNotEmpty(from, item, CapFirst(text));
     }
 
     private static void LabelLegendaryClauseLine(Mobile from, Item item, IVariantItem variant)
     {
         if (variant.LegendaryId != 0 && LegendaryRegistry.TryGet(variant.LegendaryId, out var entry))
         {
-            LabelIfNotEmpty(from, item, ClauseText.Describe(entry.Clause, entry.P1, entry.P2, entry.P3));
+            LabelIfNotEmpty(from, item, CapFirst(ClauseText.Describe(entry.Clause, entry.P1, entry.P2, entry.P3)));
         }
     }
 
@@ -171,7 +171,7 @@ public static partial class RarityEffects
 
         if (!string.IsNullOrEmpty(text))
         {
-            list.Add(text);
+            list.Add(CapFirst(text));
         }
     }
 
@@ -216,19 +216,19 @@ public static partial class RarityEffects
         if (row.SelfRepair)
         {
             AppendSeparator(ref sb);
-            sb.Append("self-repair");
+            sb.Append("Self-repair");
         }
 
         if (row.AutoCure)
         {
             AppendSeparator(ref sb);
-            sb.Append("auto-cure");
+            sb.Append("Auto-cure");
         }
 
         if (row.ParryThorns)
         {
             AppendSeparator(ref sb);
-            sb.Append("parry thorns");
+            sb.Append("Parry thorns");
         }
 
         var result = sb.ToString();
@@ -255,7 +255,7 @@ public static partial class RarityEffects
         AppendPct(ref sb, "on-kill stamina +", row.OnKillStamina);
         AppendPct(ref sb, "on-kill HP +", row.OnKillHp);
         AppendPct(ref sb, "karma +", row.KarmaGainPct);
-        AppendPct(ref sb, "vendor prices ", row.VendorPricePct);
+        AppendPct(ref sb, "better prices ", row.VendorPricePct);
         AppendPct(ref sb, "frenzy ", row.FrenzyChancePct);
         AppendPct(ref sb, "stationary regen +", row.StationaryRegenPct);
         AppendPct(ref sb, "dodge ", row.DodgePct);
@@ -267,7 +267,7 @@ public static partial class RarityEffects
                 sb.Append(", ");
             }
 
-            sb.Append("night sight");
+            sb.Append("Night sight");
         }
 
         var result = sb.ToString();
@@ -289,7 +289,7 @@ public static partial class RarityEffects
         AppendPct(ref sb, "block ", row.BlockPct);
         AppendPct(ref sb, "block DR ", row.BlockDrPct);
         AppendPct(ref sb, "lifesteal ", row.LifestealPct);
-        AppendPct(ref sb, "stam regen ", row.StamRegenPct);
+        AppendPct(ref sb, "stam regen +", row.StamRegenPct);
 
         // Re-theme lane fields (framework §4 menu).
         AppendPct(ref sb, "splash ", row.SplashPct);
@@ -304,13 +304,13 @@ public static partial class RarityEffects
         if (row.NthHitBonusPct > 0)
         {
             AppendSeparator(ref sb);
-            sb.Append($"every {row.NthHitN}th +{row.NthHitBonusPct}%");
+            sb.Append($"Every {row.NthHitN}th +{row.NthHitBonusPct}%");
         }
 
         if (row.RampPerStackPct > 0)
         {
             AppendSeparator(ref sb);
-            sb.Append($"ramp +{row.RampPerStackPct}%/hit (max {row.RampMaxStacks})");
+            sb.Append($"Ramp +{row.RampPerStackPct}%/hit (max {row.RampMaxStacks})");
         }
 
         AppendPct(ref sb, "on-kill stam ", row.OnKillStamPct);
@@ -318,12 +318,12 @@ public static partial class RarityEffects
         if (row.DefenderStamDrainFlat > 0)
         {
             AppendSeparator(ref sb);
-            sb.Append($"drain {row.DefenderStamDrainFlat} stam");
+            sb.Append($"Drain {row.DefenderStamDrainFlat} stam");
         }
 
         // Worn-side utility (held-weapon passives — staves/fencing/archery lanes).
         AppendPct(ref sb, "spell DR ", row.SpellDrPct);
-        AppendPct(ref sb, "mana regen ", row.ManaRegenPct);
+        AppendPct(ref sb, "mana regen +", row.ManaRegenPct);
         AppendPct(ref sb, "dodge ", row.DodgePct);
         AppendPct(ref sb, "heals recv +", row.HealsReceivedPct);
 
@@ -336,13 +336,18 @@ public static partial class RarityEffects
         if (row.AutoCure)
         {
             AppendSeparator(ref sb);
-            sb.Append("auto-cure");
+            sb.Append("Auto-cure");
         }
 
         var result = sb.ToString();
         sb.Dispose();
         return result;
     }
+
+    // Capitalizes the first letter of a clause sentence ("every 3rd hit..." -> "Every 3rd hit...").
+    // Null/empty or already-capital passes through unchanged.
+    private static string CapFirst(string s) =>
+        string.IsNullOrEmpty(s) || char.IsUpper(s[0]) ? s : $"{char.ToUpperInvariant(s[0])}{s.AsSpan(1)}";
 
     private static void AppendSeparator(ref ValueStringBuilder sb)
     {
@@ -367,7 +372,10 @@ public static partial class RarityEffects
         Span<char> number = stackalloc char[8];
         pct.TryFormat(number, out var written);
 
-        sb.Append(label);
+        // Capitalize the first letter so each effect reads as its own capitalized item
+        // ("Swing +5%", "Stam regen +5%"). Labels are non-empty; idempotent for already-caps ones.
+        sb.Append(char.ToUpperInvariant(label[0]));
+        sb.Append(label.AsSpan(1));
         sb.Append(number[..written]);
         sb.Append("%");
     }

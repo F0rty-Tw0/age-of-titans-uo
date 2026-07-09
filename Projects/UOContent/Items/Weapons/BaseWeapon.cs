@@ -2093,6 +2093,26 @@ public abstract partial class BaseWeapon
                           Bladeweave.BladeWeaving(attacker, out var bladeweavingAbi) &&
                           bladeweavingAbi is ArmorIgnore;
 
+        // Collect this hit's damage number and every status it applies to the defender into one
+        // overhead line (EndHit emits it at the bottom of OnHit). Crit/shrug/parry are known now;
+        // stun/poison/etc. get appended later as their post-damage procs fire.
+        Misc.FloatingCombatText.BeginHit(defender, attacker);
+
+        if (rarityFx.IsCrit)
+        {
+            Misc.FloatingCombatText.SetCritContext();
+        }
+
+        if (RarityEffects.ConsumePendingShrugDisplay())
+        {
+            Misc.FloatingCombatText.SetShrugContext();
+        }
+
+        if (RarityEffects.ConsumePendingParryDisplay())
+        {
+            Misc.FloatingCombatText.SetParryContext();
+        }
+
         var damageGiven = AOS.Damage(
             defender,
             attacker,
@@ -2108,6 +2128,8 @@ public abstract partial class BaseWeapon
             false,
             this is BaseRanged
         );
+
+        Misc.FloatingCombatText.ClearContext();
 
         if (damageGiven > 0)
         {
@@ -2342,6 +2364,8 @@ public abstract partial class BaseWeapon
                 attacker.ApplyPoison(defender, Poison.Regular);
             }
         }
+
+        Misc.FloatingCombatText.EndHit();
     }
 
     public virtual double GetAosDamage(Mobile attacker, int bonus, int dice, int sides)
@@ -2531,7 +2555,12 @@ public abstract partial class BaseWeapon
         attacker.PlaySound(GetMissAttackSound(attacker, defender));
         defender.PlaySound(GetMissDefendSound(attacker, defender));
 
-        Misc.FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Miss", Misc.FloatingCombatText.MissHue);
+        // A dodge-package defender already showed "Dodge" from RarityEffects.OnMeleeMiss;
+        // don't also float the generic "Miss" over them.
+        if (!RarityEffects.HasDodgePackage(defender))
+        {
+            Misc.FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Miss", Misc.FloatingCombatText.MissHue);
+        }
 
         WeaponAbility.GetCurrentAbility(attacker)?.OnMiss(attacker, defender);
         SpecialMove.GetCurrentMove(attacker)?.OnMiss(attacker, defender);
@@ -2976,7 +3005,9 @@ public abstract partial class BaseWeapon
             _                           => 0
         };
 
-        var name = Name;
+        // Fold the rarity tier suffix into the tooltip name line (e.g. "Klytios [Legendary]");
+        // null/Common pass through unchanged so the name==null branch below still fires.
+        var name = RarityConfig.WithSuffix(Name, _rarity);
 
         if (oreType != 0)
         {
@@ -3648,24 +3679,6 @@ public abstract partial class BaseWeapon
         }
 
         LabelTo(from, $"Damage: {MinDamage}-{MaxDamage}, Speed: {Speed:0.##}");
-
-        var skill = Skill switch
-        {
-            SkillName.Swords => "Swordsmanship",
-            SkillName.Macing => "Mace Fighting",
-            SkillName.Fencing => "Fencing",
-            SkillName.Archery => "Archery",
-            _ => Skill.ToString()
-        };
-
-        if (_hitPoints < 0 || _maxHitPoints <= 0)
-        {
-            LabelTo(from, $"Skill: {skill}");
-        }
-        else
-        {
-            LabelTo(from, $"Durability: {_hitPoints}/{_maxHitPoints}, Skill: {skill}");
-        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

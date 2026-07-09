@@ -137,8 +137,7 @@ public static partial class RarityEffects
                 }
             case ClauseType.BlockElemental:
                 {
-                    ElementalProc(attacker, defender, damage, p1);
-                    FloatingCombatText.ShowOffensiveStatus(attacker, defender, p1 == 1 ? "Burn" : "Shock");
+                    ElementalProc(attacker, defender, damage, p1, p1 == 1 ? "Burn" : "Shock");
                     break;
                 }
             case ClauseType.BlockNextShotCrit:
@@ -197,7 +196,11 @@ public static partial class RarityEffects
         if (shrugged)
         {
             damage /= 2;
-            FloatingCombatText.ShowSelfStatus(defender, "Shrug");
+            // "Shrugged" is folded into this hit's damage number by BaseWeapon.OnHit, which consumes
+            // this flag right before the main AOS.Damage. Only a plain bool is set here — the display
+            // context is applied later in OnHit, so the riders' own reflect/flame damage below never
+            // inherits the shrug label.
+            _pendingShrugDisplay = true;
 
             for (var i = 0; i < legendaries.Count; i++)
             {
@@ -338,8 +341,9 @@ public static partial class RarityEffects
 
         if (procced)
         {
-            ElementalProc(defender, attacker, damage, 1); // fire
-            FloatingCombatText.ShowOffensiveStatus(attacker, defender, "Burn");
+            // Cyclopean flame-burst is retaliation: the fire hits the ATTACKER (per clause text),
+            // not the defender who was struck. (Previously targeted `defender` — self-damage bug.)
+            ElementalProc(attacker, defender, damage, 1, "Burn"); // fire
 
             for (var i = 0; i < legendaries.Count; i++)
             {
@@ -439,7 +443,8 @@ public static partial class RarityEffects
         var agg = WornEffectState.GetAggregate(owner);
         var legendaries = WornEffectState.GetLegendaries(owner);
 
-        FloatingCombatText.ShowSelfStatus(owner, "Parry");
+        // "Parried" is folded into this hit's surviving damage number by BaseWeapon.OnHit.
+        _pendingParryDisplay = true;
 
         if (agg.ParryDrPct > 0)
         {

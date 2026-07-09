@@ -1284,7 +1284,9 @@ namespace Server.Items
                 _                           => 0
             };
 
-            var name = Name;
+            // Fold the rarity tier suffix into the tooltip name line (e.g. "Klytios [Legendary]");
+            // null/Common pass through unchanged so the name==null branches below still fire.
+            var name = RarityConfig.WithSuffix(Name, _rarity);
 
             if (oreType != 0)
             {
@@ -1292,7 +1294,7 @@ namespace Server.Items
 
                 if (name != null)
                 {
-                    list.Add(qualityNumber, $"{oreType:#}\t{Name}");
+                    list.Add(qualityNumber, $"{oreType:#}\t{name}");
                 }
                 else
                 {
@@ -1684,14 +1686,7 @@ namespace Server.Items
                 return;
             }
 
-            if (_hitPoints >= 0 && _maxHitPoints > 0)
-            {
-                LabelTo(from, $"Armor Rating: {ArmorRating:0.#}, Durability: {_hitPoints}/{_maxHitPoints}");
-            }
-            else
-            {
-                LabelTo(from, $"Armor Rating: {ArmorRating:0.#}");
-            }
+            LabelTo(from, $"Armor Rating: {ArmorRating:0.#}");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

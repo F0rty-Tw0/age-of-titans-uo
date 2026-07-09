@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Server.Network;
 
 namespace Server.Misc;
@@ -38,6 +39,36 @@ public static class FloatingCombatText
     // Mobile.Damage()/AOS.Damage() and cleared right after.
     private static int _contextHue = DamageHue;
     private static string _contextLabel;
+    private static bool _contextCrit;
+    private static bool _contextShrug;
+    private static bool _contextParry;
+
+    // Weapon-hit batching: while a hit is resolving, the damage number plus every offensive status
+    // applied to the defender are collected into ONE overhead line ("-32 Critical! Stunned Poisoned")
+    // instead of separate floats. BaseWeapon.OnHit brackets each hit with BeginHit/EndHit. Depth-
+    // guarded so a re-entrant extra swing (weapon.OnSwing mid-hit) can't corrupt state — only the
+    // outermost swing owns the batch; a nested swing's damage emits on its own line.
+    private static int _batchDepth;
+    private static Mobile _batchSubject;
+    private static Mobile _batchOther;
+    private static int _batchAmount;
+    private static int _batchHue;
+    private static int _batchIncomingHue;
+    private static bool _batchCaptured;
+    private static bool _batchCrit;
+    private static bool _batchShrug;
+    private static bool _batchParry;
+    private static readonly List<string> _batchLabels = new();
+
+    // Secondary line for retaliation dealt back to the ATTACKER during this same hit (reflect,
+    // thorns, and the "Stunned"/"Heal Block" that ride them). The attacker is _batchOther, not the
+    // primary _batchSubject, so without this its "-N" number and its status labels would stack as
+    // separate overhead lines. Collected here and emitted as ONE line ("-1 Reflect Stunned") by
+    // EndHit, mirroring the defender's line. Untyped damage only — a labeled proc ("-N (Burn)")
+    // keeps its own line.
+    private static int _secondaryAmount;
+    private static bool _secondaryCaptured;
+    private static readonly List<string> _secondaryLabels = new();
 
     public static void Initialize()
     {
@@ -62,7 +93,26 @@ public static class FloatingCombatText
     {
         _contextHue = DamageHue;
         _contextLabel = null;
+        _contextCrit = false;
+        _contextShrug = false;
+        _contextParry = false;
     }
+
+    // A landed crit folds "Critical!" into the damage line (see ShowDamage) instead of a
+    // separate float. BaseWeapon sets this around the melee AOS.Damage call.
+    public static void SetCritContext() => _contextCrit = true;
+
+    public static void ClearCritContext() => _contextCrit = false;
+
+    // A shrugged (halved) hit folds "Shrugged" into the damage line the same way.
+    public static void SetShrugContext() => _contextShrug = true;
+
+    public static void ClearShrugContext() => _contextShrug = false;
+
+    // A parried hit folds "Parried" into the damage line the same way.
+    public static void SetParryContext() => _contextParry = true;
+
+    public static void ClearParryContext() => _contextParry = false;
 
     private static string _healLabel;
 
@@ -70,13 +120,152 @@ public static class FloatingCombatText
 
     public static void ClearHealContext() => _healLabel = null;
 
+    // Begin collecting one weapon hit's floats into a single line over `defender`. Nested calls
+    // (re-entrant extra swings) just bump the depth; only the outermost owns the batch.
+    public static void BeginHit(Mobile defender, Mobile attacker)
+    {
+        if (_batchDepth++ > 0)
+        {
+            return;
+        }
+
+        _batchSubject = defender;
+        _batchOther = attacker;
+        _batchAmount = 0;
+        _batchCaptured = false;
+        _batchCrit = _batchShrug = _batchParry = false;
+        _batchLabels.Clear();
+        _secondaryAmount = 0;
+        _secondaryCaptured = false;
+        _secondaryLabels.Clear();
+    }
+
+    // Emit the collected line and end the batch. Only the outermost EndHit emits.
+    public static void EndHit()
+    {
+        if (_batchDepth == 0 || --_batchDepth > 0)
+        {
+            return;
+        }
+
+        if (_batchCaptured)
+        {
+            Span<char> text = stackalloc char[256];
+            var pos = 0;
+            text[pos++] = '-';
+            _batchAmount.TryFormat(text[pos..], out var written);
+            pos += written;
+
+            AppendSuffix(text, ref pos, _batchCrit, " Critical!");
+            AppendSuffix(text, ref pos, _batchShrug, " Shrugged");
+            AppendSuffix(text, ref pos, _batchParry, " Parried");
+            AppendLabels(text, ref pos, _batchLabels);
+
+            ShowSpan(_batchSubject, _batchOther, text[..pos], _batchHue, _batchIncomingHue);
+        }
+        else if (_batchLabels.Count > 0 && _batchSubject != null)
+        {
+            // Status(es) applied but no damage number this hit (e.g. fully absorbed) — labels only.
+            Span<char> text = stackalloc char[256];
+            var pos = 0;
+            AppendLabels(text, ref pos, _batchLabels);
+
+            if (pos > 1)
+            {
+                ShowSpan(_batchSubject, _batchOther, text[1..pos], DebuffHue, DebuffHue); // drop leading space
+            }
+        }
+
+        // Attacker's retaliation line: "-1 Reflect Stunned" (or labels-only if nothing reflected).
+        if ((_secondaryCaptured || _secondaryLabels.Count > 0) && _batchOther != null)
+        {
+            Span<char> text = stackalloc char[256];
+            var pos = 0;
+
+            if (_secondaryCaptured)
+            {
+                text[pos++] = '-';
+                _secondaryAmount.TryFormat(text[pos..], out var written);
+                pos += written;
+            }
+
+            AppendLabels(text, ref pos, _secondaryLabels);
+
+            var start = _secondaryCaptured ? 0 : 1; // drop leading space when labels-only
+
+            if (pos > start)
+            {
+                ShowSpan(_batchOther, _batchSubject, text[start..pos], DebuffHue, DebuffHue);
+            }
+        }
+
+        _batchSubject = null;
+        _batchOther = null;
+        _batchLabels.Clear();
+        _secondaryLabels.Clear();
+    }
+
+    private static void AppendLabels(Span<char> text, ref int pos, List<string> labels)
+    {
+        for (var i = 0; i < labels.Count; i++)
+        {
+            var label = labels[i];
+
+            if (pos + 1 + label.Length > text.Length)
+            {
+                break; // defensive: never overflow the overhead line
+            }
+
+            text[pos++] = ' ';
+            label.CopyTo(text[pos..]);
+            pos += label.Length;
+        }
+    }
+
     public static void ShowDamage(Mobile target, Mobile from, int amount)
     {
-        if (amount > 0)
+        if (amount <= 0)
         {
-            var incomingHue = _contextHue == DamageHue ? IncomingDamageHue : _contextHue;
-            Show(target, from, '-', amount, _contextHue, incomingHue, _contextLabel);
+            return;
         }
+
+        var hue = _contextHue;
+        var incomingHue = _contextHue == DamageHue ? IncomingDamageHue : _contextHue;
+
+        // A crit recolors the whole line to CritHue for both parties; shrug/parry keep the normal
+        // damage hue and only tack on their suffix ("-5 Shrugged" / "-1 Parried").
+        if (_contextCrit)
+        {
+            hue = CritHue;
+            incomingHue = CritHue;
+        }
+
+        // Inside a weapon hit, the untyped main damage number over the defender is captured and folded
+        // into the combined line by EndHit. Labeled damage (an elemental proc's "-10 (Lightning)", a
+        // spell) always emits on its own line — hence the _contextLabel == null guard.
+        if (_batchDepth > 0 && !_batchCaptured && target == _batchSubject && _contextLabel == null)
+        {
+            _batchAmount = amount;
+            _batchHue = hue;
+            _batchIncomingHue = incomingHue;
+            _batchCrit = _contextCrit;
+            _batchShrug = _contextShrug;
+            _batchParry = _contextParry;
+            _batchCaptured = true;
+            return;
+        }
+
+        // Untyped retaliation (reflect/thorns) back to the attacker during this hit — fold into the
+        // attacker's secondary line (EndHit emits it). Summed so multiple retaliations share the
+        // line; a labeled proc keeps _contextLabel and falls through to its own float below.
+        if (_batchDepth > 0 && _batchOther != null && target == _batchOther && _contextLabel == null)
+        {
+            _secondaryAmount += amount;
+            _secondaryCaptured = true;
+            return;
+        }
+
+        Show(target, from, '-', amount, hue, incomingHue, _contextLabel, _contextCrit, _contextShrug, _contextParry);
     }
 
     public static void ShowHeal(Mobile target, Mobile from, int amount)
@@ -90,10 +279,14 @@ public static class FloatingCombatText
         }
     }
 
-    private static void Show(Mobile target, Mobile source, char sign, int amount, int hue, int incomingHue, string label)
+    private static void Show(
+        Mobile target, Mobile source, char sign, int amount, int hue, int incomingHue, string label,
+        bool crit = false, bool shrug = false, bool parry = false
+    )
     {
-        // "-19 (Flame Strike)" — sign + digits + " (" + label + ")"
-        Span<char> text = stackalloc char[16 + (label?.Length ?? 0)];
+        // "-19 (Flame Strike)" / "-49 Critical!" / "-5 Shrugged" / "-1 Parried" —
+        // sign + digits + optional " (label)" + optional status suffixes.
+        Span<char> text = stackalloc char[44 + (label?.Length ?? 0)];
         var pos = 0;
         text[pos++] = sign;
         amount.TryFormat(text[pos..], out var written);
@@ -108,7 +301,20 @@ public static class FloatingCombatText
             text[pos++] = ')';
         }
 
+        AppendSuffix(text, ref pos, crit, " Critical!");
+        AppendSuffix(text, ref pos, shrug, " Shrugged");
+        AppendSuffix(text, ref pos, parry, " Parried");
+
         ShowSpan(target, source, text[..pos], hue, incomingHue);
+    }
+
+    private static void AppendSuffix(Span<char> text, ref int pos, bool active, string suffix)
+    {
+        if (active)
+        {
+            suffix.CopyTo(text[pos..]);
+            pos += suffix.Length;
+        }
     }
 
     // Offensive status floated over the enemy `target`; both the attacker (`source`)
@@ -118,10 +324,27 @@ public static class FloatingCombatText
 
     public static void ShowOffensiveStatus(Mobile target, Mobile source, string label, int hue)
     {
-        if (target != null && label != null)
+        if (target == null || label == null)
         {
-            ShowSpan(target, source, label, hue, hue);
+            return;
         }
+
+        // Fold a status on the current hit's defender into the combined damage line (EndHit emits it).
+        if (_batchDepth > 0 && target == _batchSubject)
+        {
+            _batchLabels.Add(label);
+            return;
+        }
+
+        // A status on the attacker (Reflect, Stunned, Heal Block) joins the attacker's retaliation
+        // line so it shares the "-N" instead of stacking on its own line.
+        if (_batchDepth > 0 && _batchOther != null && target == _batchOther)
+        {
+            _secondaryLabels.Add(label);
+            return;
+        }
+
+        ShowSpan(target, source, label, hue, hue);
     }
 
     // Beneficial status/buff floated over `self` only (frenzy, warded, dodge, crit-ready...).
