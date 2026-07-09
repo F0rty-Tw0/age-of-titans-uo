@@ -32,14 +32,29 @@ public class RarityConfigTests
     }
 
     [Theory]
-    [InlineData(ItemRarity.Common, "common")]
-    [InlineData(ItemRarity.Uncommon, "uncommon")]
-    [InlineData(ItemRarity.Rare, "rare")]
-    [InlineData(ItemRarity.Epic, "epic")]
-    [InlineData(ItemRarity.Legendary, "legendary")]
+    [InlineData(ItemRarity.Common, "Common")]
+    [InlineData(ItemRarity.Uncommon, "Uncommon")]
+    [InlineData(ItemRarity.Rare, "Rare")]
+    [InlineData(ItemRarity.Epic, "Epic")]
+    [InlineData(ItemRarity.Legendary, "Legendary")]
     public void GetName_ReturnsExpectedStringForAllTiers(ItemRarity rarity, string expected)
     {
         Assert.Equal(expected, RarityConfig.GetName(rarity));
+    }
+
+    [Theory]
+    [InlineData("Klytios", ItemRarity.Legendary, "Klytios [Legendary]")]
+    [InlineData("Menis Katana", ItemRarity.Rare, "Menis Katana [Rare]")]
+    [InlineData("Klytios", ItemRarity.Common, "Klytios")] // Common passes through unchanged
+    public void WithSuffix_AppendsTierForNonCommonNames(string name, ItemRarity rarity, string expected)
+    {
+        Assert.Equal(expected, RarityConfig.WithSuffix(name, rarity));
+    }
+
+    [Fact]
+    public void WithSuffix_NullNamePassesThrough()
+    {
+        Assert.Null(RarityConfig.WithSuffix(null, ItemRarity.Legendary));
     }
 
     [Fact]

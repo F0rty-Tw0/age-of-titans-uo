@@ -9,17 +9,18 @@ public static class RarityConfig
 
     public const int MaxBagLevel = 10;
 
-    // Index = ItemRarity. Lowercase display strings for labels/OPL.
+    // Index = ItemRarity. Title-case tier tokens for labels/OPL (item names stay lowercase per
+    // UO convention; only the rarity tier is capitalized, e.g. "a dagger [Rare]" / "rarity: Rare").
     private static readonly string[] _names =
     {
-        "common", "uncommon", "rare", "epic", "legendary"
+        "Common", "Uncommon", "Rare", "Epic", "Legendary"
     };
 
     // Index = ItemRarity. Cached name suffix appended inline to single-click names
-    // (e.g. "a dagger [rare]"). Common is empty = zero visible change. Cached = zero alloc.
+    // (e.g. "a dagger [Rare]"). Common is empty = zero visible change. Cached = zero alloc.
     private static readonly string[] _suffixes =
     {
-        "", " [uncommon]", " [rare]", " [epic]", " [legendary]"
+        "", " [Uncommon]", " [Rare]", " [Epic]", " [Legendary]"
     };
 
     // Index = ItemRarity. Placeholder hues, tune later. Same family as LootBag.cs.
@@ -54,6 +55,12 @@ public static class RarityConfig
     public static string GetName(ItemRarity rarity) => _names[Math.Clamp((int)rarity, 0, _names.Length - 1)];
 
     public static string GetSuffix(ItemRarity rarity) => _suffixes[Math.Clamp((int)rarity, 0, _suffixes.Length - 1)];
+
+    // Appends the tier suffix to a display name for OPL/tooltip name lines, e.g.
+    // "Klytios" -> "Klytios [Legendary]". Null or Common passes through unchanged (so the
+    // caller's name==null branch still fires and Common items look identical).
+    public static string WithSuffix(string name, ItemRarity rarity) =>
+        name != null && rarity != ItemRarity.Common ? $"{name}{GetSuffix(rarity)}" : name;
 
     public static int GetHue(ItemRarity rarity) => _hues[Math.Clamp((int)rarity, 0, _hues.Length - 1)];
 

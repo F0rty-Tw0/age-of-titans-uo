@@ -260,6 +260,20 @@ public abstract partial class BaseJewel : Item, ICraftable, IAosItem, IRarity, I
         return 1;
     }
 
+    public override void AddNameProperty(IPropertyList list)
+    {
+        // Fold the rarity tier suffix into the tooltip name line (e.g. "Klytios [Legendary]").
+        // Jewels don't otherwise override AddNameProperty, so only intercept the non-Common named
+        // case and defer to the base for everything else (Common items, stock LabelNumber, etc.).
+        if (Name != null && _rarity != ItemRarity.Common)
+        {
+            list.Add($"{Name}{RarityConfig.GetSuffix(_rarity)}");
+            return;
+        }
+
+        base.AddNameProperty(list);
+    }
+
     public override void OnSingleClick(Mobile from)
     {
         if (!Core.UOTD)

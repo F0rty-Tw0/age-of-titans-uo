@@ -185,6 +185,66 @@ public class FloatingCombatTextTests
         AssertThat.Equal(attackerNs.SendBuffer.GetReadSpan(), expected);
     }
 
+    [Fact]
+    public void ReflectDamageAndStatusesShareOneAttackerLine()
+    {
+        using var attackerNs = PacketTestUtilities.CreateTestNetState();
+        using var defenderNs = PacketTestUtilities.CreateTestNetState();
+        var attacker = CreateMobile(attackerNs, 0x1024);
+        var defender = CreateMobile(defenderNs, 0x1025);
+
+        FloatingCombatText.ClearContext();
+        FloatingCombatText.BeginHit(defender, attacker);
+        // Hit fully absorbed (no defender damage), then reflected back onto the attacker with a stun.
+        FloatingCombatText.ShowDamage(attacker, defender, 1);
+        FloatingCombatText.ShowOffensiveStatus(attacker, defender, "Reflect");
+        FloatingCombatText.ShowOffensiveStatus(attacker, defender, "Stunned");
+        FloatingCombatText.EndHit();
+
+        // One combined line over the ATTACKER, seen by both parties.
+        var expected = new UnicodeMessage(
+            attacker.Serial,
+            attacker.Body,
+            MessageType.Regular,
+            FloatingCombatText.DebuffHue,
+            3,
+            "ENU",
+            attacker.Name,
+            "-1 Reflect Stunned"
+        ).Compile();
+
+        AssertThat.Equal(attackerNs.SendBuffer.GetReadSpan(), expected);
+        AssertThat.Equal(defenderNs.SendBuffer.GetReadSpan(), expected);
+    }
+
+    [Fact]
+    public void AttackerStatusWithoutReflectDamageEmitsLabelsOnly()
+    {
+        using var attackerNs = PacketTestUtilities.CreateTestNetState();
+        using var defenderNs = PacketTestUtilities.CreateTestNetState();
+        var attacker = CreateMobile(attackerNs, 0x1024);
+        var defender = CreateMobile(defenderNs, 0x1025);
+
+        FloatingCombatText.ClearContext();
+        FloatingCombatText.BeginHit(defender, attacker);
+        FloatingCombatText.ShowOffensiveStatus(attacker, defender, "Stunned");
+        FloatingCombatText.EndHit();
+
+        var expected = new UnicodeMessage(
+            attacker.Serial,
+            attacker.Body,
+            MessageType.Regular,
+            FloatingCombatText.DebuffHue,
+            3,
+            "ENU",
+            attacker.Name,
+            "Stunned"
+        ).Compile();
+
+        AssertThat.Equal(attackerNs.SendBuffer.GetReadSpan(), expected);
+        AssertThat.Equal(defenderNs.SendBuffer.GetReadSpan(), expected);
+    }
+
     private static Mobile CreateMobile(NetState ns, uint serial = 0x1024)
     {
         var mobile = new Mobile((Serial)serial);

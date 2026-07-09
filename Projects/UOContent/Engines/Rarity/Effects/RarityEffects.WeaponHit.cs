@@ -88,21 +88,37 @@ public static partial class RarityEffects
         }
     }
 
+    // A defender wearing any Talarian dodge% reskins a suffered miss as "Dodge"; BaseWeapon.OnMiss
+    // reads this to suppress the generic "Miss" float for them.
+    public static bool HasDodgePackage(Mobile defender) =>
+        WornEffectState.GetAggregate(defender).DodgePct > 0;
+
     // Called from BaseWeapon.CheckHit only when the swing actually missed. A miss suffered by a
     // defender with no Talarian dodge% is an ordinary whiff, not a themed "dodge" — riders only
     // fire when the defender is actually wearing the dodge package.
     public static void OnMeleeMiss(Mobile attacker, Mobile defender)
     {
-        var agg = WornEffectState.GetAggregate(defender);
-
-        if (agg.DodgePct <= 0)
+        if (!HasDodgePackage(defender))
         {
             return;
         }
 
-        FloatingCombatText.ShowSelfStatus(defender, "Dodge");
-
         var legendaries = WornEffectState.GetLegendaries(defender);
+
+        // Ophis (DodgeGrantsCounterWindow) arms the dodger's next swing to crit. Fold that into
+        // the single dodge float ("Dodge, Crit Ready") instead of a second overhead line.
+        var counterWindow = false;
+
+        for (var i = 0; i < legendaries.Count; i++)
+        {
+            if (legendaries[i].Clause == ClauseType.DodgeGrantsCounterWindow)
+            {
+                counterWindow = true;
+                break;
+            }
+        }
+
+        FloatingCombatText.ShowSelfStatus(defender, counterWindow ? "Dodge, Crit Ready" : "Dodge");
 
         for (var i = 0; i < legendaries.Count; i++)
         {
@@ -142,10 +158,10 @@ public static partial class RarityEffects
                         FloatingCombatText.ShowOffensiveStatus(attacker, defender, "Reflect");
                         break;
                     }
-                case ClauseType.DodgeGrantsCounterWindow: // Ophis signature: the dodger's next swing crits
+                case ClauseType.DodgeGrantsCounterWindow: // Ophis signature: the dodger's next swing
+                    // crits; the "Crit Ready" cue is already folded into the dodge float above.
                     {
                         CombatFxState.SetNextHitCrit(defender);
-                        FloatingCombatText.ShowSelfStatus(defender, "Crit Ready");
                         break;
                     }
             }
@@ -358,11 +374,6 @@ public static partial class RarityEffects
 
         var row = ctx.Row;
 
-        if (ctx.IsCrit)
-        {
-            FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Critical!", FloatingCombatText.CritHue);
-        }
-
         if (damageGiven > 0 && row.LifestealPct > 0)
         {
             var pct = row.LifestealPct;
@@ -457,8 +468,7 @@ public static partial class RarityEffects
 
         if (row.ElementalProcPct > 0 && Utility.Random(100) < row.ElementalProcPct)
         {
-            ElementalProc(defender, attacker, damageGiven, row.ElementalKind);
-            FloatingCombatText.ShowOffensiveStatus(defender, attacker, row.ElementalKind == 1 ? "Burn" : "Shock");
+            ElementalProc(defender, attacker, damageGiven, row.ElementalKind, row.ElementalKind == 1 ? "Burn" : "Shock");
         }
 
         if (row.HealBlockProcPct > 0 && Utility.Random(100) < row.HealBlockProcPct)
@@ -500,8 +510,7 @@ public static partial class RarityEffects
             return;
         }
 
-        ElementalProc(defender, attacker, 0, 0); // lightning
-        FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Lightning");
+        ElementalProc(defender, attacker, 0, 0, "Lightning"); // lightning
 
         var legendaries = WornEffectState.GetLegendaries(attacker);
 
@@ -708,8 +717,7 @@ public static partial class RarityEffects
                 }
             case ClauseType.ExtraSwingElemental:
                 {
-                    ElementalProc(defender, attacker, damageGiven, p2);
-                    FloatingCombatText.ShowOffensiveStatus(defender, attacker, p2 == 1 ? "Burn" : "Shock");
+                    ElementalProc(defender, attacker, damageGiven, p2, p2 == 1 ? "Burn" : "Shock");
                     break;
                 }
         }

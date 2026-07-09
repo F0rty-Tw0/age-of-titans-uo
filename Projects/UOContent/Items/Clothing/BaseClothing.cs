@@ -739,7 +739,9 @@ namespace Server.Items
                 _                           => 0
             };
 
-            var name = Name;
+            // Fold the rarity tier suffix into the tooltip name line (e.g. "Klytios [Legendary]");
+            // null/Common pass through unchanged so the name==null branch below still fires.
+            var name = RarityConfig.WithSuffix(Name, _rarity);
 
             if (oreType != 0)
             {

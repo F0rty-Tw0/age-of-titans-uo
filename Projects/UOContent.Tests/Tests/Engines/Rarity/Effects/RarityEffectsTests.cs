@@ -30,7 +30,7 @@ public class RarityEffectsTests
             Assert.Equal(ItemRarity.Rare, item.Rarity);
             Assert.Equal(VariantRootInfo.GetBodyHue(VariantRoot.Zephyr, ItemRarity.Rare), item.Hue);
             Assert.NotNull(item.Name);
-            Assert.StartsWith("zephyr", item.Name);
+            Assert.StartsWith("Zephyr", item.Name); // root display name is capitalized in BuildRootName
         }
         finally
         {

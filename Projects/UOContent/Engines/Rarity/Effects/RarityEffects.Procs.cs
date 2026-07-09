@@ -105,8 +105,8 @@ public static partial class RarityEffects
                 }
             case ClauseType.MarkElemental:
                 {
-                    ElementalProc(defender, attacker, 0, p1); // P1 = element (0 lightning / 1 fire)
-                    FloatingCombatText.ShowOffensiveStatus(defender, attacker, p1 == 1 ? "Burn" : "Shock");
+                    // P1 = element (0 lightning / 1 fire)
+                    ElementalProc(defender, attacker, 0, p1, p1 == 1 ? "Burn" : "Shock");
                     break;
                 }
         }
@@ -201,8 +201,7 @@ public static partial class RarityEffects
                 {
                     if (ctx.IsCrit)
                     {
-                        ElementalProc(defender, attacker, damageGiven, p2);
-                        FloatingCombatText.ShowOffensiveStatus(defender, attacker, p2 == 1 ? "Burn" : "Shock");
+                        ElementalProc(defender, attacker, damageGiven, p2, p2 == 1 ? "Burn" : "Shock");
                     }
 
                     break;
@@ -286,8 +285,9 @@ public static partial class RarityEffects
         to.Mana = Math.Min(to.ManaMax, to.Mana + amount);
     }
 
-    // P24: elemental FX + flat bonus damage. element: 0 = lightning, 1 = fire.
-    private static void ElementalProc(Mobile target, Mobile from, int baseDamage, int element)
+    // P24: elemental FX + flat bonus damage. element: 0 = lightning, 1 = fire. The typed damage
+    // renders inline as "-N (label)" in spell color (SetSpellContext) rather than a separate float.
+    private static void ElementalProc(Mobile target, Mobile from, int baseDamage, int element, string label)
     {
         if (target.Map == null || !target.Alive)
         {
@@ -306,7 +306,10 @@ public static partial class RarityEffects
         }
 
         from.DoHarmful(target, true);
+
+        FloatingCombatText.SetSpellContext(label);
         AOS.Damage(target, from, 10 + baseDamage / 10, 100, 0, 0, 0, 0);
+        FloatingCombatText.ClearContext();
     }
 
     private static void MarkNearbyAllies(Mobile attacker, Mobile center, int bonus, int cap)
