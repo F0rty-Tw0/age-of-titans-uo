@@ -35,6 +35,12 @@ public static class FloatingCombatText
     public const int ManaHue = 0x5;     // blue (mana restored)
     public const int BuffHue = 0x59;    // teal (self-buff: frenzy, warded, dodge, crit-ready)
 
+    // Shared label literals. Referenced at the call sites (BaseWeapon.OnMiss, RarityEffects.
+    // DoExtraSwing) AND by EndHit's extra-swing folding, so they must stay identical — keep them
+    // as consts rather than scattering the string.
+    public const string MissLabel = "Miss";
+    public const string ExtraSwingLabel = "Extra Swing";
+
     // Ambient damage context — single-threaded game loop, set right before
     // Mobile.Damage()/AOS.Damage() and cleared right after.
     private static int _contextHue = DamageHue;
@@ -159,7 +165,7 @@ public static class FloatingCombatText
             AppendSuffix(text, ref pos, _batchCrit, " Critical!");
             AppendSuffix(text, ref pos, _batchShrug, " Shrugged");
             AppendSuffix(text, ref pos, _batchParry, " Parried");
-            AppendLabels(text, ref pos, _batchLabels);
+            AppendDefenderLabels(text, ref pos, _batchLabels);
 
             ShowSpan(_batchSubject, _batchOther, text[..pos], _batchHue, _batchIncomingHue);
         }
@@ -168,7 +174,7 @@ public static class FloatingCombatText
             // Status(es) applied but no damage number this hit (e.g. fully absorbed) — labels only.
             Span<char> text = stackalloc char[256];
             var pos = 0;
-            AppendLabels(text, ref pos, _batchLabels);
+            AppendDefenderLabels(text, ref pos, _batchLabels);
 
             if (pos > 1)
             {
@@ -209,16 +215,77 @@ public static class FloatingCombatText
     {
         for (var i = 0; i < labels.Count; i++)
         {
+            AppendLabel(text, ref pos, labels[i]);
+        }
+    }
+
+    private static void AppendLabel(Span<char> text, ref int pos, string label)
+    {
+        if (pos + 1 + label.Length > text.Length)
+        {
+            return; // defensive: never overflow the overhead line
+        }
+
+        text[pos++] = ' ';
+        label.CopyTo(text[pos..]);
+        pos += label.Length;
+    }
+
+    // The defender's line, with extra-swing folding. RarityEffects.DoExtraSwing adds one
+    // "Extra Swing" per bonus swing, and a whiffed bonus swing's OnMiss adds "Miss" — both land
+    // in _batchLabels. Instead of leaking "Miss Extra Swing Extra Swing", they render as a single
+    // tail: "Extra Swing" / "Extra Swing x2" / "Extra Swing Miss" / "Extra Swing x2 Miss". A
+    // batched "Miss" can ONLY be an extra swing whiffing — a main-swing miss never opens a hit
+    // batch (BeginHit runs only from OnHit) — so folding it here is safe. Every batched "Miss" is
+    // paired with an "Extra Swing" (DoExtraSwing adds it whether the swing hit or missed), so the
+    // summary always leads with "Extra Swing".
+    private static void AppendDefenderLabels(Span<char> text, ref int pos, List<string> labels)
+    {
+        var extraSwings = 0;
+        var extraSwingMissed = false;
+
+        for (var i = 0; i < labels.Count; i++)
+        {
             var label = labels[i];
 
-            if (pos + 1 + label.Length > text.Length)
+            switch (label)
             {
-                break; // defensive: never overflow the overhead line
+                case ExtraSwingLabel:
+                    {
+                        extraSwings++;
+                        break;
+                    }
+                case MissLabel:
+                    {
+                        extraSwingMissed = true;
+                        break;
+                    }
+                default:
+                    {
+                        AppendLabel(text, ref pos, label);
+                        break;
+                    }
             }
+        }
 
+        if (extraSwings == 0)
+        {
+            return;
+        }
+
+        AppendLabel(text, ref pos, ExtraSwingLabel);
+
+        if (extraSwings > 1 && pos + 4 <= text.Length) // " x" + up to two digits
+        {
             text[pos++] = ' ';
-            label.CopyTo(text[pos..]);
-            pos += label.Length;
+            text[pos++] = 'x';
+            extraSwings.TryFormat(text[pos..], out var written);
+            pos += written;
+        }
+
+        if (extraSwingMissed)
+        {
+            AppendLabel(text, ref pos, MissLabel);
         }
     }
 

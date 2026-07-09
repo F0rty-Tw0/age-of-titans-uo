@@ -48,5 +48,4 @@
 # BuildTool native binaries (downloaded from GitHub Releases)
 /tools/
 artifacts
-scratch-build
-scratch
+scratch*
