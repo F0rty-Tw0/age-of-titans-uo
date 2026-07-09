@@ -367,6 +367,13 @@ public static partial class RarityEffects
         // must run regardless of whether the weapon itself carries a rarity variant.
         ApplyOlympianLightningProc(attacker, defender);
 
+        // Armor/shield hit-riders are driven by the ATTACKER's own worn gear, not the weapon,
+        // so they must run even when the weapon carries no rarity variant (same rationale as the
+        // Olympian jewelry proc above). Kept before the ctx.Active gate so a plain weapon still
+        // fires armor on-kill / crit-taken riders. ctx may be default() here so the ctx.IsCrit /
+        // ctx.IsFirstHit branches inside stay dormant, while the on-kill block still runs.
+        ApplyArmorHitRiders(attacker, defender, in ctx);
+
         if (!ctx.Active)
         {
             return;
@@ -403,7 +410,6 @@ public static partial class RarityEffects
         RunClauseProcs(attacker, defender, damageGiven, ctx.Signature, ctx.S1, ctx.S2, ctx.S3, in ctx);
         RunClauseProcs(attacker, defender, damageGiven, ctx.Clause, ctx.P1, ctx.P2, ctx.P3, in ctx);
         RunRowNumericProcs(attacker, defender, damageGiven, in ctx);
-        ApplyArmorHitRiders(attacker, defender, in ctx);
 
         // ExtraSwingChain (either slot) relaxes the re-entrancy guard to depth 2 so the chained
         // swing may itself proc ONE more; every other extra swing is depth 1.
@@ -550,9 +556,10 @@ public static partial class RarityEffects
 
     // Armor/shield riders that key off a landed melee hit rather than the weapon's own variant:
     // crit-taken bursts on the defender's gear, and the attacker's own on-kill / first-hit-landed
-    // shield clauses. Gated the same as the rest of this function (ctx.Active) — a known scope
-    // limit is that these only fire when the attacker's own weapon also carries a rarity variant,
-    // since that is what makes BeginWeaponHit populate ctx at all (flagged in the P3a report).
+    // shield clauses. Called from EndWeaponHit BEFORE the ctx.Active gate so they fire regardless
+    // of whether the attacker's weapon carries a rarity variant; these are the wearer's armor,
+    // not the weapon. ctx may be default() for a plain weapon, so the ctx.IsCrit / ctx.IsFirstHit
+    // branches below stay dormant then, while the weapon-independent on-kill block still runs.
     private static void ApplyArmorHitRiders(Mobile attacker, Mobile defender, in WeaponHitContext ctx)
     {
         if (ctx.IsCrit)
@@ -673,7 +680,7 @@ public static partial class RarityEffects
             ForceHit = priorForceHit;
         }
 
-        FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Extra Swing");
+        FloatingCombatText.ShowOffensiveStatus(defender, attacker, FloatingCombatText.ExtraSwingLabel);
 
         if (stagger)
         {

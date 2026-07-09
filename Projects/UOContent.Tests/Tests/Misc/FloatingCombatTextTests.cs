@@ -245,6 +245,66 @@ public class FloatingCombatTextTests
         AssertThat.Equal(defenderNs.SendBuffer.GetReadSpan(), expected);
     }
 
+    [Fact]
+    public void MissedExtraSwingFoldsIntoOneTail()
+    {
+        using var attackerNs = PacketTestUtilities.CreateTestNetState();
+        using var defenderNs = PacketTestUtilities.CreateTestNetState();
+        var attacker = CreateMobile(attackerNs, 0x1024);
+        var defender = CreateMobile(defenderNs, 0x1025);
+
+        FloatingCombatText.ClearContext();
+        FloatingCombatText.BeginHit(defender, attacker);
+        // Main hit lands for 15, then the bonus swing whiffs: OnMiss adds "Miss",
+        // DoExtraSwing adds "Extra Swing" (raw order is Miss then Extra Swing).
+        FloatingCombatText.ShowDamage(defender, attacker, 15);
+        FloatingCombatText.ShowOffensiveStatus(defender, attacker, FloatingCombatText.MissLabel);
+        FloatingCombatText.ShowOffensiveStatus(defender, attacker, FloatingCombatText.ExtraSwingLabel);
+        FloatingCombatText.EndHit();
+
+        var expected = new UnicodeMessage(
+            defender.Serial,
+            defender.Body,
+            MessageType.Regular,
+            0x490, // defender sees the incoming-damage hue for their own line
+            3,
+            "ENU",
+            defender.Name,
+            "-15 Extra Swing Miss"
+        ).Compile();
+
+        AssertThat.Equal(defenderNs.SendBuffer.GetReadSpan(), expected);
+    }
+
+    [Fact]
+    public void TwoExtraSwingsCollapseToMultiplier()
+    {
+        using var attackerNs = PacketTestUtilities.CreateTestNetState();
+        using var defenderNs = PacketTestUtilities.CreateTestNetState();
+        var attacker = CreateMobile(attackerNs, 0x1024);
+        var defender = CreateMobile(defenderNs, 0x1025);
+
+        FloatingCombatText.ClearContext();
+        FloatingCombatText.BeginHit(defender, attacker);
+        FloatingCombatText.ShowDamage(defender, attacker, 30);
+        FloatingCombatText.ShowOffensiveStatus(defender, attacker, FloatingCombatText.ExtraSwingLabel);
+        FloatingCombatText.ShowOffensiveStatus(defender, attacker, FloatingCombatText.ExtraSwingLabel);
+        FloatingCombatText.EndHit();
+
+        var expected = new UnicodeMessage(
+            defender.Serial,
+            defender.Body,
+            MessageType.Regular,
+            0x490, // defender sees the incoming-damage hue for their own line
+            3,
+            "ENU",
+            defender.Name,
+            "-30 Extra Swing x2"
+        ).Compile();
+
+        AssertThat.Equal(defenderNs.SendBuffer.GetReadSpan(), expected);
+    }
+
     private static Mobile CreateMobile(NetState ns, uint serial = 0x1024)
     {
         var mobile = new Mobile((Serial)serial);

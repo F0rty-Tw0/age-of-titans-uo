@@ -2559,7 +2559,9 @@ public abstract partial class BaseWeapon
         // don't also float the generic "Miss" over them.
         if (!RarityEffects.HasDodgePackage(defender))
         {
-            Misc.FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Miss", Misc.FloatingCombatText.MissHue);
+            Misc.FloatingCombatText.ShowOffensiveStatus(
+                defender, attacker, Misc.FloatingCombatText.MissLabel, Misc.FloatingCombatText.MissHue
+            );
         }
 
         WeaponAbility.GetCurrentAbility(attacker)?.OnMiss(attacker, defender);
