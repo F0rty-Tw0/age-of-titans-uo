@@ -4033,7 +4033,7 @@ namespace Server.Mobiles
             }
         }
 
-        public override ApplyPoisonResult ApplyPoison(Mobile from, Poison poison)
+        public override ApplyPoisonResult ApplyPoison(Mobile from, Poison poison, bool refreshOnly = false)
         {
             if (!Alive)
             {
@@ -4045,7 +4045,7 @@ namespace Server.Mobiles
                 poison = PoisonImpl.IncreaseLevel(poison);
             }
 
-            var result = base.ApplyPoison(from, poison);
+            var result = base.ApplyPoison(from, poison, refreshOnly);
 
             if (from != null && result == ApplyPoisonResult.Poisoned && PoisonTimer is PoisonImpl.PoisonTimer timer)
             {

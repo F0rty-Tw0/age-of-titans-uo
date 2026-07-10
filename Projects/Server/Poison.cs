@@ -6,6 +6,36 @@ namespace Server;
 
 public enum PoisonFamily { Standard, Darkglow, Parasitic }
 
+// Stackable-poison model: one live application of a poison on a mobile (Mobile.PoisonStacks,
+// cap Mobile.MaxPoisonStacks). A stack carries its own source (per-stack attribution and family
+// riders) and its own tick bookkeeping (own expiry). The tick math lives in the content-side
+// timer (PoisonImpl.PoisonTimer), which sums every active stack into one merged tick.
+// Not serialized — poison state has never been part of the save, stacks included.
+public class PoisonStack
+{
+    public PoisonStack(Poison poison, Mobile from)
+    {
+        Poison = poison;
+        From = from;
+    }
+
+    public Poison Poison { get; }
+    public Mobile From { get; set; }
+    public int TicksElapsed { get; set; }
+    public int LastDamage { get; set; }
+
+    // Area sources (fields/gas/traps) re-arm their stack instead of appending a new one.
+    public void Refresh(Mobile from)
+    {
+        TicksElapsed = 0;
+
+        if (from != null)
+        {
+            From = from;
+        }
+    }
+}
+
 public abstract class Poison : ISpanParsable<Poison>
 {
     public static List<Poison> Poisons { get; } = [];

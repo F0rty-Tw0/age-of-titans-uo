@@ -12,13 +12,10 @@ public class FloatingCombatTextTests
 {
     static FloatingCombatTextTests()
     {
-        Core.ApplicationAssembly = typeof(FloatingCombatTextTests).Assembly;
-        ServerConfiguration.Load(true);
-        Core.LoopContext = new EventLoopContext();
-        NetState.Configure();
-        TestMapDefinitions.ConfigureTestMapDefinitions();
-        World.Configure();
-        Timer.Init(0);
+        // Process-wide once-guarded boot. The old hand-rolled boot re-ran ServerConfiguration
+        // .Load(true) whenever this class initialized mid-suite, dropping the boot-added data
+        // directory and flaking the pathfinding tests (empty lazily-loaded map sectors).
+        TestServerInitializer.Initialize();
     }
 
     [Fact]

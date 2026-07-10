@@ -347,7 +347,7 @@ namespace Server.Items
                         to.PlaySound(0x231);
                         to.LocalOverheadMessage(MessageType.Regular, 0x44, 1010523); // A toxic vapor envelops thee.
 
-                        to.ApplyPoison(to, Poison.Regular);
+                        to.ApplyPoison(to, Poison.Regular, refreshOnly: true); // area source: refresh, don't stack
 
                         break;
                     }
