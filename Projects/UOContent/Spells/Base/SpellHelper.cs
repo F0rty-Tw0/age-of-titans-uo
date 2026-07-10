@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Server.Engines.BuffIcons;
 using Server.Engines.CannedEvil;
 using Server.Engines.ConPVP;
 using Server.Engines.PartySystem;
@@ -898,6 +899,7 @@ namespace Server.Spells
                 {
                     // T2A: single-use reflection, consumed immediately
                     target.MagicDamageAbsorb = 0;
+                    (target as PlayerMobile)?.RemoveBuff(BuffIcon.MagicReflection);
                     reflect = true;
                 }
                 else
