@@ -1,4 +1,5 @@
 using System;
+using Server.Engines.BuffIcons;
 using Server.Engines.Virtues;
 using Server.Items;
 using Server.Mobiles;
@@ -55,6 +56,11 @@ public class PoisonImpl : Poison
             From = m;
             _mobile = m;
             _poison = p;
+
+            // Buff-bar icon spans the whole poison; auto-expires on its own timer so an external
+            // cure (which stops this timer without hitting the exits below) still clears it.
+            var total = p._delay + TimeSpan.FromTicks(p._interval.Ticks * p._count);
+            BuffHelper.AddCustomBuff(m, BuffIcon.Poison, "Poisoned", total);
         }
 
         public Mobile From{ get; set; }
@@ -96,6 +102,7 @@ public class PoisonImpl : Poison
                     );
                 }
 
+                BuffHelper.RemoveBuff(_mobile, BuffIcon.Poison);
                 Stop();
                 return;
             }
@@ -105,6 +112,7 @@ public class PoisonImpl : Poison
                 _mobile.SendLocalizedMessage(502136); // The poison seems to have worn off.
                 _mobile.Poison = null;
 
+                BuffHelper.RemoveBuff(_mobile, BuffIcon.Poison);
                 Stop();
                 return;
             }

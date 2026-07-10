@@ -1,5 +1,6 @@
 using System;
 using ModernUO.Serialization;
+using Server.Engines.BuffIcons;
 using Server.Items;
 using Server.Misc;
 using Server.Mobiles;
@@ -164,6 +165,9 @@ public partial class ParalyzeField : Item
             }
 
             m.Paralyze(TimeSpan.FromSeconds(duration));
+
+            BuffHelper.AddCustomBuff(m, BuffIcon.Paralyze, "Paralyzed", TimeSpan.FromSeconds(duration));
+            FloatingCombatText.ShowOffensiveStatus(m, _caster, "Stunned");
 
             m.PlaySound(0x204);
             m.FixedEffect(0x376A, 10, 16);
