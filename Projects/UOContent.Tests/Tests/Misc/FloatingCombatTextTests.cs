@@ -305,6 +305,51 @@ public class FloatingCombatTextTests
         AssertThat.Equal(defenderNs.SendBuffer.GetReadSpan(), expected);
     }
 
+    [Fact]
+    public void NestedExtraSwingOwnsItsDamageAndStun()
+    {
+        using var attackerNs = PacketTestUtilities.CreateTestNetState();
+        using var defenderNs = PacketTestUtilities.CreateTestNetState();
+        var attacker = CreateMobile(attackerNs, 0x1024);
+        var defender = CreateMobile(defenderNs, 0x1025);
+
+        FloatingCombatText.ClearContext();
+        FloatingCombatText.BeginHit(defender, attacker);                    // main swing
+        FloatingCombatText.ShowDamage(defender, attacker, 25);
+        FloatingCombatText.BeginHit(defender, attacker);                    // re-entrant extra swing
+        FloatingCombatText.ShowDamage(defender, attacker, 1);
+        FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Stunned"); // proc of the extra swing
+        FloatingCombatText.EndHit();                                        // -> "-1 Stunned"
+        FloatingCombatText.ShowOffensiveStatus(defender, attacker, FloatingCombatText.ExtraSwingLabel);
+        FloatingCombatText.EndHit();                                        // -> "-25 Extra Swing"
+
+        var nested = new UnicodeMessage(
+            defender.Serial,
+            defender.Body,
+            MessageType.Regular,
+            0x490, // defender sees the incoming-damage hue for their own line
+            3,
+            "ENU",
+            defender.Name,
+            "-1 Stunned"
+        ).Compile();
+
+        var main = new UnicodeMessage(
+            defender.Serial,
+            defender.Body,
+            MessageType.Regular,
+            0x490,
+            3,
+            "ENU",
+            defender.Name,
+            "-25 Extra Swing"
+        ).Compile();
+
+        var sent = defenderNs.SendBuffer.GetReadSpan();
+        AssertThat.Equal(sent[..nested.Length], nested);
+        AssertThat.Equal(sent[nested.Length..], main);
+    }
+
     private static Mobile CreateMobile(NetState ns, uint serial = 0x1024)
     {
         var mobile = new Mobile((Serial)serial);

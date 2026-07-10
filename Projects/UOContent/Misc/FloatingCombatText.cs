@@ -51,30 +51,54 @@ public static class FloatingCombatText
 
     // Weapon-hit batching: while a hit is resolving, the damage number plus every offensive status
     // applied to the defender are collected into ONE overhead line ("-32 Critical! Stunned Poisoned")
-    // instead of separate floats. BaseWeapon.OnHit brackets each hit with BeginHit/EndHit. Depth-
-    // guarded so a re-entrant extra swing (weapon.OnSwing mid-hit) can't corrupt state — only the
-    // outermost swing owns the batch; a nested swing's damage emits on its own line.
-    private static int _batchDepth;
-    private static Mobile _batchSubject;
-    private static Mobile _batchOther;
-    private static int _batchAmount;
-    private static int _batchHue;
-    private static int _batchIncomingHue;
-    private static bool _batchCaptured;
-    private static bool _batchCrit;
-    private static bool _batchShrug;
-    private static bool _batchParry;
-    private static readonly List<string> _batchLabels = new();
+    // instead of separate floats. BaseWeapon.OnHit brackets each hit with BeginHit/EndHit.
+    //
+    // Frames form a STACK: a re-entrant extra swing (weapon.OnSwing mid-hit) pushes its OWN frame,
+    // so the nested swing's damage and the statuses its procs apply fold into the nested swing's
+    // line ("-1 Stunned") instead of leaking a bare "-1" while its stun mislands on the main line.
+    // Statuses fired after the nested swing returns (e.g. the Notos stagger rider, "Extra Swing"
+    // itself) fold into the then-innermost frame — the main hit's.
+    private sealed class HitFrame
+    {
+        public Mobile Subject;
+        public Mobile Other;
+        public int Amount;
+        public int Hue;
+        public int IncomingHue;
+        public bool Captured;
+        public bool Crit;
+        public bool Shrug;
+        public bool Parry;
+        public readonly List<string> Labels = new();
 
-    // Secondary line for retaliation dealt back to the ATTACKER during this same hit (reflect,
-    // thorns, and the "Stunned"/"Heal Block" that ride them). The attacker is _batchOther, not the
-    // primary _batchSubject, so without this its "-N" number and its status labels would stack as
-    // separate overhead lines. Collected here and emitted as ONE line ("-1 Reflect Stunned") by
-    // EndHit, mirroring the defender's line. Untyped damage only — a labeled proc ("-N (Burn)")
-    // keeps its own line.
-    private static int _secondaryAmount;
-    private static bool _secondaryCaptured;
-    private static readonly List<string> _secondaryLabels = new();
+        // Secondary line for retaliation dealt back to the ATTACKER during this hit (reflect,
+        // thorns, and the "Stunned"/"Heal Block" that ride them). The attacker is Other, not the
+        // primary Subject, so without this its "-N" number and its status labels would stack as
+        // separate overhead lines. Emitted as ONE line ("-1 Reflect Stunned") by EndHit, mirroring
+        // the defender's line. Untyped damage only — a labeled proc ("-N (Burn)") keeps its own line.
+        public int SecondaryAmount;
+        public bool SecondaryCaptured;
+        public readonly List<string> SecondaryLabels = new();
+
+        public void Reset(Mobile subject, Mobile other)
+        {
+            Subject = subject;
+            Other = other;
+            Amount = 0;
+            Captured = false;
+            Crit = Shrug = Parry = false;
+            Labels.Clear();
+            SecondaryAmount = 0;
+            SecondaryCaptured = false;
+            SecondaryLabels.Clear();
+        }
+    }
+
+    // Innermost frame = last. Popped frames return to the pool — zero steady-state allocation.
+    private static readonly List<HitFrame> _frames = new();
+    private static readonly List<HitFrame> _framePool = new();
+
+    private static HitFrame CurrentFrame => _frames.Count > 0 ? _frames[^1] : null;
 
     public static void Initialize()
     {
@@ -126,89 +150,91 @@ public static class FloatingCombatText
 
     public static void ClearHealContext() => _healLabel = null;
 
-    // Begin collecting one weapon hit's floats into a single line over `defender`. Nested calls
-    // (re-entrant extra swings) just bump the depth; only the outermost owns the batch.
+    // Begin collecting one swing's floats into a single line over `defender`. A nested call
+    // (re-entrant extra swing) pushes its own frame — each swing owns its own line.
     public static void BeginHit(Mobile defender, Mobile attacker)
     {
-        if (_batchDepth++ > 0)
+        HitFrame frame;
+
+        if (_framePool.Count > 0)
         {
-            return;
+            frame = _framePool[^1];
+            _framePool.RemoveAt(_framePool.Count - 1);
+        }
+        else
+        {
+            frame = new HitFrame();
         }
 
-        _batchSubject = defender;
-        _batchOther = attacker;
-        _batchAmount = 0;
-        _batchCaptured = false;
-        _batchCrit = _batchShrug = _batchParry = false;
-        _batchLabels.Clear();
-        _secondaryAmount = 0;
-        _secondaryCaptured = false;
-        _secondaryLabels.Clear();
+        frame.Reset(defender, attacker);
+        _frames.Add(frame);
     }
 
-    // Emit the collected line and end the batch. Only the outermost EndHit emits.
+    // Emit the innermost frame's collected line(s) and pop it.
     public static void EndHit()
     {
-        if (_batchDepth == 0 || --_batchDepth > 0)
+        var frame = CurrentFrame;
+
+        if (frame == null)
         {
             return;
         }
 
-        if (_batchCaptured)
+        _frames.RemoveAt(_frames.Count - 1);
+
+        if (frame.Captured)
         {
             Span<char> text = stackalloc char[256];
             var pos = 0;
             text[pos++] = '-';
-            _batchAmount.TryFormat(text[pos..], out var written);
+            frame.Amount.TryFormat(text[pos..], out var written);
             pos += written;
 
-            AppendSuffix(text, ref pos, _batchCrit, " Critical!");
-            AppendSuffix(text, ref pos, _batchShrug, " Shrugged");
-            AppendSuffix(text, ref pos, _batchParry, " Parried");
-            AppendDefenderLabels(text, ref pos, _batchLabels);
+            AppendSuffix(text, ref pos, frame.Crit, " Critical!");
+            AppendSuffix(text, ref pos, frame.Shrug, " Shrugged");
+            AppendSuffix(text, ref pos, frame.Parry, " Parried");
+            AppendDefenderLabels(text, ref pos, frame.Labels);
 
-            ShowSpan(_batchSubject, _batchOther, text[..pos], _batchHue, _batchIncomingHue);
+            ShowSpan(frame.Subject, frame.Other, text[..pos], frame.Hue, frame.IncomingHue);
         }
-        else if (_batchLabels.Count > 0 && _batchSubject != null)
+        else if (frame.Labels.Count > 0 && frame.Subject != null)
         {
             // Status(es) applied but no damage number this hit (e.g. fully absorbed) — labels only.
             Span<char> text = stackalloc char[256];
             var pos = 0;
-            AppendDefenderLabels(text, ref pos, _batchLabels);
+            AppendDefenderLabels(text, ref pos, frame.Labels);
 
             if (pos > 1)
             {
-                ShowSpan(_batchSubject, _batchOther, text[1..pos], DebuffHue, DebuffHue); // drop leading space
+                ShowSpan(frame.Subject, frame.Other, text[1..pos], DebuffHue, DebuffHue); // drop leading space
             }
         }
 
         // Attacker's retaliation line: "-1 Reflect Stunned" (or labels-only if nothing reflected).
-        if ((_secondaryCaptured || _secondaryLabels.Count > 0) && _batchOther != null)
+        if ((frame.SecondaryCaptured || frame.SecondaryLabels.Count > 0) && frame.Other != null)
         {
             Span<char> text = stackalloc char[256];
             var pos = 0;
 
-            if (_secondaryCaptured)
+            if (frame.SecondaryCaptured)
             {
                 text[pos++] = '-';
-                _secondaryAmount.TryFormat(text[pos..], out var written);
+                frame.SecondaryAmount.TryFormat(text[pos..], out var written);
                 pos += written;
             }
 
-            AppendLabels(text, ref pos, _secondaryLabels);
+            AppendLabels(text, ref pos, frame.SecondaryLabels);
 
-            var start = _secondaryCaptured ? 0 : 1; // drop leading space when labels-only
+            var start = frame.SecondaryCaptured ? 0 : 1; // drop leading space when labels-only
 
             if (pos > start)
             {
-                ShowSpan(_batchOther, _batchSubject, text[start..pos], DebuffHue, DebuffHue);
+                ShowSpan(frame.Other, frame.Subject, text[start..pos], DebuffHue, DebuffHue);
             }
         }
 
-        _batchSubject = null;
-        _batchOther = null;
-        _batchLabels.Clear();
-        _secondaryLabels.Clear();
+        frame.Reset(null, null); // drop Mobile refs while pooled
+        _framePool.Add(frame);
     }
 
     private static void AppendLabels(Span<char> text, ref int pos, List<string> labels)
@@ -233,7 +259,7 @@ public static class FloatingCombatText
 
     // The defender's line, with extra-swing folding. RarityEffects.DoExtraSwing adds one
     // "Extra Swing" per bonus swing, and a whiffed bonus swing's OnMiss adds "Miss" — both land
-    // in _batchLabels. Instead of leaking "Miss Extra Swing Extra Swing", they render as a single
+    // in the frame's Labels. Instead of leaking "Miss Extra Swing Extra Swing", they render as a single
     // tail: "Extra Swing" / "Extra Swing x2" / "Extra Swing Miss" / "Extra Swing x2 Miss". A
     // batched "Miss" can ONLY be an extra swing whiffing — a main-swing miss never opens a hit
     // batch (BeginHit runs only from OnHit) — so folding it here is safe. Every batched "Miss" is
@@ -310,25 +336,27 @@ public static class FloatingCombatText
         // Inside a weapon hit, the untyped main damage number over the defender is captured and folded
         // into the combined line by EndHit. Labeled damage (an elemental proc's "-10 (Lightning)", a
         // spell) always emits on its own line — hence the _contextLabel == null guard.
-        if (_batchDepth > 0 && !_batchCaptured && target == _batchSubject && _contextLabel == null)
+        var frame = CurrentFrame;
+
+        if (frame != null && !frame.Captured && target == frame.Subject && _contextLabel == null)
         {
-            _batchAmount = amount;
-            _batchHue = hue;
-            _batchIncomingHue = incomingHue;
-            _batchCrit = _contextCrit;
-            _batchShrug = _contextShrug;
-            _batchParry = _contextParry;
-            _batchCaptured = true;
+            frame.Amount = amount;
+            frame.Hue = hue;
+            frame.IncomingHue = incomingHue;
+            frame.Crit = _contextCrit;
+            frame.Shrug = _contextShrug;
+            frame.Parry = _contextParry;
+            frame.Captured = true;
             return;
         }
 
         // Untyped retaliation (reflect/thorns) back to the attacker during this hit — fold into the
         // attacker's secondary line (EndHit emits it). Summed so multiple retaliations share the
         // line; a labeled proc keeps _contextLabel and falls through to its own float below.
-        if (_batchDepth > 0 && _batchOther != null && target == _batchOther && _contextLabel == null)
+        if (frame?.Other != null && target == frame.Other && _contextLabel == null)
         {
-            _secondaryAmount += amount;
-            _secondaryCaptured = true;
+            frame.SecondaryAmount += amount;
+            frame.SecondaryCaptured = true;
             return;
         }
 
@@ -396,18 +424,21 @@ public static class FloatingCombatText
             return;
         }
 
-        // Fold a status on the current hit's defender into the combined damage line (EndHit emits it).
-        if (_batchDepth > 0 && target == _batchSubject)
+        // Fold a status on the current swing's defender into that swing's damage line (EndHit
+        // emits it) — the innermost frame, so an extra swing's stun rides the extra swing's "-N".
+        var frame = CurrentFrame;
+
+        if (frame != null && target == frame.Subject)
         {
-            _batchLabels.Add(label);
+            frame.Labels.Add(label);
             return;
         }
 
         // A status on the attacker (Reflect, Stunned, Heal Block) joins the attacker's retaliation
         // line so it shares the "-N" instead of stacking on its own line.
-        if (_batchDepth > 0 && _batchOther != null && target == _batchOther)
+        if (frame?.Other != null && target == frame.Other)
         {
-            _secondaryLabels.Add(label);
+            frame.SecondaryLabels.Add(label);
             return;
         }
 
