@@ -69,7 +69,7 @@ public partial class GasTrap : BaseTrap
         Effects.SendLocationEffect(Location, Map, GetBaseID(Type) - 2, 16, 3, GetEffectHue());
         Effects.PlaySound(Location, Map, 0x231);
 
-        from.ApplyPoison(from, Poison);
+        from.ApplyPoison(from, Poison, refreshOnly: true); // area source: refresh, don't stack
 
         from.LocalOverheadMessage(MessageType.Regular, 0x22, 500855); // You are enveloped by a noxious gas cloud!
     }

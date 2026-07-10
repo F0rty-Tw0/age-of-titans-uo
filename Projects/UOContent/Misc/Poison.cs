@@ -44,32 +44,55 @@ public class PoisonImpl : Poison
 
     public override Timer ConstructTimer(Mobile m) => new PoisonTimer(m, this);
 
+    // Stackable-poison merged tick: the FIRST stack constructs this timer and donates its
+    // delay/interval cadence; every tick then sums the per-stack damage of ALL active stacks
+    // (each stack keeps its own T2A damage math, own last-damage quirk, and own expiry) into
+    // one damage number, pruning expired stacks as it goes. The engine (Mobile.PoisonStacks)
+    // owns the stack set; this timer owns the tick.
     public class PoisonTimer : Timer
     {
         private readonly Mobile _mobile;
-        private readonly PoisonImpl _poison;
-        private int _index;
-        private int _lastDamage;
+        private readonly PoisonImpl _anchor; // cadence donor — the first stack's poison
+        private int _tickIndex;
+        private int _lastStackCount = 1;
 
         public PoisonTimer(Mobile m, PoisonImpl p) : base(p._delay, p._interval)
         {
-            From = m;
             _mobile = m;
-            _poison = p;
+            _anchor = p;
 
-            // Buff-bar icon spans the whole poison; auto-expires on its own timer so an external
+            // Buff-bar icon spans the anchor stack; appended stacks re-arm it via the
+            // count-change refresh in OnTick. Auto-expires on its own timer so an external
             // cure (which stops this timer without hitting the exits below) still clears it.
             var total = p._delay + TimeSpan.FromTicks(p._interval.Ticks * p._count);
             BuffHelper.AddCustomBuff(m, BuffIcon.Poison, "Poisoned", total);
         }
 
-        public Mobile From{ get; set; }
+        // Legacy attribution knob (PlayerMobile/BaseCreature set this right after ApplyPoison).
+        // Stacks now carry their own source; this remains the fallback for stacks appended
+        // sourceless (direct `Poison = x` assignments).
+        public Mobile From { get; set; }
 
         protected override void OnTick()
         {
-            if ((Core.AOS && _poison.Level < 4 &&
+            var stacks = _mobile.PoisonStacks;
+
+            if (stacks.Count == 0)
+            {
+                BuffHelper.RemoveBuff(_mobile, BuffIcon.Poison);
+                Stop();
+                return;
+            }
+
+            _tickIndex++;
+
+            // Era self-cure escapes, level-gated on the strongest active stack (the Poison
+            // mirror). A successful cure clears every stack.
+            var strongestLevel = _mobile.Poison?.Level ?? 0;
+
+            if ((Core.AOS && strongestLevel < 4 &&
                  TransformationSpellHelper.UnderTransformation(_mobile, typeof(VampiricEmbraceSpell)) ||
-                 _poison.Level < 3 && OrangePetals.UnderEffect(_mobile) ||
+                 strongestLevel < 3 && OrangePetals.UnderEffect(_mobile) ||
                  AnimalForm.UnderTransformation(_mobile, typeof(Unicorn))) && _mobile.CurePoison(_mobile))
             {
                 if (Core.SA)
@@ -107,65 +130,107 @@ public class PoisonImpl : Poison
                 return;
             }
 
-            if (_index++ == _poison._count)
+            var total = 0;
+            var remainingTicks = 0; // longest-lived stack, for the buff icon's countdown
+
+            for (var i = stacks.Count - 1; i >= 0; i--)
+            {
+                var stack = stacks[i];
+
+                if (stack.Poison is not PoisonImpl impl || stack.TicksElapsed++ >= impl._count)
+                {
+                    _mobile.OnPoisonStackExpired(stack); // merged tick shrinks as stacks expire
+                    continue;
+                }
+
+                remainingTicks = Math.Max(remainingTicks, impl._count - stack.TicksElapsed);
+
+                int damage;
+
+                if (!Core.AOS && stack.LastDamage != 0 && Utility.RandomBool())
+                {
+                    damage = stack.LastDamage;
+                }
+                else
+                {
+                    damage = 1 + (int)(_mobile.Hits * impl._scalar);
+                    damage = Math.Clamp(damage, impl._minimum, impl._maximum);
+
+                    stack.LastDamage = damage;
+                }
+
+                var source = stack.From ?? From;
+
+                // Darkglow: 10% damage boost when attacker is more than 1 tile away
+                if (impl.Family == PoisonFamily.Darkglow && source != null && source.Map == _mobile.Map &&
+                    !source.InRange(_mobile, 1))
+                {
+                    damage = (int)(damage * 1.1);
+                    // Darkglow poison increases your damage!
+                    source.SendLocalizedMessage(1072850);
+                }
+
+                // Parasitic: heals the attacker for this stack's damage when within 1 tile.
+                // (Pre-merge this healed after the damage landed; inert reordering on a T2A
+                // shard — Darkglow/Parasitic poisons are never registered pre-ML.)
+                if (impl.Family == PoisonFamily.Parasitic && source != null && source.Map == _mobile.Map &&
+                    source.InRange(_mobile, 1))
+                {
+                    source.Heal(damage);
+                    // You have had ~1_HEALED_AMOUNT~ hit points healed.
+                    source.SendLocalizedMessage(1060203, damage.ToString());
+                }
+
+                total += damage;
+            }
+
+            if (stacks.Count == 0)
             {
                 _mobile.SendLocalizedMessage(502136); // The poison seems to have worn off.
-                _mobile.Poison = null;
+                _mobile.Poison = null; // clears the mirror; stops this timer via the setter
 
                 BuffHelper.RemoveBuff(_mobile, BuffIcon.Poison);
                 Stop();
                 return;
             }
 
-            int damage;
-
-            if (!Core.AOS && _lastDamage != 0 && Utility.RandomBool())
+            if (total > 0)
             {
-                damage = _lastDamage;
-            }
-            else
-            {
-                damage = 1 + (int)(_mobile.Hits * _poison._scalar);
-                damage = Math.Clamp(damage, _poison._minimum, _poison._maximum);
+                // One merged number. Attribution goes to the oldest stack's source (the timer's
+                // anchor) — per-stack riders above already credited each source individually.
+                var source = stacks[0].From ?? From;
 
-                _lastDamage = damage;
-            }
+                source?.DoHarmful(_mobile, true);
 
-            // Darkglow: 10% damage boost when attacker is more than 1 tile away
-            if (_poison.Family == PoisonFamily.Darkglow && From != null && From.Map == _mobile.Map &&
-                !From.InRange(_mobile, 1))
-            {
-                damage = (int)(damage * 1.1);
-                // Darkglow poison increases your damage!
-                From.SendLocalizedMessage(1072850);
-            }
+                (_mobile as IHonorTarget)?.ReceivedHonorContext?.OnTargetPoisoned();
 
-            From?.DoHarmful(_mobile, true);
+                Misc.FloatingCombatText.SetPoisonContext();
+                AOS.Damage(_mobile, source, total, 0, 0, 0, 100, 0);
+                Misc.FloatingCombatText.ClearContext();
 
-            (_mobile as IHonorTarget)?.ReceivedHonorContext?.OnTargetPoisoned();
+                // OSI: randomly revealed between first and third damage tick, guessing 60% chance
+                if (Utility.RandomDouble() < 0.40)
+                {
+                    _mobile.RevealingAction();
+                }
 
-            Misc.FloatingCombatText.SetPoisonContext();
-            AOS.Damage(_mobile, From, damage, 0, 0, 0, 100, 0);
-            Misc.FloatingCombatText.ClearContext();
-
-            // Parasitic: heals attacker for damage dealt when within 1 tile
-            if (_poison.Family == PoisonFamily.Parasitic && From != null && From.Map == _mobile.Map &&
-                From.InRange(_mobile, 1))
-            {
-                From.Heal(damage);
-                // You have had ~1_HEALED_AMOUNT~ hit points healed.
-                From.SendLocalizedMessage(1060203, damage.ToString());
+                // Merged buff-bar readout ("-{tick} poison x{n}"); re-sent only when the stack
+                // count changes so the bar isn't spammed every tick.
+                if (stacks.Count != _lastStackCount)
+                {
+                    _lastStackCount = stacks.Count;
+                    BuffHelper.AddCustomBuff(
+                        _mobile,
+                        BuffIcon.Poison,
+                        $"-{total} poison x{stacks.Count}",
+                        TimeSpan.FromTicks(_anchor._interval.Ticks * (remainingTicks + 1))
+                    );
+                }
             }
 
-            // OSI: randomly revealed between first and third damage tick, guessing 60% chance
-            if (Utility.RandomDouble() < 0.40)
+            if (_tickIndex % _anchor._messageInterval == 0)
             {
-                _mobile.RevealingAction();
-            }
-
-            if (_index % _poison._messageInterval == 0)
-            {
-                _mobile.OnPoisoned(From, _poison, _poison);
+                _mobile.OnPoisoned(stacks[0].From ?? From, _anchor, _anchor);
             }
         }
     }

@@ -8,22 +8,15 @@ using Xunit;
 
 namespace UOContent.Tests;
 
+// Sequential collection: creates world mobiles, and its old hand-rolled cctor boot re-ran
+// ServerConfiguration.Load(true) mid-suite, dropping the boot-added data directory and flaking
+// the pathfinding tests (empty lazily-loaded map sectors).
+[Collection("Sequential UOContent Tests")]
 public class BaseCreatureSingleClickTests
 {
     static BaseCreatureSingleClickTests()
     {
-        Core.ApplicationAssembly = typeof(BaseCreatureSingleClickTests).Assembly;
-        ServerConfiguration.Load(true);
-        Core.LoopContext = new EventLoopContext();
-        NetState.Configure();
-
-        if (Map.Internal == null)
-        {
-            TestMapDefinitions.ConfigureTestMapDefinitions();
-        }
-
-        World.Configure();
-        Timer.Init(0);
+        Server.Tests.TestServerInitializer.Initialize();
     }
 
     [Fact]

@@ -69,7 +69,7 @@ public abstract partial class Food : Item
 
             if (Poison != null)
             {
-                from.ApplyPoison(Poisoner, Poison);
+                from.ApplyPoison(Poisoner, Poison, refreshOnly: true); // repeat bites refresh, don't stack (plan PP3)
             }
 
             Consume();
