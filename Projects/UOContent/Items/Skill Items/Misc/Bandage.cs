@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ModernUO.Serialization;
+using Server.Engines.BuffIcons;
 using Server.Engines.ConPVP;
 using Server.Engines.Rarity;
 using Server.Factions;
@@ -164,6 +165,7 @@ public class BandageContext : Timer
     public void StopHeal()
     {
         _table.Remove(Healer);
+        BuffHelper.RemoveBuff(Healer, BuffIcon.Healing);
         Stop();
     }
 
@@ -538,6 +540,9 @@ public class BandageContext : Timer
             context = new BandageContext(healer, patient, TimeSpan.FromMilliseconds(seconds));
             _table[healer] = context;
             context.Start();
+
+            // Buff-bar countdown on the healer; cleared by StopHeal (which OnTick calls on finish).
+            BuffHelper.AddCustomBuff(healer, BuffIcon.Healing, "Healing", TimeSpan.FromMilliseconds(seconds));
 
             if (!onSelf)
             {
