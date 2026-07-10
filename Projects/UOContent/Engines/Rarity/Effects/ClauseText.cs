@@ -118,6 +118,12 @@ public static class ClauseText
         ClauseType.ShrugReflect => $"a fully shrugged blow reflects {p1}% of its damage back",
         ClauseType.ShrugFirstHitGuaranteed => "the first hit taken each fight is always shrugged",
 
+        // Option A slot-set signatures (armor-slotsets plan, Phase 3)
+        ClauseType.ShrugFirstHitPoisonAttacker => "the first hit taken each fight is shrugged, poisoning the attacker",
+        ClauseType.ShrugFirstHitDrainStam => $"the first hit taken each fight is shrugged, draining {AmountOr(p1)} stamina from the attacker",
+        ClauseType.ShrugFirstHitDrBurst => $"the first hit taken each fight is shrugged, granting +{p1}% damage reduction for {SecsOr(p2)}",
+        ClauseType.ShrugReflectStun => $"a fully shrugged blow reflects {p1}% of its damage back and briefly stuns the attacker",
+
         // Cyclopean flame-proc riders
         ClauseType.FlameProcDoubleFirstHit => "the flame proc chance doubles vs the first hit of any fight",
         ClauseType.FlameProcHealBlock => $"the flame proc also heal-blocks the attacker for {SecsOr(p1)}",
