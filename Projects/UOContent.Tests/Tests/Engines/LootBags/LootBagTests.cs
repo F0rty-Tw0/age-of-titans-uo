@@ -8,10 +8,10 @@ public class LootBagConfigTests
 {
     [Theory]
     [InlineData(0, 0.0)]
-    [InlineData(1, 0.05)]
+    [InlineData(1, 0.10)]
     [InlineData(-1, 0.0)] // clamped to level 0
-    [InlineData(11, 0.30)] // clamped to level 10
-    [InlineData(99, 0.30)] // clamped to level 10
+    [InlineData(11, 0.50)] // clamped to level 10
+    [InlineData(99, 0.50)] // clamped to level 10
     public void ChanceForMobLevel_MapsLevelToTable(int level, double expected)
     {
         Assert.Equal(expected, LootBagConfig.ChanceForMobLevel(level));
