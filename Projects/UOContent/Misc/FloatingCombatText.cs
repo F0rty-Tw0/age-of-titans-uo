@@ -49,19 +49,25 @@ public static class FloatingCombatText
     private static bool _contextShrug;
     private static bool _contextParry;
 
-    // Weapon-hit batching: while a hit is resolving, the damage number plus every offensive status
-    // applied to the defender are collected into ONE overhead line ("-32 Critical! Stunned Poisoned")
-    // instead of separate floats. BaseWeapon.OnHit brackets each hit with BeginHit/EndHit.
+    // Weapon-hit batching: while a hit is resolving, the damage number and the statuses applied
+    // during it are collected so each status can be PAIRED with the number that caused it — one
+    // effect per overhead line, never merged. The defender's main hit takes its first status
+    // ("-32 Critical! Stunned"); any further status ("Poisoned") floats on its own line, as does a
+    // whiffed extra swing's "Miss". BaseWeapon.OnHit brackets each hit with BeginHit/EndHit.
     //
     // Frames form a STACK: a re-entrant extra swing (weapon.OnSwing mid-hit) pushes its OWN frame,
-    // so the nested swing's damage and the statuses its procs apply fold into the nested swing's
-    // line ("-1 Stunned") instead of leaking a bare "-1" while its stun mislands on the main line.
+    // so the nested swing's damage and the status its procs apply pair on the nested swing's line
+    // ("-1 Stunned") instead of leaking a bare "-1" while its stun mislands on the main line.
     // Statuses fired after the nested swing returns (e.g. the Notos stagger rider, "Extra Swing"
     // itself) fold into the then-innermost frame — the main hit's.
     private sealed class HitFrame
     {
         public Mobile Subject;
         public Mobile Other;
+
+        // Subject's (defender's) main melee number and the crit/shrug/parry/extra-swing decorations
+        // that describe it. EndHit emits "-N [Critical!] [Extra Swing]" and pairs the FIRST status
+        // onto that line.
         public int Amount;
         public int Hue;
         public int IncomingHue;
@@ -69,16 +75,17 @@ public static class FloatingCombatText
         public bool Crit;
         public bool Shrug;
         public bool Parry;
-        public readonly List<string> Labels = new();
+        public int ExtraSwings;
+        public bool ExtraSwingMissed;
+        public readonly List<string> Statuses = new();
 
-        // Secondary line for retaliation dealt back to the ATTACKER during this hit (reflect,
-        // thorns, and the "Stunned"/"Heal Block" that ride them). The attacker is Other, not the
-        // primary Subject, so without this its "-N" number and its status labels would stack as
-        // separate overhead lines. Emitted as ONE line ("-1 Reflect Stunned") by EndHit, mirroring
-        // the defender's line. Untyped damage only — a labeled proc ("-N (Burn)") keeps its own line.
-        public int SecondaryAmount;
-        public bool SecondaryCaptured;
-        public readonly List<string> SecondaryLabels = new();
+        // Retaliation dealt back to the ATTACKER (Other) this hit (reflect/thorns and the
+        // "Stunned"/"Heal Block" that ride them). Emitted per-proc as it resolves so each number
+        // pairs with its OWN status ("-5 Reflect", then "-88 Stunned") — never summed or merged.
+        // OtherPending holds a retaliation number until its status pairs onto it (or EndHit flushes
+        // it bare). Untyped damage only; a labeled proc keeps its own float.
+        public int OtherPending;
+        public bool OtherPendingSet;
 
         public void Reset(Mobile subject, Mobile other)
         {
@@ -87,10 +94,11 @@ public static class FloatingCombatText
             Amount = 0;
             Captured = false;
             Crit = Shrug = Parry = false;
-            Labels.Clear();
-            SecondaryAmount = 0;
-            SecondaryCaptured = false;
-            SecondaryLabels.Clear();
+            ExtraSwings = 0;
+            ExtraSwingMissed = false;
+            Statuses.Clear();
+            OtherPending = 0;
+            OtherPendingSet = false;
         }
     }
 
@@ -182,66 +190,77 @@ public static class FloatingCombatText
 
         _frames.RemoveAt(_frames.Count - 1);
 
-        if (frame.Captured)
+        // Defender's line: "-N [Critical!] [Extra Swing]" + its first status; further statuses and a
+        // whiffed extra swing float on their own lines.
+        if (frame.Subject != null)
         {
-            Span<char> text = stackalloc char[256];
-            var pos = 0;
-            text[pos++] = '-';
-            frame.Amount.TryFormat(text[pos..], out var written);
-            pos += written;
+            EmitPairedLines(
+                frame.Subject, frame.Other, frame.Hue, frame.IncomingHue,
+                frame.Captured, frame.Amount, frame.Crit, frame.Shrug, frame.Parry, frame.ExtraSwings,
+                frame.Statuses
+            );
 
-            AppendSuffix(text, ref pos, frame.Crit, " Critical!");
-            AppendSuffix(text, ref pos, frame.Shrug, " Shrugged");
-            AppendSuffix(text, ref pos, frame.Parry, " Parried");
-            AppendDefenderLabels(text, ref pos, frame.Labels);
-
-            ShowSpan(frame.Subject, frame.Other, text[..pos], frame.Hue, frame.IncomingHue);
-        }
-        else if (frame.Labels.Count > 0 && frame.Subject != null)
-        {
-            // Status(es) applied but no damage number this hit (e.g. fully absorbed) — labels only.
-            Span<char> text = stackalloc char[256];
-            var pos = 0;
-            AppendDefenderLabels(text, ref pos, frame.Labels);
-
-            if (pos > 1)
+            if (frame.ExtraSwingMissed)
             {
-                ShowSpan(frame.Subject, frame.Other, text[1..pos], DebuffHue, DebuffHue); // drop leading space
+                ShowSpan(frame.Subject, frame.Other, MissLabel, MissHue, MissHue);
             }
         }
 
-        // Attacker's retaliation line: "-1 Reflect Stunned" (or labels-only if nothing reflected).
-        if ((frame.SecondaryCaptured || frame.SecondaryLabels.Count > 0) && frame.Other != null)
+        // A retaliation number left with no status pairs onto it (reflect with no rider) — flush bare.
+        if (frame.Other != null && frame.OtherPendingSet)
         {
-            Span<char> text = stackalloc char[256];
-            var pos = 0;
-
-            if (frame.SecondaryCaptured)
-            {
-                text[pos++] = '-';
-                frame.SecondaryAmount.TryFormat(text[pos..], out var written);
-                pos += written;
-            }
-
-            AppendLabels(text, ref pos, frame.SecondaryLabels);
-
-            var start = frame.SecondaryCaptured ? 0 : 1; // drop leading space when labels-only
-
-            if (pos > start)
-            {
-                ShowSpan(frame.Other, frame.Subject, text[start..pos], DebuffHue, DebuffHue);
-            }
+            FloatRetaliation(frame, frame.OtherPending, null);
         }
 
         frame.Reset(null, null); // drop Mobile refs while pooled
         _framePool.Add(frame);
     }
 
-    private static void AppendLabels(Span<char> text, ref int pos, List<string> labels)
+    // Emit one target's overhead lines. The damage number (if captured) plus its crit/shrug/parry
+    // and extra-swing decorations form the first line, carrying the FIRST status paired onto it
+    // ("-88 Stunned"). Every remaining status floats on its own line — effects are never merged.
+    private static void EmitPairedLines(
+        Mobile subject, Mobile other, int otherHue, int subjectHue,
+        bool captured, int amount, bool crit, bool shrug, bool parry, int extraSwings, List<string> statuses
+    )
     {
-        for (var i = 0; i < labels.Count; i++)
+        Span<char> text = stackalloc char[256];
+        var pos = 0;
+
+        if (captured)
         {
-            AppendLabel(text, ref pos, labels[i]);
+            text[pos++] = '-';
+            amount.TryFormat(text[pos..], out var written);
+            pos += written;
+            AppendSuffix(text, ref pos, crit, " Critical!");
+            AppendSuffix(text, ref pos, shrug, " Shrugged");
+            AppendSuffix(text, ref pos, parry, " Parried");
+        }
+
+        AppendExtraSwing(text, ref pos, extraSwings);
+
+        var firstStatus = 0;
+
+        if (statuses.Count > 0)
+        {
+            AppendLabel(text, ref pos, statuses[0]); // prepends a space
+            firstStatus = 1;
+        }
+
+        // Drop the leading space when the line has no number (status/extra-swing-only); a numbered
+        // line keeps the damage hue, a label-only line uses the debuff hue.
+        var start = captured ? 0 : 1;
+
+        if (pos > start)
+        {
+            var lineOther = captured ? otherHue : DebuffHue;
+            var lineSubject = captured ? subjectHue : DebuffHue;
+            ShowSpan(subject, other, text[start..pos], lineOther, lineSubject);
+        }
+
+        for (var i = firstStatus; i < statuses.Count; i++)
+        {
+            ShowSpan(subject, other, statuses[i], DebuffHue, DebuffHue);
         }
     }
 
@@ -257,44 +276,11 @@ public static class FloatingCombatText
         pos += label.Length;
     }
 
-    // The defender's line, with extra-swing folding. RarityEffects.DoExtraSwing adds one
-    // "Extra Swing" per bonus swing, and a whiffed bonus swing's OnMiss adds "Miss" — both land
-    // in the frame's Labels. Instead of leaking "Miss Extra Swing Extra Swing", they render as a single
-    // tail: "Extra Swing" / "Extra Swing x2" / "Extra Swing Miss" / "Extra Swing x2 Miss". A
-    // batched "Miss" can ONLY be an extra swing whiffing — a main-swing miss never opens a hit
-    // batch (BeginHit runs only from OnHit) — so folding it here is safe. Every batched "Miss" is
-    // paired with an "Extra Swing" (DoExtraSwing adds it whether the swing hit or missed), so the
-    // summary always leads with "Extra Swing".
-    private static void AppendDefenderLabels(Span<char> text, ref int pos, List<string> labels)
+    // RarityEffects.DoExtraSwing adds one "Extra Swing" per bonus swing; multiple collapse to
+    // "Extra Swing x2". Folded onto the hit line (it describes the swing, not a separate effect).
+    private static void AppendExtraSwing(Span<char> text, ref int pos, int extraSwings)
     {
-        var extraSwings = 0;
-        var extraSwingMissed = false;
-
-        for (var i = 0; i < labels.Count; i++)
-        {
-            var label = labels[i];
-
-            switch (label)
-            {
-                case ExtraSwingLabel:
-                    {
-                        extraSwings++;
-                        break;
-                    }
-                case MissLabel:
-                    {
-                        extraSwingMissed = true;
-                        break;
-                    }
-                default:
-                    {
-                        AppendLabel(text, ref pos, label);
-                        break;
-                    }
-            }
-        }
-
-        if (extraSwings == 0)
+        if (extraSwings <= 0)
         {
             return;
         }
@@ -308,10 +294,36 @@ public static class FloatingCombatText
             extraSwings.TryFormat(text[pos..], out var written);
             pos += written;
         }
+    }
 
-        if (extraSwingMissed)
+    // One retaliation float over the attacker (frame.Other), seen by both parties. amount <= 0 =
+    // no number; label null = no label. "-5 Reflect" / "-88 Stunned" / "-5" / "Stunned".
+    private static void FloatRetaliation(HitFrame frame, int amount, string label)
+    {
+        Span<char> text = stackalloc char[64 + (label?.Length ?? 0)];
+        var pos = 0;
+
+        if (amount > 0)
         {
-            AppendLabel(text, ref pos, MissLabel);
+            text[pos++] = '-';
+            amount.TryFormat(text[pos..], out var written);
+            pos += written;
+        }
+
+        if (label != null)
+        {
+            if (pos > 0)
+            {
+                text[pos++] = ' ';
+            }
+
+            label.CopyTo(text[pos..]);
+            pos += label.Length;
+        }
+
+        if (pos > 0)
+        {
+            ShowSpan(frame.Other, frame.Subject, text[..pos], DebuffHue, DebuffHue);
         }
     }
 
@@ -350,13 +362,19 @@ public static class FloatingCombatText
             return;
         }
 
-        // Untyped retaliation (reflect/thorns) back to the attacker during this hit — fold into the
-        // attacker's secondary line (EndHit emits it). Summed so multiple retaliations share the
-        // line; a labeled proc keeps _contextLabel and falls through to its own float below.
+        // Untyped retaliation (reflect/thorns) back to the attacker during this hit — held until its
+        // status pairs onto it ("-5 Reflect"). Per-proc: if a prior retaliation number is still
+        // pending (two retaliations, no rider between), flush it bare first so numbers never merge.
+        // A labeled proc keeps _contextLabel and falls through to its own float below.
         if (frame?.Other != null && target == frame.Other && _contextLabel == null)
         {
-            frame.SecondaryAmount += amount;
-            frame.SecondaryCaptured = true;
+            if (frame.OtherPendingSet)
+            {
+                FloatRetaliation(frame, frame.OtherPending, null);
+            }
+
+            frame.OtherPending = amount;
+            frame.OtherPendingSet = true;
             return;
         }
 
@@ -424,21 +442,37 @@ public static class FloatingCombatText
             return;
         }
 
-        // Fold a status on the current swing's defender into that swing's damage line (EndHit
-        // emits it) — the innermost frame, so an extra swing's stun rides the extra swing's "-N".
+        // Collect a status on the current swing's defender — EndHit pairs the first with the hit's
+        // "-N" and floats the rest on their own lines. Extra-swing bookkeeping is folded onto the
+        // hit line (Extra Swing) or floated apart (Miss), not treated as a status.
         var frame = CurrentFrame;
 
         if (frame != null && target == frame.Subject)
         {
-            frame.Labels.Add(label);
+            if (label == ExtraSwingLabel)
+            {
+                frame.ExtraSwings++;
+            }
+            else if (label == MissLabel)
+            {
+                frame.ExtraSwingMissed = true;
+            }
+            else
+            {
+                frame.Statuses.Add(label);
+            }
+
             return;
         }
 
-        // A status on the attacker (Reflect, Stunned, Heal Block) joins the attacker's retaliation
-        // line so it shares the "-N" instead of stacking on its own line.
+        // A status on the attacker (Reflect, Stunned, Heal Block): pairs with the retaliation number
+        // that just landed ("-5 Reflect"), else floats alone ("Stunned"). One effect per line.
         if (frame?.Other != null && target == frame.Other)
         {
-            frame.SecondaryLabels.Add(label);
+            var amount = frame.OtherPendingSet ? frame.OtherPending : 0;
+            frame.OtherPending = 0;
+            frame.OtherPendingSet = false;
+            FloatRetaliation(frame, amount, label);
             return;
         }
 

@@ -1973,6 +1973,13 @@ public abstract partial class BaseWeapon
         bcDef?.AlterMeleeDamageFrom(attacker, ref damage);
 
         RarityEffects.SetPendingHitCrit(rarityFx.IsCrit);
+
+        // Open the batching frame BEFORE AbsorbDamage so the defensive procs it fires (reflect/
+        // thorns and the stun/heal-block that ride them) fold into the attacker's retaliation line
+        // instead of leaking as separate "-5"/"Reflect"/"Stunned" floats. Crit/shrug/parry context
+        // is set below — after AbsorbDamage, which is where the shrug/parry pending flags are raised.
+        Misc.FloatingCombatText.BeginHit(defender, attacker);
+
         damage = AbsorbDamage(attacker, defender, damage);
 
         if (!Core.AOS && damage < 1)
@@ -2093,11 +2100,8 @@ public abstract partial class BaseWeapon
                           Bladeweave.BladeWeaving(attacker, out var bladeweavingAbi) &&
                           bladeweavingAbi is ArmorIgnore;
 
-        // Collect this hit's damage number and every status it applies to the defender into one
-        // overhead line (EndHit emits it at the bottom of OnHit). Crit/shrug/parry are known now;
-        // stun/poison/etc. get appended later as their post-damage procs fire.
-        Misc.FloatingCombatText.BeginHit(defender, attacker);
-
+        // Crit/shrug/parry are known now (shrug/parry pending flags were raised inside AbsorbDamage
+        // above); stun/poison/etc. get appended later as their post-damage procs fire.
         if (rarityFx.IsCrit)
         {
             Misc.FloatingCombatText.SetCritContext();
