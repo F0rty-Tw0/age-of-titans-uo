@@ -476,6 +476,22 @@ public static class CombatFxState
     public static int GetFrenzySwingPct(Mobile m) =>
         m != null && _frenzy.TryGetValue(m, out var f) && Core.TickCount < f.ExpiryTick ? f.SwingPct : 0;
 
+    // Ward-Surge (chainmail set capstone): taking a crit opens a window where the wearer's DR
+    // rises to the suit-wide cap. Expiry-on-read like Frenzy; consumed in AbsorbForDefenderArmor.
+    private static readonly Dictionary<Mobile, long> _wardSurgeUntil = new();
+
+    public static void ArmWardSurge(Mobile m, TimeSpan duration)
+    {
+        if (m != null)
+        {
+            _wardSurgeUntil[m] = Core.TickCount + (long)duration.TotalMilliseconds;
+            BuffHelper.AddCustomBuff(m, BuffIcon.Protection, "Ward-Surge", duration);
+        }
+    }
+
+    public static bool IsWardSurgeActive(Mobile m) =>
+        m != null && _wardSurgeUntil.TryGetValue(m, out var until) && Core.TickCount < until;
+
     // Penelope web-snare: slows `target`'s swing speed by pct% for `duration`; a re-apply refreshes.
     public static void SetSnare(Mobile target, int pct, TimeSpan duration)
     {
@@ -528,6 +544,11 @@ public static class CombatFxState
         if (_frenzy.Remove(m))
         {
             BuffHelper.RemoveBuff(m, BuffIcon.Rage);
+        }
+
+        if (_wardSurgeUntil.Remove(m))
+        {
+            BuffHelper.RemoveBuff(m, BuffIcon.Protection);
         }
 
         _snare.Remove(m);

@@ -599,6 +599,14 @@ public static partial class RarityEffects
                     WornEffectState.ArmClauseBurst(defender, entry.Clause, TimeSpan.FromSeconds(entry.P1 > 0 ? entry.P1 : 3));
                 }
             }
+
+            // Ward-Surge (chainmail set capstone): taking a crit opens a DR-to-cap window.
+            if (WornEffectState.GetAggregate(defender) is
+                { HasCapstone: true, CapstoneMaterial: ArmorMaterialType.Chainmail })
+            {
+                CombatFxState.ArmWardSurge(defender, TimeSpan.FromSeconds(5));
+                FloatingCombatText.ShowSelfStatus(defender, "Ward-Surge");
+            }
         }
 
         var attackerLegendaries = WornEffectState.GetLegendaries(attacker);
@@ -622,6 +630,48 @@ public static partial class RarityEffects
                         FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Stunned");
                     }
                 }
+            }
+        }
+
+        // P4 set capstones, debuff trio: a completed Studded/Bone/Plate set rides the wearer's
+        // landed hits. Each has a natural rate limiter: poison no-ops while the target is already
+        // poisoned, heal-block re-applies only after expiry, and TryStun's 10s immunity gates
+        // the stagger.
+        var attackerAgg = WornEffectState.GetAggregate(attacker);
+
+        if (attackerAgg.HasCapstone && defender.Alive)
+        {
+            switch (attackerAgg.CapstoneMaterial)
+            {
+                case ArmorMaterialType.Studded: // Venom — interim single poison; becomes "add a
+                    // stack" once the stackable-poison feature lands (plan Feature 2).
+                    {
+                        if (defender.ApplyPoison(attacker, Poison.Lesser) == ApplyPoisonResult.Poisoned)
+                        {
+                            FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Poisoned", FloatingCombatText.PoisonHue);
+                        }
+
+                        break;
+                    }
+                case ArmorMaterialType.Bone: // Grave-Chill
+                    {
+                        if (!CombatFxState.IsHealBlocked(defender))
+                        {
+                            CombatFxState.SetHealBlock(defender, TimeSpan.FromSeconds(2));
+                            FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Heal Block");
+                        }
+
+                        break;
+                    }
+                case ArmorMaterialType.Plate: // Siege-Shock
+                    {
+                        if (CombatFxState.TryStun(defender, TimeSpan.FromSeconds(1)))
+                        {
+                            FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Stunned");
+                        }
+
+                        break;
+                    }
             }
         }
 

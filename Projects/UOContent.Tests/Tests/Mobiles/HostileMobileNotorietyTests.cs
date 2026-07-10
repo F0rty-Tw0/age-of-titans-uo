@@ -1,28 +1,22 @@
 using Server;
 using Server.Misc;
 using Server.Mobiles;
-using Server.Tests.Maps;
+using Server.Tests;
 using Xunit;
 
 namespace UOContent.Tests;
 
+// In the sequential collection: this class creates mobiles, so it must share the fixture's
+// world boot. Its old hand-rolled cctor boot raced the shared UOContentFixture when run in
+// parallel (TypeInitializationException out of World.Configure) and clobbered shared config
+// (ServerConfiguration.Load) when serialized — TestServerInitializer is the process-wide,
+// once-guarded boot both paths need.
+[Collection("Sequential UOContent Tests")]
 public class HostileMobileNotorietyTests
 {
     static HostileMobileNotorietyTests()
     {
-        Core.ApplicationAssembly = typeof(HostileMobileNotorietyTests).Assembly;
-        Core.LoopContext = new EventLoopContext();
-        Core.Expansion = Expansion.EJ;
-
-        ServerConfiguration.Load(true);
-
-        if (Map.Internal == null)
-        {
-            TestMapDefinitions.ConfigureTestMapDefinitions();
-        }
-
-        World.Configure();
-        Timer.Init(0);
+        TestServerInitializer.Initialize();
         NotorietyHandlers.Initialize();
     }
 

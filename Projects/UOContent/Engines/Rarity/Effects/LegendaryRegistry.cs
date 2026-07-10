@@ -79,6 +79,12 @@ public enum ClauseType : byte
     ShrugReflect,            // a fully shrugged blow reflects P1% of its damage back (Erechtheus/Erymanthos)
     ShrugFirstHitGuaranteed, // the first hit taken each fight is always shrugged (Kadmos/Nemea)
 
+    // Option A slot-set signatures (armor-slotsets plan, Phase 3) — chest/arms shrug riders
+    ShrugFirstHitPoisonAttacker, // first hit always shrugged + poisons the attacker (Studded Chest)
+    ShrugFirstHitDrainStam,      // first hit always shrugged + drains P1 stamina from the attacker (Bone Chest)
+    ShrugFirstHitDrBurst,        // first hit always shrugged + grants +P1% DR for P2s (Ringmail Chest)
+    ShrugReflectStun,            // a fully shrugged blow reflects P1% back and briefly stuns (Plate Arms)
+
     // Cyclopean flame-proc riders
     FlameProcDoubleFirstHit,     // proc chance doubles vs the first hit of any fight (Perdix/Teumessos)
     FlameProcHealBlock,          // proc also heal-blocks the attacker; P1 = seconds (Erichthonios)
