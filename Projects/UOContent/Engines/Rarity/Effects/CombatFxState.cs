@@ -71,6 +71,10 @@ public static class CombatFxState
     // frenzy window is ever active at a time (a fresh proc simply refreshes it).
     private static readonly Dictionary<Mobile, (int DmgPct, int SwingPct, long ExpiryTick)> _frenzy = new();
 
+    // Penelope's web-snare: a dodge slows the attacker's swings by Pct% for a short window. Keyed by
+    // mobile; a re-dodge refreshes it. Read by RarityEffects.AdjustSwingDelay.
+    private static readonly Dictionary<Mobile, (int Pct, long ExpiryTick)> _snare = new();
+
     // Registers a landed hit for the attacker and returns the running hit count.
     // firstHitOfFight is true when combat had lapsed (30s idle) before this hit.
     public static int RegisterHit(Mobile attacker, out bool firstHitOfFight)
@@ -92,6 +96,45 @@ public static class CombatFxState
         _attackers[attacker] = state;
 
         return state.HitCount;
+    }
+
+    // A kill ends the killer's fight: clear their per-fight hit tracking (both offense and defense)
+    // so the NEXT foe engaged counts as a fresh fight — "first hit of the fight" clauses re-arm and
+    // the hit cadence restarts. Without this, killing one enemy and turning to another inside the
+    // 30s window carries the dead fight's counters over, so first-hit never fires on the new enemy.
+    // ponytail: resets on ANY kill, so in a multi-foe brawl a kill also re-arms first-hit against a
+    // foe you were already fighting. Fine on PvE; move to per-target first-hit tracking if abused.
+    public static void ResetFight(Mobile m)
+    {
+        if (m != null)
+        {
+            _attackers.Remove(m);
+            _defenders.Remove(m);
+        }
+    }
+
+    // Undo this swing's RegisterHit when it landed but dealt no damage (fully parried/blocked/
+    // absorbed): a no-damage swing must not consume "first hit of the fight" nor advance the Nth-hit
+    // cadence — only a hit that actually connects counts. `hitCountThisSwing` is the value RegisterHit
+    // returned for the swing being undone; the rollback no-ops if anything advanced the counter since
+    // (e.g. a nested extra swing landed), so it can never rewind a hit that did connect.
+    public static void RollbackHit(Mobile attacker, int hitCountThisSwing)
+    {
+        if (attacker == null || hitCountThisSwing <= 0 ||
+            !_attackers.TryGetValue(attacker, out var state) || state.HitCount != hitCountThisSwing)
+        {
+            return;
+        }
+
+        if (state.HitCount <= 1)
+        {
+            _attackers.Remove(attacker); // undo the first hit → the next connecting hit is first again
+        }
+        else
+        {
+            state.HitCount--;
+            _attackers[attacker] = state;
+        }
     }
 
     // Non-mutating fight-freshness check (no hit registration) — used by clauses that key off
@@ -433,6 +476,18 @@ public static class CombatFxState
     public static int GetFrenzySwingPct(Mobile m) =>
         m != null && _frenzy.TryGetValue(m, out var f) && Core.TickCount < f.ExpiryTick ? f.SwingPct : 0;
 
+    // Penelope web-snare: slows `target`'s swing speed by pct% for `duration`; a re-apply refreshes.
+    public static void SetSnare(Mobile target, int pct, TimeSpan duration)
+    {
+        if (target != null && pct > 0)
+        {
+            _snare[target] = (pct, Core.TickCount + (long)duration.TotalMilliseconds);
+        }
+    }
+
+    public static int GetSnarePct(Mobile target) =>
+        target != null && _snare.TryGetValue(target, out var s) && Core.TickCount < s.ExpiryTick ? s.Pct : 0;
+
     // Drops every entry that references a mobile (as attacker, marked target, or marker).
     public static void Evict(Mobile m)
     {
@@ -475,6 +530,7 @@ public static class CombatFxState
             BuffHelper.RemoveBuff(m, BuffIcon.Rage);
         }
 
+        _snare.Remove(m);
         _ramps.Remove(m);
     }
 }

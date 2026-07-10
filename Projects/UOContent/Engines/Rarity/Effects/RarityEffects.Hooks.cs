@@ -370,6 +370,7 @@ public static partial class RarityEffects
         if (m.LastKiller is { Deleted: false } killer && killer != m)
         {
             ApplyOnKillEffects(killer);
+            CombatFxState.ResetFight(killer); // a kill ends the killer's fight → next foe is a fresh first-hit
         }
 
         // Britomartis: when a marked target dies, the mark jumps to nearby enemies.

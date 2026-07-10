@@ -15,15 +15,22 @@ public static class ClauseText
     private static string Element(short kind) => kind == 1 ? "fire" : "lightning";
     private static string FirstHitAddendum(short p3) => p3 == 1 ? ", plus the first hit of every fight" : "";
 
+    // Extra-swing clauses with no cadence N (p1 == 0) fall back to a natural-crit trigger (the engine
+    // mirrors the crit-rider convention). `rider` describes what the granted extra swing also does.
+    private static string ExtraSwingText(short p1, string rider) =>
+        p1 > 0 ? $"every {p1}th hit grants an extra swing{rider}" : $"natural crits grant an extra swing{rider}";
+
     public static string Describe(ClauseType clause, short p1, short p2, short p3) => clause switch
     {
         ClauseType.None => null,
 
         // Extra-swing family (Zephyr)
-        ClauseType.ExtraSwingEveryN => $"every {p1}th hit grants an extra swing",
+        ClauseType.ExtraSwingEveryN => ExtraSwingText(p1, ""),
         ClauseType.ExtraSwingOnParry => "parrying a hit grants an extra swing",
         ClauseType.ExtraSwingFirstHit => "the first hit of every fight grants an extra swing",
-        ClauseType.DoubleStrikeEveryN => $"every {p1}th hit becomes a double strike; the second strike always crits",
+        ClauseType.DoubleStrikeEveryN => p1 > 0
+            ? $"every {p1}th hit becomes a double strike; the second strike always crits"
+            : "natural crits become a double strike; the second strike always crits",
 
         // Crit family (Phobos)
         ClauseType.CritFirstHit => p2 > 0
@@ -62,13 +69,13 @@ public static class ClauseText
         // ---- P2 additions: weapon families 1-6 (swords/polearms/maces/staves/fencing/archery) ----
 
         // Extra-swing riders (Zephyr lines)
-        ClauseType.ExtraSwingSplash => $"every {p1}th hit grants an extra swing that splashes {p2}% to up to {p3} targets",
-        ClauseType.ExtraSwingGuaranteedHit => $"every {p1}th hit grants an extra swing that always lands",
-        ClauseType.ExtraSwingManaLeech => $"every {p1}th hit grants an extra swing that leeches {p2}% of the target's mana",
+        ClauseType.ExtraSwingSplash => ExtraSwingText(p1, $" that splashes {p2}% to up to {p3} targets"),
+        ClauseType.ExtraSwingGuaranteedHit => ExtraSwingText(p1, " that always lands"),
+        ClauseType.ExtraSwingManaLeech => ExtraSwingText(p1, $" that leeches {p2}% of the target's mana"),
         ClauseType.ExtraSwingElemental => p1 > 0
             ? $"every {p1}th hit grants an extra swing with a {Element(p2)} proc"
             : $"the first hit of every fight grants an extra swing with a {Element(p2)} proc",
-        ClauseType.ExtraSwingHealBlock => $"every {p1}th hit grants an extra swing that heal-blocks the target for {SecsOr(p2)}",
+        ClauseType.ExtraSwingHealBlock => ExtraSwingText(p1, $" that heal-blocks the target for {SecsOr(p2)}"),
         ClauseType.ExtraSwingStackingHit => $"the first hit grants an extra swing; each later swing gains +{p1}% hit chance, up to {p2}%",
 
         // Crit riders (Phobos / caster lines)
@@ -208,7 +215,7 @@ public static class ClauseText
         ClauseType.AnimalTamingSkillBonus => $"+{p1} animal taming while worn",
         ClauseType.FrenzyStaggerChance => $"while frenzied, hits carry a {p1}% chance to stagger the target",
         ClauseType.DurabilityLossImmunity => "immune to durability loss while worn",
-        ClauseType.DodgeReflectDamage => $"a successful dodge reflects {p1}% of the avoided damage",
+        ClauseType.DodgeSnare => $"a successful dodge webs the attacker, slowing their swings by {p1}% for {SecsOr(p2)}",
 
         // ---- P2 (re-theme 2026-07-07): per-family Epic signature clauses ---------------------
         ClauseType.RampMaxStacksSplash => $"when a consecutive-hit ramp maxes out, splashes {p1}% to {p2} targets",
@@ -217,7 +224,7 @@ public static class ClauseText
         ClauseType.BlockGrantsDrBurst => $"after a block, gain +{p1}% damage reduction for {SecsOr(p2)}",
         ClauseType.NthHitSplash => $"every {p1}th hit splashes {p2}% to {p3} targets",
         ClauseType.NthHitFullArmorPen => $"every {p1}th hit ignores armor entirely",
-        ClauseType.ExtraSwingChain => $"every {p1}th hit grants an extra swing that may itself chain once more",
+        ClauseType.ExtraSwingChain => ExtraSwingText(p1, " that may itself chain once more"),
         ClauseType.CritFirstHitStamRefund => "the first hit of every fight is a guaranteed crit and refunds its swing's stamina cost",
         ClauseType.PoisonedTargetsMarked => $"targets the wielder poisons are marked, taking +{p1}% damage",
         ClauseType.DodgeGrantsCounterWindow => $"for {SecsOr(p1)} after a dodge, the wielder's next swing crits",
