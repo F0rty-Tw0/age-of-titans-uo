@@ -9,6 +9,9 @@ namespace Server.Items
         [Constructible]
         public ShortSpear() : base(0x1403)
         {
+            // One-handed fencing weapon — usable with a shield. Overrides the two-handed
+            // layer its tiledata (ItemData.Quality) otherwise assigns in BaseWeapon.
+            Layer = Layer.OneHanded;
         }
 
         public override double DefaultWeight => 4.0;
