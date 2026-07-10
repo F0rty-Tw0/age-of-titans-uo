@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
+using Server.Engines.BuffIcons;
 
 namespace Server.Engines.Rarity;
 
 // Transient, NON-serialized combat state for rarity weapon effects. The server is
 // single-threaded, so plain dictionaries are correct here — never a lock or
 // ConcurrentDictionary (CLAUDE.md rule 3). All expiry is checked lazily against
-// Core.TickCount on read; there are no per-entry timers. Entries for dead/deleted
-// mobiles are evicted by the death/delete hook in RarityEffects and lazily on access.
+// Core.TickCount on read. Entries for dead/deleted mobiles are evicted by the
+// death/delete hook in RarityEffects and lazily on access.
+// Exception: marks carry a short repeating "pulse" timer (_markPulse) purely for the
+// visual glow + tooltip refresh — the mark's game state is still lazy-expiry.
 public static class CombatFxState
 {
     // A fight "ends" after this long with no tracked action; the next hit is a first-hit.
@@ -49,6 +52,15 @@ public static class CombatFxState
     private static readonly Dictionary<Mobile, AttackerState> _attackers = new();
     private static readonly Dictionary<Mobile, AttackerState> _defenders = new();
     private static readonly Dictionary<Mobile, MarkInfo> _marks = new();
+
+    // Visual pulse timer per affected target — flashes a glow and refreshes the tooltip while any
+    // target-side indicator (mark / heal-block) is active. One timer per target regardless of how
+    // many indicators overlap; it self-terminates when none remain.
+    private static readonly Dictionary<Mobile, TimerExecutionToken> _indicatorPulse = new();
+    private static readonly TimeSpan IndicatorPulseInterval = TimeSpan.FromSeconds(1.25);
+    private const int MarkHue = 0x25;      // orange — matches the "Marked" floating text
+    private const int HealBlockHue = 0x21; // red — matches the offensive/debuff floating text
+
     private static readonly Dictionary<Mobile, long> _stunImmuneUntil = new();
     private static readonly Dictionary<Mobile, long> _healBlockUntil = new();
     private static readonly Dictionary<Mobile, int> _hitStacks = new();
@@ -133,6 +145,98 @@ public static class CombatFxState
         }
 
         _marks[target] = new MarkInfo(marker, Core.TickCount + (long)duration.TotalMilliseconds, bonusPct, allSources);
+        BuffHelper.AddCustomBuff(target, BuffIcon.EnemyOfOneDebuff, "Marked", duration);
+        target.InvalidateProperties(); // show the "Marked" tooltip line
+        StartIndicatorPulse(target);
+    }
+
+    // Whether a mark is currently active on the target, and its bonus % (for the tooltip line).
+    public static bool TryGetMark(Mobile target, out int bonusPct)
+    {
+        if (TryGetActiveMark(target, out var mark))
+        {
+            bonusPct = mark.BonusPct;
+            return true;
+        }
+
+        bonusPct = 0;
+        return false;
+    }
+
+    public static bool IsMarked(Mobile target) => TryGetActiveMark(target, out _);
+
+    // ---- Target-side visual indicators (glow pulse + tooltip lines) ---------------------------
+    // Adds a tooltip line for every target-side status active on the mobile. Called from the
+    // creature/player property builders so an attacker can read what they've applied to a target.
+    public static void AddIndicatorProperties(Mobile target, IPropertyList list)
+    {
+        // 1114057 = "~1_val~" passthrough cliloc. The whole label must be a SINGLE hole (rule 14:
+        // bare text in a PropertyList handler is treated as a delimiter, not literal text).
+        if (TryGetMark(target, out var bonus))
+        {
+            var label = $"Marked +{bonus}%";
+            list.Add(1114057, $"{label}");
+        }
+
+        if (IsHealBlocked(target))
+        {
+            list.Add(1114057, $"{"Heal Block"}");
+        }
+
+        if (target.Poisoned)
+        {
+            list.Add(1114057, $"{"Poisoned"}");
+        }
+    }
+
+    // Hue of the highest-priority active indicator, or -1 if none are active.
+    private static int ActiveIndicatorHue(Mobile target)
+    {
+        if (IsMarked(target))
+        {
+            return MarkHue;
+        }
+
+        if (IsHealBlocked(target))
+        {
+            return HealBlockHue;
+        }
+
+        return -1;
+    }
+
+    private static void StartIndicatorPulse(Mobile target)
+    {
+        if (target == null || _indicatorPulse.ContainsKey(target))
+        {
+            return; // one shared pulse per target — a second indicator rides the existing timer
+        }
+
+        Timer.StartTimer(IndicatorPulseInterval, IndicatorPulseInterval, () => PulseIndicators(target), out var token);
+        _indicatorPulse[target] = token;
+    }
+
+    private static void StopIndicatorPulse(Mobile target)
+    {
+        if (target != null && _indicatorPulse.Remove(target, out var token))
+        {
+            token.Cancel();
+        }
+    }
+
+    private static void PulseIndicators(Mobile target)
+    {
+        var hue = target is { Deleted: false } ? ActiveIndicatorHue(target) : -1;
+
+        if (hue >= 0)
+        {
+            target.FixedEffect(0x374A, 10, 16, hue, 0);
+            return;
+        }
+
+        // All indicators gone (cleared or lazily expired) — stop pulsing and drop the tooltip lines.
+        StopIndicatorPulse(target);
+        target?.InvalidateProperties();
     }
 
     // Returns the extra damage % a marked target takes from this attacker, or 0.
@@ -162,7 +266,14 @@ public static class CombatFxState
         return false;
     }
 
-    public static void ClearMark(Mobile target) => _marks.Remove(target);
+    public static void ClearMark(Mobile target)
+    {
+        if (_marks.Remove(target))
+        {
+            BuffHelper.RemoveBuff(target, BuffIcon.EnemyOfOneDebuff);
+            target.InvalidateProperties(); // pulse self-terminates if no other indicator remains
+        }
+    }
 
     private static bool TryGetActiveMark(Mobile target, out MarkInfo mark)
     {
@@ -221,7 +332,11 @@ public static class CombatFxState
     {
         if (target != null)
         {
-            _healBlockUntil[target] = Core.TickCount + (long)Math.Min(duration.TotalMilliseconds, 3000);
+            var ms = (long)Math.Min(duration.TotalMilliseconds, 3000);
+            _healBlockUntil[target] = Core.TickCount + ms;
+            BuffHelper.AddCustomBuff(target, BuffIcon.MortalStrike, "Heal Block", TimeSpan.FromMilliseconds(ms));
+            target.InvalidateProperties(); // show the "Heal Block" tooltip line
+            StartIndicatorPulse(target);
         }
     }
 
@@ -308,6 +423,7 @@ public static class CombatFxState
         if (m != null)
         {
             _frenzy[m] = (dmgPct, swingPct, Core.TickCount + (long)duration.TotalMilliseconds);
+            BuffHelper.AddCustomBuff(m, BuffIcon.Rage, "Frenzy", duration);
         }
     }
 
@@ -327,12 +443,38 @@ public static class CombatFxState
 
         _attackers.Remove(m);
         _defenders.Remove(m);
-        _marks.Remove(m);
+
+        StopIndicatorPulse(m);
+
+        var wasIndicated = false;
+
+        if (_marks.Remove(m))
+        {
+            BuffHelper.RemoveBuff(m, BuffIcon.EnemyOfOneDebuff);
+            wasIndicated = true;
+        }
+
         _stunImmuneUntil.Remove(m);
-        _healBlockUntil.Remove(m);
+
+        if (_healBlockUntil.Remove(m))
+        {
+            BuffHelper.RemoveBuff(m, BuffIcon.MortalStrike);
+            wasIndicated = true;
+        }
+
+        if (wasIndicated && !m.Deleted)
+        {
+            m.InvalidateProperties();
+        }
+
         _hitStacks.Remove(m);
         _nextHitCrit.Remove(m);
-        _frenzy.Remove(m);
+
+        if (_frenzy.Remove(m))
+        {
+            BuffHelper.RemoveBuff(m, BuffIcon.Rage);
+        }
+
         _ramps.Remove(m);
     }
 }

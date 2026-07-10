@@ -2892,6 +2892,8 @@ namespace Server.Mobiles
         {
             base.AddNameProperties(list);
 
+            Engines.Rarity.CombatFxState.AddIndicatorProperties(this, list);
+
             if (MLQuestSystem.Enabled && CanGiveMLQuest)
             {
                 list.Add(1072269); // Quest Giver
