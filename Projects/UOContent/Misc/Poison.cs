@@ -207,7 +207,7 @@ public class PoisonImpl : Poison
 
                 (_mobile as IHonorTarget)?.ReceivedHonorContext?.OnTargetPoisoned();
 
-                Misc.FloatingCombatText.SetPoisonContext();
+                Misc.FloatingCombatText.SetPoisonContext(stacks.Count); // "-9 Poison x2"
                 AOS.Damage(_mobile, source, total, 0, 0, 0, 100, 0);
                 Misc.FloatingCombatText.ClearContext();
 
