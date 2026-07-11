@@ -442,6 +442,7 @@ public static partial class RarityEffects
 
         CombatFxState.Evict(m);
         WornEffectState.Evict(m);
+        PantheonFx.Evict(m);
     }
 
     // Worn effects (Olympian stat mods, resist/skill mods, night sight, and the whole defensive

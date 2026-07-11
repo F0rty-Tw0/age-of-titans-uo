@@ -17,7 +17,8 @@ public static partial class RarityEffects
     {
         ClauseType.BlockGrantsDrBurst, ClauseType.ReflectFirstHit, ClauseType.ReflectHealBlock,
         ClauseType.BlockFirstHit, ClauseType.BlockRestoreStam, ClauseType.BlockDrainStam,
-        ClauseType.BlockManaLeech, ClauseType.BlockElemental, ClauseType.BlockNextShotCrit
+        ClauseType.BlockManaLeech, ClauseType.BlockElemental, ClauseType.BlockNextShotCrit,
+        ClauseType.ExtraSwingOnParry
     };
 
     // Pre-AOS defensive absorb (Pallas). Called from BaseWeapon.AbsorbDamage; reads the DEFENDER's
@@ -64,7 +65,7 @@ public static partial class RarityEffects
         if (clause is ClauseType.ReflectFirstHit or ClauseType.ReflectHealBlock &&
             CombatFxState.RegisterHitTaken(defender, out var reflectFirst) && reflectFirst)
         {
-            var reflect = damage * (p1 > 0 ? p1 : 20) / 100;
+            var reflect = ReflectAmount(damage, p1 > 0 ? p1 : 20);
 
             if (reflect > 0)
             {
@@ -82,6 +83,8 @@ public static partial class RarityEffects
             {
                 FloatingCombatText.ShowOffensiveStatus(attacker, defender, "Stunned");
             }
+
+            PantheonFx.PlayWornProc(defender, root);
 
             return damage;
         }
@@ -124,8 +127,56 @@ public static partial class RarityEffects
         RunBlockClause(signature, row.S1, row.S2, damage, attacker, defender);
         RunBlockClause(clause, p1, p2, damage, attacker, defender);
 
+        // Aello/Elektor: a successful block answers with an immediate counter-swing.
+        if (clause == ClauseType.ExtraSwingOnParry || signature == ClauseType.ExtraSwingOnParry)
+        {
+            CounterSwingOnParry(defender, attacker);
+        }
+
+        // Pantheon flourish on the blocker when their weapon legendary's clause rode this block.
+        if (IsBlockClause(clause) || clause == ClauseType.ExtraSwingOnParry)
+        {
+            PantheonFx.PlayWornProc(defender, root);
+        }
+
         return Math.Max(damage, 0);
     }
+
+    // Aello/Elektor (ExtraSwingOnParry): a successful block/parry answers with an immediate
+    // counter-swing from the defender's weapon. Shares the extra-swing depth guard so a counter
+    // can never chain another counter (or ride an extra swing), and only fires while the attacker
+    // is still inside the defender's weapon range — an archer blocked at distance draws no riposte.
+    private static void CounterSwingOnParry(Mobile defender, Mobile attacker)
+    {
+        if (_extraSwingDepth > 0 || attacker is not { Alive: true } ||
+            defender.Weapon is not BaseWeapon weapon ||
+            !defender.InRange(attacker.Location, weapon.MaxRange) || !defender.CanBeHarmful(attacker, false))
+        {
+            return;
+        }
+
+        _extraSwingDepth++;
+
+        try
+        {
+            // Same reduced-strength scalar as a granted extra swing — a riposte is a free hit too.
+            defender.NextCombatTime = Core.TickCount +
+                (int)weapon.OnSwing(defender, attacker, ExtraSwingDamageScalar).TotalMilliseconds;
+        }
+        finally
+        {
+            _extraSwingDepth--;
+        }
+
+        FloatingCombatText.ShowSelfStatus(defender, "Riposte");
+    }
+
+    // Reflect/thorns amount with a 1-damage floor (2026-07-11 balance pass): integer math made
+    // every percentage reflect round to ZERO against small post-DR hits — thorns were dead
+    // weight vs weak attackers. If a reflect effect is active and the hit dealt damage, it
+    // always stings for at least 1.
+    private static int ReflectAmount(int damage, int pct) =>
+        damage <= 0 || pct <= 0 ? 0 : Math.Max(1, damage * pct / 100);
 
     // Dual-invoked on-block rider for one clause slot (runs only after a block landed).
     private static void RunBlockClause(ClauseType clause, short p1, short p2, int damage, Mobile attacker, Mobile defender)
@@ -153,7 +204,8 @@ public static partial class RarityEffects
                 }
             case ClauseType.BlockElemental:
                 {
-                    ElementalProc(attacker, defender, damage, p1, p1 == 1 ? "Burn" : "Shock");
+                    // Halved flat (see ElementalProc): a per-block passive punish, not a crit proc.
+                    ElementalProc(attacker, defender, damage, p1, p1 == 1 ? "Burn" : "Shock", 5);
                     break;
                 }
             case ClauseType.BlockNextShotCrit:
@@ -228,6 +280,10 @@ public static partial class RarityEffects
             }
         }
 
+        // Pantheon flourish root for this absorb — set by whichever armor clause acts below,
+        // played once at the end (PantheonFx throttles repeats anyway).
+        var fxRoot = VariantRoot.None;
+
         if (shrugged)
         {
             damage /= 2;
@@ -250,11 +306,12 @@ public static partial class RarityEffects
                                 FloatingCombatText.ShowOffensiveStatus(attacker, defender, "Stunned");
                             }
 
+                            fxRoot = entry.Root;
                             break;
                         }
                     case ClauseType.ShrugReflect: // Erechtheus / Erymanthos
                         {
-                            var reflected = damage * entry.P1 / 100;
+                            var reflected = ReflectAmount(damage, entry.P1);
 
                             if (reflected > 0)
                             {
@@ -262,11 +319,12 @@ public static partial class RarityEffects
                                 FloatingCombatText.ShowOffensiveStatus(attacker, defender, "Reflect");
                             }
 
+                            fxRoot = entry.Root;
                             break;
                         }
                     case ClauseType.ShrugReflectStun: // Plate Arms signature
                         {
-                            var reflected = damage * entry.P1 / 100;
+                            var reflected = ReflectAmount(damage, entry.P1);
 
                             if (reflected > 0)
                             {
@@ -279,29 +337,34 @@ public static partial class RarityEffects
                                 FloatingCombatText.ShowOffensiveStatus(attacker, defender, "Stunned");
                             }
 
+                            fxRoot = entry.Root;
                             break;
                         }
                     case ClauseType.ShrugFirstHitPoisonAttacker when firstHit: // Studded Chest signature
                         {
                             attacker.ApplyPoison(defender, Poison.Lesser);
                             FloatingCombatText.ShowOffensiveStatus(attacker, defender, "Poisoned", FloatingCombatText.PoisonHue);
+                            fxRoot = entry.Root;
                             break;
                         }
                     case ClauseType.ShrugFirstHitDrainStam when firstHit: // Bone Chest signature
                         {
                             attacker.Stam -= entry.P1 > 0 ? entry.P1 : 5;
                             FloatingCombatText.ShowOffensiveStatus(attacker, defender, "-Stam");
+                            fxRoot = entry.Root;
                             break;
                         }
                     case ClauseType.ShrugFirstHitDrBurst when firstHit: // Ringmail Chest signature
                         {
                             WornEffectState.ArmClauseBurst(defender, entry.Clause, TimeSpan.FromSeconds(entry.P2 > 0 ? entry.P2 : 3));
                             FloatingCombatText.ShowSelfStatus(defender, "Fortified");
+                            fxRoot = entry.Root;
                             break;
                         }
                     case ClauseType.HitHalvedRegenPulse: // Ananke
                         {
                             WornEffectState.ArmClauseBurst(defender, entry.Clause, TimeSpan.FromSeconds(entry.P1 > 0 ? entry.P1 : 3));
+                            fxRoot = entry.Root;
                             break;
                         }
                     case ClauseType.HitHalvedDurabilityImmunity: // Nemesis — burst armed correctly;
@@ -315,6 +378,7 @@ public static partial class RarityEffects
                         {
                             WornEffectState.ArmClauseBurst(defender, entry.Clause, TimeSpan.FromSeconds(entry.P2 > 0 ? entry.P2 : 3));
                             FloatingCombatText.ShowSelfStatus(defender, "Warded");
+                            fxRoot = entry.Root;
                             break;
                         }
                 }
@@ -378,12 +442,13 @@ public static partial class RarityEffects
             if (legendaries[i].Clause == ClauseType.ReflectBoostFirstHit && firstHit)
             {
                 reflectPct = Math.Max(reflectPct, legendaries[i].P1); // Proitos
+                fxRoot = legendaries[i].Root;
             }
         }
 
         if (reflectPct > 0 && damage > 0)
         {
-            var reflectDamage = damage * reflectPct / 100;
+            var reflectDamage = ReflectAmount(damage, reflectPct);
 
             if (reflectDamage > 0)
             {
@@ -401,6 +466,8 @@ public static partial class RarityEffects
                         {
                             FloatingCombatText.ShowOffensiveStatus(attacker, defender, "Stunned");
                         }
+
+                        fxRoot = legendaries[i].Root;
                     }
                 }
             }
@@ -491,7 +558,15 @@ public static partial class RarityEffects
                 var gain = Math.Max(1, defender.HitsMax / 10);
                 defender.Hits += gain;
                 FloatingCombatText.ShowRestore(defender, 'L', gain);
+                fxRoot = entry.Root;
             }
+        }
+
+        // Pantheon flourish on the wearer for whichever armor clause acted this absorb. The
+        // Cyclopean flame proc is deliberately excluded — its retaliation fire is already its FX.
+        if (fxRoot != VariantRoot.None)
+        {
+            PantheonFx.PlayWornProc(defender, fxRoot);
         }
 
         return Math.Max(damage, 0);
@@ -511,7 +586,8 @@ public static partial class RarityEffects
         ClauseType.BlockRestoreStam, ClauseType.BlockDrainStam, ClauseType.BlockManaLeech,
         ClauseType.BlockElemental, ClauseType.BlockNextShotCrit, ClauseType.LowHpGuaranteedParry,
         ClauseType.FirstHitNoSecondaryEffect, ClauseType.ParryExtraReflect, ClauseType.ParryCritStun,
-        ClauseType.ParryRepairsEveryN, ClauseType.SelfRepairBurstOnCritBlock, ClauseType.ParryRestoresStam
+        ClauseType.ParryRepairsEveryN, ClauseType.SelfRepairBurstOnCritBlock, ClauseType.ParryRestoresStam,
+        ClauseType.ExtraSwingOnParry
     };
 
     public static double AdjustShieldParryChance(Mobile owner, double chance)
@@ -538,6 +614,7 @@ public static partial class RarityEffects
 
             if (guaranteedFirst || guaranteedLowHp)
             {
+                PantheonFx.PlayWornProc(owner, entry.Root);
                 return 1.0; // Ankyle / Aias / Abderos / Kerberos / Sakos
             }
 
@@ -581,7 +658,8 @@ public static partial class RarityEffects
 
         if ((agg.ParryThorns || extraReflectPct > 0) && attacker != null)
         {
-            var reflect = Math.Max(1, damage) * (5 + extraReflectPct) / 100; // 5% base thorns + rider
+            // 5% base thorns + rider, floored to 1 so a parried weak hit still stings.
+            var reflect = ReflectAmount(Math.Max(1, damage), 5 + extraReflectPct);
 
             if (reflect > 0)
             {
@@ -591,6 +669,7 @@ public static partial class RarityEffects
         }
 
         var crit = ConsumePendingHitCrit();
+        var fxRoot = VariantRoot.None;
 
         for (var i = 0; i < legendaries.Count; i++)
         {
@@ -605,6 +684,7 @@ public static partial class RarityEffects
                             FloatingCombatText.ShowOffensiveStatus(attacker, owner, "Stunned");
                         }
 
+                        fxRoot = entry.Root;
                         break;
                     }
                 case ClauseType.ParryFirstHitGuaranteedStun when attacker != null: // Aias
@@ -614,6 +694,7 @@ public static partial class RarityEffects
                             FloatingCombatText.ShowOffensiveStatus(attacker, owner, "Stunned");
                         }
 
+                        fxRoot = entry.Root;
                         break;
                     }
                 case ClauseType.ParryRepairsEveryN: // Telamon
@@ -626,6 +707,7 @@ public static partial class RarityEffects
                         {
                             shield.HitPoints++;
                             FloatingCombatText.ShowSelfStatus(owner, "Repair");
+                            fxRoot = entry.Root;
                         }
 
                         break;
@@ -633,6 +715,7 @@ public static partial class RarityEffects
                 case ClauseType.SelfRepairBurstOnCritBlock when crit: // Zethos
                     {
                         WornEffectState.ArmClauseBurst(owner, entry.Clause, TimeSpan.FromSeconds(entry.P1 > 0 ? entry.P1 : 5));
+                        fxRoot = entry.Root;
                         break;
                     }
                 case ClauseType.ParryRestoresStam: // Aegis-line signature: restore P1% max stam on parry
@@ -640,6 +723,14 @@ public static partial class RarityEffects
                         var before = owner.Stam;
                         owner.Stam = Math.Min(owner.StamMax, owner.Stam + owner.StamMax * (entry.P1 > 0 ? entry.P1 : 10) / 100);
                         FloatingCombatText.ShowRestore(owner, 'S', owner.Stam - before);
+                        break;
+                    }
+                case ClauseType.ExtraSwingOnParry when attacker != null: // Aello / Elektor
+                    {
+                        // The wielder's weapon clause riding the shield parry: answer with an
+                        // immediate counter-swing (depth-guarded, range-gated).
+                        CounterSwingOnParry(owner, attacker);
+                        fxRoot = entry.Root;
                         break;
                     }
                 case ClauseType.BlockRestoreStam or ClauseType.BlockDrainStam or ClauseType.BlockManaLeech
@@ -650,9 +741,16 @@ public static partial class RarityEffects
                         // Aiakos, Probolos' BlockElemental signature). Same rider semantics as
                         // the weapon-side block path.
                         RunBlockClause(entry.Clause, entry.P1, entry.P2, damage, attacker, owner);
+                        fxRoot = entry.Root;
                         break;
                     }
             }
+        }
+
+        // Pantheon flourish on the parrier for whichever legendary clause rode this parry.
+        if (fxRoot != VariantRoot.None)
+        {
+            PantheonFx.PlayWornProc(owner, fxRoot);
         }
 
         return Math.Max(damage, 0);

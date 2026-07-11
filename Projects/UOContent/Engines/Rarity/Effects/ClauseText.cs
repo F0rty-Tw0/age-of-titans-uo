@@ -26,7 +26,7 @@ public static class ClauseText
 
         // Extra-swing family (Zephyr)
         ClauseType.ExtraSwingEveryN => ExtraSwingText(p1, ""),
-        ClauseType.ExtraSwingOnParry => "parrying a hit grants an extra swing",
+        ClauseType.ExtraSwingOnParry => "parrying or dodging a hit answers with an immediate counter-swing",
         ClauseType.ExtraSwingFirstHit => "the first hit of every fight grants an extra swing",
         ClauseType.DoubleStrikeEveryN => p1 > 0
             ? $"every {p1}th hit becomes a double strike; the second strike always crits"
@@ -57,7 +57,6 @@ public static class ClauseText
 
         // Defense family (Pallas)
         ClauseType.BlockFirstHit => "the first hit taken each fight is always blocked",
-        ClauseType.BlockCritStun => "blocking a crit briefly stuns the attacker",
         ClauseType.ReflectFirstHit => $"the first hit taken each fight reflects {p1}% damage back and staggers the attacker",
 
         // Drain family (Stygian)
@@ -160,7 +159,7 @@ public static class ClauseText
         ClauseType.DodgeRestoreMana => $"a successful dodge also restores {p1}% mana",
         ClauseType.DodgeDoubleFirstAttack => "dodge chance doubles vs the first attack of any fight",
         ClauseType.DodgeRegenBurst => $"a successful dodge grants +{p1}% stamina regen for {SecsOr(p2)}",
-        ClauseType.WeightReductionSuiteBurstOnDodge => $"weight reduction applies suit-wide for {SecsOr(p1)} after a dodge",
+        ClauseType.DodgeRefundStamSuitWeight => "a dodge converts your armor's weight into stamina",
 
         // Aegis shield-parry riders
         ClauseType.ParryFirstHitGuaranteed => "guaranteed parry vs the first hit of any fight",

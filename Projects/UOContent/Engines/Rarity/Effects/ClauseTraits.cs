@@ -10,8 +10,9 @@ namespace Server.Engines.Rarity;
 //
 // A clause may fire at several sites, so the flags compose ([Flags]). Every ClauseType except
 // None has an entry with at least one flag. `Deferred` is the honest label for a clause that is
-// declared and tooltip-visible but has NO live dispatch yet (a known gap, see the four members
-// below) — it is mutually exclusive with the dispatch flags.
+// declared and tooltip-visible but has NO live dispatch yet — it is mutually exclusive with the
+// dispatch flags. As of 2026-07-11 no clause is deferred (the last three were wired, the
+// orphaned BlockCritStun was deleted); the flag stays for future parked clauses.
 [System.Flags]
 public enum ClauseTrigger : uint
 {
@@ -71,7 +72,7 @@ public static class ClauseTraits
         return new Dictionary<ClauseType, ClauseTrigger>
         {
             [ClauseType.ExtraSwingEveryN]                  = ClauseTrigger.WeaponHitArm | ClauseTrigger.ExtraSwingRider,
-            [ClauseType.ExtraSwingOnParry]                 = ClauseTrigger.Deferred,
+            [ClauseType.ExtraSwingOnParry]                 = ClauseTrigger.WeaponBlock | ClauseTrigger.ShieldParry | ClauseTrigger.Dodge,
             [ClauseType.ExtraSwingFirstHit]                = ClauseTrigger.WeaponHitArm,
             [ClauseType.DoubleStrikeEveryN]                = ClauseTrigger.WeaponHitArm | ClauseTrigger.ExtraSwingRider,
             [ClauseType.CritFirstHit]                      = ClauseTrigger.WeaponHitArm | ClauseTrigger.PostHitProc,
@@ -86,7 +87,6 @@ public static class ClauseTraits
             [ClauseType.MarkNearbyAllies]                  = ClauseTrigger.MarkRider,
             [ClauseType.MarkHealBlock]                     = ClauseTrigger.MarkRider,
             [ClauseType.BlockFirstHit]                     = ClauseTrigger.WeaponBlock | ClauseTrigger.ShieldParry,
-            [ClauseType.BlockCritStun]                     = ClauseTrigger.Deferred,
             [ClauseType.ReflectFirstHit]                   = ClauseTrigger.WeaponBlock,
             [ClauseType.LifestealOnCrit]                   = ClauseTrigger.PostHitProc,
             [ClauseType.OnKillRestore]                     = ClauseTrigger.PostHitProc,
@@ -149,7 +149,7 @@ public static class ClauseTraits
             [ClauseType.DodgeRestoreMana]                  = ClauseTrigger.Dodge,
             [ClauseType.DodgeDoubleFirstAttack]            = ClauseTrigger.Dodge,
             [ClauseType.DodgeRegenBurst]                   = ClauseTrigger.RegenTick | ClauseTrigger.Dodge,
-            [ClauseType.WeightReductionSuiteBurstOnDodge]  = ClauseTrigger.Dodge,
+            [ClauseType.DodgeRefundStamSuitWeight]         = ClauseTrigger.Dodge,
             [ClauseType.ParryFirstHitGuaranteed]           = ClauseTrigger.ShieldParry,
             [ClauseType.ParryCritStun]                     = ClauseTrigger.ShieldParry,
             [ClauseType.ParryExtraReflect]                 = ClauseTrigger.ShieldParry,
@@ -180,7 +180,7 @@ public static class ClauseTraits
             [ClauseType.MissRerollGrazeRestoreStam]        = ClauseTrigger.MissReroll,
             [ClauseType.HitHalvedDurabilityImmunity]       = ClauseTrigger.ArmorDefense,
             [ClauseType.HitHalvedResistBurst]              = ClauseTrigger.ArmorDefense | ClauseTrigger.SpellDr,
-            [ClauseType.StealthBreakRefundStam]            = ClauseTrigger.Deferred,
+            [ClauseType.StealthBreakRefundStam]            = ClauseTrigger.ArmorHitRider,
             [ClauseType.RegenDoubleWhileHidden]            = ClauseTrigger.RegenTick,
             [ClauseType.HideRestoresMana]                  = ClauseTrigger.Hide,
             [ClauseType.PoisonResistDoubleWhileHidden]     = ClauseTrigger.PoisonResist,

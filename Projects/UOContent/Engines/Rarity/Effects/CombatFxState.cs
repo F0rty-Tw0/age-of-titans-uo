@@ -187,6 +187,14 @@ public static class CombatFxState
             return;
         }
 
+        // Strongest mark wins: a rival's weaker mark must not overwrite an active stronger one
+        // (e.g. a +10% plain mark stomping a +25% all-sources mark). The owner may always
+        // refresh their own mark; equal-bonus marks refresh too (last-writer keeps it simple).
+        if (TryGetActiveMark(target, out var existing) && existing.Marker != marker && existing.BonusPct > bonusPct)
+        {
+            return;
+        }
+
         _marks[target] = new MarkInfo(marker, Core.TickCount + (long)duration.TotalMilliseconds, bonusPct, allSources);
         BuffHelper.AddCustomBuff(target, BuffIcon.EnemyOfOneDebuff, $"Marked: +{bonusPct}% damage taken", duration);
         target.InvalidateProperties(); // show the "Marked" tooltip line
@@ -370,13 +378,45 @@ public static class CombatFxState
         _stunImmuneUntil[target] = (_stunImmuneUntil.TryGetValue(target, out var until) ? Math.Max(until, now) : now) + extraMs;
     }
 
-    // Heal-block debuff (framework §9.3, capped at 3s by the caller).
+    // PvP debuff budget: once a heal-block or snare lands on a PLAYER, another application is
+    // locked out until the window plus this margin has passed — a coordinated group (or one
+    // spammer) can no longer chain-refresh either debuff into a permanent state. Creatures are
+    // exempt (PvE re-tag pacing is already limited by expiry checks at the apply sites).
+    private const long PlayerDebuffLockoutMs = 6_000;
+
+    private static readonly Dictionary<Mobile, long> _healBlockLockoutUntil = new();
+    private static readonly Dictionary<Mobile, long> _snareLockoutUntil = new();
+
+    // Heal-block debuff (framework §9.3, capped at 3s per application). Extend-only: a fresh,
+    // shorter application (e.g. the bone capstone's 2s) never trims a longer window already
+    // running — repeats extend the debuff, they cannot shorten it. Players additionally get one
+    // application per lockout window (see PlayerDebuffLockoutMs).
     public static void SetHealBlock(Mobile target, TimeSpan duration)
     {
         if (target != null)
         {
+            var now = Core.TickCount;
+
+            if (target.Player && _healBlockLockoutUntil.TryGetValue(target, out var lockout) && now < lockout)
+            {
+                return;
+            }
+
             var ms = (long)Math.Min(duration.TotalMilliseconds, 3000);
-            _healBlockUntil[target] = Core.TickCount + ms;
+            var until = now + ms;
+
+            if (_healBlockUntil.TryGetValue(target, out var existing) && existing > until)
+            {
+                return; // longer window already active — the buff icon for it is live too
+            }
+
+            _healBlockUntil[target] = until;
+
+            if (target.Player)
+            {
+                _healBlockLockoutUntil[target] = until + PlayerDebuffLockoutMs;
+            }
+
             BuffHelper.AddCustomBuff(target, BuffIcon.MortalStrike, "Heal Block: healing is suppressed", TimeSpan.FromMilliseconds(ms));
             target.InvalidateProperties(); // show the "Heal Block" tooltip line
             StartIndicatorPulse(target);
@@ -385,6 +425,12 @@ public static class CombatFxState
 
     public static bool IsHealBlocked(Mobile target) =>
         target != null && _healBlockUntil.TryGetValue(target, out var until) && Core.TickCount < until;
+
+    // Test seam: remaining heal-block window in ms (0 when inactive) — asserts extend-only stacking.
+    internal static long GetHealBlockRemaining(Mobile target) =>
+        target != null && _healBlockUntil.TryGetValue(target, out var until)
+            ? Math.Max(0, until - Core.TickCount)
+            : 0;
 
     // Stacking hit-chance accumulator (Kyknos): each follow-up swing adds `step`, capped at `cap`.
     public static void AddHitStack(Mobile attacker, int step, int cap)
@@ -505,12 +551,46 @@ public static class CombatFxState
     public static bool IsWardSurgeActive(Mobile m) =>
         m != null && _wardSurgeUntil.TryGetValue(m, out var until) && Core.TickCount < until;
 
-    // Penelope web-snare: slows `target`'s swing speed by pct% for `duration`; a re-apply refreshes.
+    // Hypnos (StealthBreakRefundStam): tracks when a mobile last came OUT of hiding so "opened
+    // the fight from stealth" can be checked when their first hit lands (the reveal happens at
+    // attack time, seconds before the swing resolves). PlayerMobile.OnHiddenChanged records it.
+    private const long RevealWindowMs = 10_000;
+
+    private static readonly Dictionary<Mobile, long> _lastRevealTick = new();
+
+    public static void RecordReveal(Mobile m)
+    {
+        if (m != null)
+        {
+            _lastRevealTick[m] = Core.TickCount;
+        }
+    }
+
+    public static bool WasRecentlyRevealed(Mobile m) =>
+        m != null && _lastRevealTick.TryGetValue(m, out var tick) && Core.TickCount - tick < RevealWindowMs;
+
+    // Penelope web-snare: slows `target`'s swing speed by pct% for `duration`; a re-apply
+    // refreshes — except on players, who get one snare per lockout window (PvP budget above).
     public static void SetSnare(Mobile target, int pct, TimeSpan duration)
     {
-        if (target != null && pct > 0)
+        if (target == null || pct <= 0)
         {
-            _snare[target] = (pct, Core.TickCount + (long)duration.TotalMilliseconds);
+            return;
+        }
+
+        var now = Core.TickCount;
+
+        if (target.Player && _snareLockoutUntil.TryGetValue(target, out var lockout) && now < lockout)
+        {
+            return;
+        }
+
+        var expiry = now + (long)duration.TotalMilliseconds;
+        _snare[target] = (pct, expiry);
+
+        if (target.Player)
+        {
+            _snareLockoutUntil[target] = expiry + PlayerDebuffLockoutMs;
         }
     }
 
@@ -570,5 +650,8 @@ public static class CombatFxState
 
         _snare.Remove(m);
         _ramps.Remove(m);
+        _lastRevealTick.Remove(m);
+        _healBlockLockoutUntil.Remove(m);
+        _snareLockoutUntil.Remove(m);
     }
 }

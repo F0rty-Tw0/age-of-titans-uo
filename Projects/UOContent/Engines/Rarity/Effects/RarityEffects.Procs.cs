@@ -55,6 +55,13 @@ public static partial class RarityEffects
 
         RunMarkRider(ctx.Signature, ctx.S1, attacker, defender, bonus);
         RunMarkRider(ctx.Clause, ctx.P1, attacker, defender, bonus);
+
+        // Pantheon flourish: a mark-lane legendary landing its mark is that weapon's signature
+        // ability — flash the root's god answer on the marked target (throttled in PantheonFx).
+        if (System.Array.IndexOf(HandledByMark, ctx.Clause) >= 0)
+        {
+            PantheonFx.PlayWeaponProc(attacker, defender, ctx.Root);
+        }
     }
 
     // Dual-invoked accumulator: one clause slot's contribution to whether/how a mark lands.
@@ -189,6 +196,9 @@ public static partial class RarityEffects
                             attacker.Mana = attacker.ManaMax;
                             FloatingCombatText.ShowRestore(attacker, 'M', attacker.Mana - beforeMana);
                         }
+
+                        // Pantheon flourish on the killer — the target is already down.
+                        PantheonFx.PlayWornProc(attacker, ctx.Root);
                     }
 
                     break;
@@ -305,7 +315,10 @@ public static partial class RarityEffects
 
     // P24: elemental FX + flat bonus damage. element: 0 = lightning, 1 = fire. The typed damage
     // renders inline as "-N (label)" in spell color (SetSpellContext) rather than a separate float.
-    private static void ElementalProc(Mobile target, Mobile from, int baseDamage, int element, string label)
+    // flat: the base proc damage — offensive procs keep the default 10; the shield block rider
+    // passes 5 (2026-07-11 sim pass: at 10 the passive block-elemental out-damaged the dedicated
+    // Amyntor reflect lane 8x).
+    private static void ElementalProc(Mobile target, Mobile from, int baseDamage, int element, string label, int flat = 10)
     {
         if (target.Map == null || !target.Alive)
         {
@@ -326,7 +339,7 @@ public static partial class RarityEffects
         from.DoHarmful(target, true);
 
         FloatingCombatText.SetSpellContext(label);
-        AOS.Damage(target, from, 10 + baseDamage / 10, 100, 0, 0, 0, 0);
+        AOS.Damage(target, from, flat + baseDamage / 10, 100, 0, 0, 0, 0);
         FloatingCombatText.ClearContext();
     }
 
