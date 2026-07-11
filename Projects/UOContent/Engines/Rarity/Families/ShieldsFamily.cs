@@ -39,7 +39,10 @@ public static class ShieldsFamily
                     new ArmorEffectRow { ReflectPct = 4 },
                     new ArmorEffectRow { ReflectPct = 6, SelfRepair = true },
                     new ArmorEffectRow { ReflectPct = 8, SelfRepair = true, Signature = ClauseType.ParryExtraReflect, S1 = 6 },
-                    new ArmorEffectRow { ReflectPct = 10, SelfRepair = true, Signature = ClauseType.ParryExtraReflect, S1 = 6 }
+                    // Legendary reflect 10 -> 12 (2026-07-11 sim pass): the DEDICATED reflect lane
+                    // measured 8x below Probolos's block-elemental rider; nudged up while that
+                    // rider's flat proc damage came down (RunBlockClause). Suit-wide cap 25 is law.
+                    new ArmorEffectRow { ReflectPct = 12, SelfRepair = true, Signature = ClauseType.ParryExtraReflect, S1 = 6 }
                 }
             },
             // Probolos — breakwater (DR on block + stam regen)

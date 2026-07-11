@@ -58,8 +58,11 @@ public static class SwordsFamily
                 {
                     new WeaponEffectRow { RampPerStackPct = 2, RampMaxStacks = 5 },
                     new WeaponEffectRow { RampPerStackPct = 3, RampMaxStacks = 5, DamagePct = 8 },
-                    new WeaponEffectRow { RampPerStackPct = 3, RampMaxStacks = 6, DamagePct = 10, Signature = ClauseType.RampMaxStacksSplash, S1 = 12, S2 = 3 },
-                    new WeaponEffectRow { RampPerStackPct = 3, RampMaxStacks = 6, DamagePct = 10, Signature = ClauseType.RampMaxStacksSplash, S1 = 12, S2 = 3 }
+                    // DamagePct 10 -> 8 (2026-07-11 sim pass): at full single-target ramp uptime
+                    // Menis measured ~+34% over the Phobos-tier lanes; the ramp is the identity
+                    // (real fights reset it), so only the flat rider comes down.
+                    new WeaponEffectRow { RampPerStackPct = 3, RampMaxStacks = 6, DamagePct = 8, Signature = ClauseType.RampMaxStacksSplash, S1 = 12, S2 = 3 },
+                    new WeaponEffectRow { RampPerStackPct = 3, RampMaxStacks = 6, DamagePct = 8, Signature = ClauseType.RampMaxStacksSplash, S1 = 12, S2 = 3 }
                 }
             },
             // Aristeia (glory, P23): on-kill stamina restore; signature = on-kill full stam + the next

@@ -101,7 +101,7 @@ public static class StuddedFamily
         {
             new LegendaryEntry(202, "Kithairon", VariantRoot.Arkas, LegendaryRegistry.FamilyLightArmor, 1, ClauseType.ShrugStunAttacker, 0, 0, 0, 0),
             new LegendaryEntry(205, "Khimaira", VariantRoot.Batos, LegendaryRegistry.FamilyLightArmor, 1, ClauseType.ReflectCritStun, 0, 0, 0, 0), // SWAP FlameProcPoison
-            new LegendaryEntry(208, "Daphne", VariantRoot.Elaphis, LegendaryRegistry.FamilyLightArmor, 1, ClauseType.WeightReductionSuiteBurstOnDodge, 5, 0, 0, 0), // SWAP LowHpEmergencyCure
+            new LegendaryEntry(208, "Daphne", VariantRoot.Elaphis, LegendaryRegistry.FamilyLightArmor, 1, ClauseType.DodgeRefundStamSuitWeight, 4, 0, 0, 0), // SWAP LowHpEmergencyCure; re-spec 2026-07-11, P1 = weight divisor
             new LegendaryEntry(211, "Skylla", VariantRoot.Skia, LegendaryRegistry.FamilyLightArmor, 1, ClauseType.SpellDrVsPoisonDot, 0, 0, 0, 0),
             new LegendaryEntry(214, "Melanippe", VariantRoot.Kynegis, LegendaryRegistry.FamilyLightArmor, 1, ClauseType.DodgeRefundStam, 15, 0, 0, 0)
         }
