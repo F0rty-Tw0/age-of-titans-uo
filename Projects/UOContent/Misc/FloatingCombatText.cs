@@ -121,10 +121,16 @@ public static class FloatingCombatText
         _contextLabel = spellName;
     }
 
-    public static void SetPoisonContext()
+    // Pre-built per-count labels (cap = Mobile.MaxPoisonStacks) — the poison tick runs every
+    // few seconds on every poisoned mobile, so the label must not allocate per tick.
+    private static readonly string[] _poisonStackLabels =
+        ["Poison", "Poison x2", "Poison x3", "Poison x4", "Poison x5"];
+
+    // stacks = active poison-stack count; the merged tick's number floats as "-9 Poison x2".
+    public static void SetPoisonContext(int stacks = 1)
     {
         _contextHue = PoisonHue;
-        _contextLabel = "Poison";
+        _contextLabel = _poisonStackLabels[Math.Clamp(stacks, 1, _poisonStackLabels.Length) - 1];
     }
 
     public static void ClearContext()
