@@ -422,7 +422,7 @@ public static class LegendaryRegistry
 
         // Empousa line (was Zephyr — mana drawn from a shade's grasp)
         new(126, "Teiresias", VariantRoot.Empousa, FamilyStaves, 0, ClauseType.ExtraSwingManaLeech, 5, 5, 0, 0),
-        new(127, "Kalchas", VariantRoot.Empousa, FamilyStaves, 1, ClauseType.ExtraSwingManaLeech, 0, 8, 0, 0), // SWAP ExtraSwingElemental (elemental is Prester's)
+        new(127, "Kalchas", VariantRoot.Empousa, FamilyStaves, 1, ClauseType.ExtraSwingManaLeech, 5, 8, 0, 0), // SWAP ExtraSwingElemental (elemental is Prester's); P1 5-hit cadence (matches line-mates, was stale 0 from the swap)
         new(128, "Amphiaraos", VariantRoot.Empousa, FamilyStaves, 2, ClauseType.ExtraSwingManaLeech, 5, 10, 0, 0), // SWAP ExtraSwingHealBlock (heal-block is Baskania's)
 
         // Prester line (was Phobos — the storm's circle). Signature = None.
