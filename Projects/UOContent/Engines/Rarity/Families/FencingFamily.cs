@@ -56,8 +56,11 @@ public static class FencingFamily
                 {
                     new WeaponEffectRow { SwingSpeedPct = 8 },
                     new WeaponEffectRow { SwingSpeedPct = 8, HitChancePct = 6 },
-                    new WeaponEffectRow { SwingSpeedPct = 10, HitChancePct = 8, ExtraSwingPct = 10, Signature = ClauseType.ExtraSwingChain, S1 = 5 },
-                    new WeaponEffectRow { SwingSpeedPct = 10, HitChancePct = 8, ExtraSwingPct = 10, Signature = ClauseType.ExtraSwingChain, S1 = 5 }
+                    // Chain cadence 5 -> 7 (2026-07-11 sim pass): the guaranteed every-5th extra
+                    // swing + chain measured ~+60% DPS over the family pack; every-7th keeps the
+                    // lane clearly fastest without lapping the damage lanes.
+                    new WeaponEffectRow { SwingSpeedPct = 10, HitChancePct = 8, ExtraSwingPct = 10, Signature = ClauseType.ExtraSwingChain, S1 = 7 },
+                    new WeaponEffectRow { SwingSpeedPct = 10, HitChancePct = 8, ExtraSwingPct = 10, Signature = ClauseType.ExtraSwingChain, S1 = 7 }
                 }
             },
             // Kentron (puncture): armor pen + hit%; signature = every 3rd hit fully ignores armor.
