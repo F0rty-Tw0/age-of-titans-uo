@@ -32,7 +32,7 @@ This repository is a fork of [ModernUO](https://github.com/modernuo/ModernUO) cu
 ### Equipment Rarity — `Projects/UOContent/Engines/Rarity/`
 - Five tiers (common, uncommon, rare, epic, legendary) on weapons, armor, clothing, and jewelry. Serialized with versioned migrations, GM-settable via `[props`.
 - Non-common items show `rarity: <tier>` in tooltips and a `[tier]` suffix on T2A single-click labels, including unidentified magic items.
-- Salvage multipliers (1x–16x) and a world-broadcast announcement for epic+ finds are in place for the upcoming loot roller.
+- Pantheon altar hub (`[Add PantheonAltar`): salvage Uncommon–Epic variants into ichor (2/4/8), spend ichor on deterministic tier upgrades (20 → Rare, 80 → Epic; item keeps its theme), or make the two-for-one legendary domain offering. A world-broadcast announcement fires on epic+ finds when the loot bag is opened.
 
 ### Floating Combat Text — `Projects/UOContent/Misc/FloatingCombatText.cs`
 - Overhead numbers replace the client's raw damage packet: red melee, red-orange spells, green heals, dark-green poison, tagged with the source (e.g. `-19 (Flame Strike)`).
