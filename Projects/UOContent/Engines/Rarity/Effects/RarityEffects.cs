@@ -26,9 +26,20 @@ public static partial class RarityEffects
     private static int _extraSwingDepth;
     public static bool InExtraSwing => _extraSwingDepth > 0;
 
+    // Extra swings and ripostes land at reduced strength (2026-07-11 balance pass): a granted
+    // swing is a FULL free hit, and at 100% the cadence extra-swing lanes (Aiolos/Horme/Zephyr)
+    // measured +25-60% DPS over their family packs while paying an 8-10% rider's budget. One
+    // scalar prices the whole mechanic class; the swing still animates, procs, and leeches.
+    private const double ExtraSwingDamageScalar = 0.65;
+
     // Set only while a guaranteed extra swing (Antilochos/Peleus) is resolving; AdjustHitChance
     // honors it so that swing always lands. Cleared in the same finally block.
     private static bool ForceHit;
+
+    // Set only while a DoubleStrikeEveryN extra swing (Ocypete/Podarkes/Kabeiros) is resolving;
+    // BeginWeaponHit honors it so the second strike always crits. Same try/finally lifetime as
+    // ForceHit above.
+    private static bool ForceCrit;
 
     // ---- Public API ---------------------------------------------------------------------
 

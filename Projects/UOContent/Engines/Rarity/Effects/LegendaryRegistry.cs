@@ -32,7 +32,8 @@ public enum ClauseType : byte
 
     // Defense family (Pallas)
     BlockFirstHit,      // guaranteed block vs first hit; blocking a crit stuns (§9)
-    BlockCritStun,
+    // BlockCritStun removed 2026-07-11: orphaned — no registry entry ever carried it, nothing in
+    // game promised it. ClauseType is not serialized, so removal is save-safe.
     ReflectFirstHit,    // P1 = reflect %; staggers attacker (1s stun, §9)
 
     // Drain family (Stygian)
@@ -121,7 +122,7 @@ public enum ClauseType : byte
     DodgeRestoreMana,         // a successful dodge also restores P1% mana (Damastor)
     DodgeDoubleFirstAttack,   // dodge chance doubles vs the first attack of any fight (Kyllene)
     DodgeRegenBurst,          // a successful dodge grants +P1% stam regen for P2s (Kalydon/Panoptes)
-    WeightReductionSuiteBurstOnDodge, // weight reduction applies suit-wide for P1s after a dodge (Myrtilos)
+    DodgeRefundStamSuitWeight, // a dodge converts armor burden into vigor: refunds (worn armor weight / P1) stamina (Daphne). Re-spec 2026-07-11 of the never-consumed WeightReductionSuiteBurstOnDodge burst — ClauseType is not serialized, so the rename is save-safe.
 
     // Aegis shield-parry riders
     ParryFirstHitGuaranteed,      // guaranteed parry vs the first hit of any fight (Ankyle/Abderos/Kerberos)

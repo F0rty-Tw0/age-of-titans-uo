@@ -109,7 +109,8 @@ public static partial class RarityEffects
     internal static readonly ClauseType[] HandledByMeleeMiss =
     {
         ClauseType.DodgeGrantsCounterWindow, ClauseType.DodgeRefundStam, ClauseType.DodgeRestoreMana,
-        ClauseType.DodgeRegenBurst, ClauseType.WeightReductionSuiteBurstOnDodge, ClauseType.DodgeSnare
+        ClauseType.DodgeRegenBurst, ClauseType.DodgeRefundStamSuitWeight, ClauseType.DodgeSnare,
+        ClauseType.ExtraSwingOnParry
     };
 
     // Called from BaseWeapon.CheckHit only when the swing actually missed. A miss suffered by a
@@ -164,9 +165,24 @@ public static partial class RarityEffects
                         WornEffectState.ArmClauseBurst(defender, entry.Clause, TimeSpan.FromSeconds(entry.P2 > 0 ? entry.P2 : 3));
                         break;
                     }
-                case ClauseType.WeightReductionSuiteBurstOnDodge:
+                case ClauseType.DodgeRefundStamSuitWeight: // Daphne — burden into vigor: the heavier
+                    // the worn armor, the bigger the stamina refund (weight / P1, min 1).
                     {
-                        WornEffectState.ArmClauseBurst(defender, entry.Clause, TimeSpan.FromSeconds(entry.P1 > 0 ? entry.P1 : 3));
+                        var suitWeight = 0.0;
+                        var items = defender.Items;
+
+                        for (var k = 0; k < items.Count; k++)
+                        {
+                            if (items[k] is BaseArmor wornArmor)
+                            {
+                                suitWeight += wornArmor.Weight;
+                            }
+                        }
+
+                        var refund = Math.Max(1, (int)(suitWeight / (entry.P1 > 0 ? entry.P1 : 4)));
+                        var before = defender.Stam;
+                        defender.Stam = Math.Min(defender.StamMax, defender.Stam + refund);
+                        FloatingCombatText.ShowRestore(defender, 'S', defender.Stam - before);
                         break;
                     }
                 case ClauseType.DodgeSnare: // Penelope — the blow whiffs into the web: no damage (you
@@ -185,6 +201,19 @@ public static partial class RarityEffects
                         CombatFxState.SetNextHitCrit(defender);
                         break;
                     }
+                case ClauseType.ExtraSwingOnParry: // Aello — a two-handed axe can never hold a
+                    // shield and Zephyr carries no block, so the wind-god's riposte also answers
+                    // a themed dodge (this path only runs when the wearer has the dodge package).
+                    {
+                        CounterSwingOnParry(defender, attacker);
+                        break;
+                    }
+            }
+
+            // Pantheon flourish on the dodger when a dodge-rider clause acted (throttled).
+            if (System.Array.IndexOf(HandledByMeleeMiss, entry.Clause) >= 0)
+            {
+                PantheonFx.PlayWornProc(defender, entry.Root);
             }
         }
     }
@@ -228,6 +257,12 @@ public static partial class RarityEffects
 
         // Kydon: a prior block armed this attacker's next hit to crit.
         if (CombatFxState.ConsumeNextHitCrit(attacker))
+        {
+            isCrit = true;
+        }
+
+        // DoubleStrikeEveryN: the cadence strike's follow-up swing always crits.
+        if (ForceCrit)
         {
             isCrit = true;
         }
@@ -276,6 +311,11 @@ public static partial class RarityEffects
         }
 
         bonus += CombatFxState.GetMarkBonusFrom(defender, attacker);
+
+        // Divine Resonance (duplicate clauses echo) + Patron God devotion (3+ same-domain
+        // legendaries) — both computed and capped in WornEffectState.Rebuild.
+        var wornAgg = WornEffectState.GetAggregate(attacker);
+        bonus += wornAgg.ResonanceDamagePct + wornAgg.DevotionDamagePct;
 
         if (isCrit && clause == ClauseType.CritExecuteUnder15 &&
             IsUnderHpFraction(defender, (p2 > 0 ? p2 : 15) / 100.0))
@@ -462,6 +502,14 @@ public static partial class RarityEffects
         RunClauseProcs(attacker, defender, damageGiven, ctx.Clause, ctx.P1, ctx.P2, ctx.P3, in ctx);
         RunRowNumericProcs(attacker, defender, damageGiven, in ctx);
 
+        // Pantheon flourish: a legendary weapon's clause answering (forced/natural crit or an
+        // extra-swing proc) flashes the root's god signature on the struck target. Throttled
+        // inside PantheonFx so a crit+splash+extra-swing chain reads as one divine answer.
+        if (ctx.Clause != ClauseType.None && damageGiven > 0 && (ctx.IsCrit || ctx.ExtraSwing))
+        {
+            PantheonFx.PlayWeaponProc(attacker, defender, ctx.Root);
+        }
+
         // ExtraSwingChain (either slot) relaxes the re-entrancy guard to depth 2 so the chained
         // swing may itself proc ONE more; every other extra swing is depth 1.
         var maxDepth = ctx.Clause == ClauseType.ExtraSwingChain || ctx.Signature == ClauseType.ExtraSwingChain
@@ -631,7 +679,8 @@ public static partial class RarityEffects
     internal static readonly ClauseType[] HandledByArmorHitRider =
     {
         ClauseType.HpRegenBurstOnCritTaken, ClauseType.SpellDrBurstOnCritTaken,
-        ClauseType.HealBlockOnFirstHitLanded, ClauseType.FrenzyStaggerChance
+        ClauseType.HealBlockOnFirstHitLanded, ClauseType.FrenzyStaggerChance,
+        ClauseType.StealthBreakRefundStam
     };
 
     internal static readonly ClauseType[] HandledByOnKillWeapon =
@@ -679,6 +728,20 @@ public static partial class RarityEffects
             {
                 CombatFxState.SetHealBlock(defender, TimeSpan.FromSeconds(entry.P1 > 0 ? entry.P1 : 3));
                 FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Heal Block");
+            }
+            else if (entry.Clause == ClauseType.StealthBreakRefundStam && ctx.IsFirstHit &&
+                     CombatFxState.WasRecentlyRevealed(attacker))
+            {
+                // Hypnos: opening a fight from stealth refunds the swing's stamina cost. No
+                // explicit per-swing stamina cost exists on the T2A path (same stand-in as the
+                // Ephodos signature), so a flat refund applies. "From stealth" = the attacker
+                // came out of hiding within the reveal window before this first hit; a wielder
+                // without a variant weapon never reaches this rider (ctx stays default) —
+                // accepted limitation, flagged in the audit report.
+                var before = attacker.Stam;
+                attacker.Stam = Math.Min(attacker.StamMax, attacker.Stam + (entry.P1 > 0 ? entry.P1 : 10));
+                FloatingCombatText.ShowRestore(attacker, 'S', attacker.Stam - before);
+                PantheonFx.PlayWornProc(attacker, entry.Root);
             }
             else if (entry.Clause == ClauseType.FrenzyStaggerChance && CombatFxState.GetFrenzyDamagePct(attacker) > 0)
             {
@@ -803,21 +866,27 @@ public static partial class RarityEffects
     private static void DoExtraSwing(BaseWeapon weapon, Mobile attacker, Mobile defender, in WeaponHitContext ctx)
     {
         var stagger = ctx.Clause == ClauseType.ExtraSwingEveryN && ctx.P2 == 1; // Notos
-        var doubleStrikeCrits = ctx.Clause == ClauseType.DoubleStrikeEveryN;
+        // Ocypete/Podarkes/Kabeiros: the second strike always crits (either clause slot may carry it).
+        var doubleStrikeCrits = ctx.Clause == ClauseType.DoubleStrikeEveryN ||
+                                ctx.Signature == ClauseType.DoubleStrikeEveryN;
         var guaranteedHit = ctx.Clause == ClauseType.ExtraSwingGuaranteedHit; // Antilochos/Peleus
 
         var priorForceHit = ForceHit;
+        var priorForceCrit = ForceCrit;
         _extraSwingDepth++;
         ForceHit = guaranteedHit;
+        ForceCrit = doubleStrikeCrits;
 
         try
         {
-            attacker.NextCombatTime = Core.TickCount + (int)weapon.OnSwing(attacker, defender).TotalMilliseconds;
+            attacker.NextCombatTime = Core.TickCount +
+                (int)weapon.OnSwing(attacker, defender, ExtraSwingDamageScalar).TotalMilliseconds;
         }
         finally
         {
             _extraSwingDepth--;
             ForceHit = priorForceHit;
+            ForceCrit = priorForceCrit;
         }
 
         FloatingCombatText.ShowOffensiveStatus(defender, attacker, FloatingCombatText.ExtraSwingLabel);
@@ -829,10 +898,6 @@ public static partial class RarityEffects
                 FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Stunned");
             }
         }
-
-        // ponytail: DoubleStrikeEveryN's "second strike always crits" rider is deferred to P2 —
-        // the extra swing rolls its own crit through the normal path for now.
-        _ = doubleStrikeCrits;
     }
 
     // Post-swing riders that ride the guaranteed extra swing (splash/mana-leech/heal-block/
