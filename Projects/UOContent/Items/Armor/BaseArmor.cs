@@ -1562,6 +1562,11 @@ namespace Server.Items
             }
 
             LabelTo(from, $"Armor Rating: {ArmorRating:0.#}");
+
+            if (_hitPoints >= 0 && _maxHitPoints > 0)
+            {
+                LabelTo(from, $"Durability: {_hitPoints}/{_maxHitPoints}");
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
