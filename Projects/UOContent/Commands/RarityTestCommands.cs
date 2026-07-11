@@ -16,6 +16,44 @@ public static class RarityTestCommands
         CommandSystem.Register("GenVariant", AccessLevel.GameMaster, GenVariant_OnCommand);
         CommandSystem.Register("ClearVariant", AccessLevel.GameMaster, ClearVariant_OnCommand);
         CommandSystem.Register("GenArmorSet", AccessLevel.GameMaster, GenArmorSet_OnCommand);
+        CommandSystem.Register("PantheonFxTest", AccessLevel.GameMaster, PantheonFxTest_OnCommand);
+    }
+
+    [Usage("PantheonFxTest")]
+    [Description("Previews every pantheon domain's legendary proc flourish on you, 1.5s apart, ending with the devotion crown. For the in-client FX/sound verification pass.")]
+    private static void PantheonFxTest_OnCommand(CommandEventArgs e)
+    {
+        var from = e.Mobile;
+        var domains = Enum.GetValues<PantheonDomain>();
+
+        for (var i = 0; i < domains.Length; i++)
+        {
+            var domain = domains[i];
+
+            Timer.StartTimer(TimeSpan.FromSeconds(1.5 * i), () =>
+            {
+                if (from.Deleted || from.Map == null)
+                {
+                    return;
+                }
+
+                from.SendMessage($"{domain} — {PantheonFx.GetPatronName(domain)} ({PantheonFx.GetPerkText(domain)})");
+                PantheonFx.PlayForDomain(from, domain, PantheonFx.SampleHue(domain), devoted: false);
+            });
+        }
+
+        Timer.StartTimer(TimeSpan.FromSeconds(1.5 * domains.Length), () =>
+        {
+            if (from.Deleted || from.Map == null)
+            {
+                return;
+            }
+
+            from.SendMessage("Devotion crown (Sky domain, devoted)");
+            PantheonFx.PlayForDomain(from, PantheonDomain.Sky, PantheonFx.SampleHue(PantheonDomain.Sky), devoted: true);
+        });
+
+        from.SendMessage("Pantheon FX preview started: 11 domains + devotion crown.");
     }
 
     [Usage("GenVariant <root> <rarity>")]
