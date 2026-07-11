@@ -207,9 +207,19 @@ public class PoisonImpl : Poison
 
                 (_mobile as IHonorTarget)?.ReceivedHonorContext?.OnTargetPoisoned();
 
-                Misc.FloatingCombatText.SetPoisonContext();
+                Misc.FloatingCombatText.SetPoisonContext(stacks.Count); // "-9 Poison x2"
                 AOS.Damage(_mobile, source, total, 0, 0, 0, 100, 0);
                 Misc.FloatingCombatText.ClearContext();
+
+                // The merged damage can KILL the target (or trigger a cure) — death runs
+                // `Poison = null`, which clears this same stack list mid-tick. Everything past
+                // the damage call must re-check or it indexes an empty list (live crash).
+                if (stacks.Count == 0)
+                {
+                    BuffHelper.RemoveBuff(_mobile, BuffIcon.Poison);
+                    Stop();
+                    return;
+                }
 
                 // OSI: randomly revealed between first and third damage tick, guessing 60% chance
                 if (Utility.RandomDouble() < 0.40)
