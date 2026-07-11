@@ -135,11 +135,13 @@ public class ArmorEffectTableTests
         VariantRoot.Amyntor, VariantRoot.Probolos, VariantRoot.Herkos, VariantRoot.Pnoe
     };
 
-    // Phase 4 data coverage: every material root has a full armor ladder (Uncommon+ non-empty),
-    // carries its lane signature at Epic AND Legendary, and has NO shield package. Legacy shared
-    // roots keep their rows for old-save decode; the loot roller never deals them.
+    // Data coverage: every material root has a full armor ladder (Uncommon+ non-empty) and NO
+    // shield package. Since the Option-A milestone, Epic+ non-shield armor reads its signature from
+    // the (material x slot) ArmorSlotSignatureTable, not the per-root row — so the row's own
+    // Signature at Epic/Legendary is dead and MUST be None (see WornEffectState.Rebuild's fork).
+    // Legacy shared roots keep their rows for old-save decode; the loot roller never deals them.
     [Fact]
-    public void EveryMaterialRoot_HasArmorLadderWithEpicSignature()
+    public void EveryMaterialRoot_HasFullArmorLadder_AndNoDeadRowSignature()
     {
         foreach (var root in MaterialArmorRoots)
         {
@@ -151,8 +153,9 @@ public class ArmorEffectTableTests
             var epic = ArmorEffectTable.Get(root, ItemRarity.Epic, isShield: false);
             var legendary = ArmorEffectTable.Get(root, ItemRarity.Legendary, isShield: false);
 
-            Assert.NotEqual(ClauseType.None, epic.Signature);
-            Assert.Equal(epic.Signature, legendary.Signature);
+            // Epic+ signatures live in the slot table now; the row-level ones are dead — keep them None.
+            Assert.Equal(ClauseType.None, epic.Signature);
+            Assert.Equal(ClauseType.None, legendary.Signature);
             Assert.True(ArmorEffectTable.Get(root, ItemRarity.Epic, isShield: true).IsEmpty);
         }
     }

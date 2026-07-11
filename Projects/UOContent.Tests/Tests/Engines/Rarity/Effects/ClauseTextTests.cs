@@ -56,6 +56,30 @@ public class ClauseTextTests
     }
 
     [Fact]
+    public void CritExecuteUnder15_RendersTheEnginesEffectiveThreshold()
+    {
+        // The engine (RarityEffects.WeaponHit.cs) reads `p2 > 0 ? p2 : 15` as the low-HP execute
+        // threshold. Tydeus (id 149) sets P2=25, so the tooltip must read "25%", not a hardcoded
+        // "15%" that drifts from the real in-game trigger.
+        Assert.True(LegendaryRegistry.TryGet(149, out var tydeus));
+        Assert.Equal("Tydeus", tydeus.Name);
+        Assert.Equal(25, tydeus.P2);
+
+        var text = ClauseText.Describe(tydeus.Clause, tydeus.P1, tydeus.P2, tydeus.P3);
+
+        Assert.Contains("under 25% health", text);
+        Assert.DoesNotContain("under 15% health", text);
+    }
+
+    [Fact]
+    public void CritExecuteUnder15_WithNoLegendaryOverride_DefaultsTo15Percent()
+    {
+        var text = ClauseText.Describe(ClauseType.CritExecuteUnder15, 0, 0, 0);
+
+        Assert.Contains("under 15% health", text);
+    }
+
+    [Fact]
     public void EveryLegendary_WithARealClause_ProducesNonEmptyText()
     {
         foreach (var entry in LegendaryRegistry.Entries)

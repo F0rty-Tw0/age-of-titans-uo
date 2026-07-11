@@ -9,13 +9,15 @@ public class LegendaryRegistryTests
     [Fact]
     public void Registry_ContainsAllWeaponArmorJewelryAndClothingFamilyEntries()
     {
-        Assert.Equal(270, LegendaryRegistry.Entries.Count);
+        // 270 through the jewelry + 5 body-clothing relics, plus the 5 hat-bound clothing relics
+        // (271-275, 21-clothing.md §3).
+        Assert.Equal(275, LegendaryRegistry.Entries.Count);
     }
 
     [Fact]
-    public void Ids_OneThroughTwoSeventy_AllPresent()
+    public void Ids_OneThroughTwoSeventyFive_AllPresent()
     {
-        for (ushort id = 1; id <= 270; id++)
+        for (ushort id = 1; id <= 275; id++)
         {
             Assert.True(LegendaryRegistry.TryGet(id, out _), $"Missing legendary id {id}");
         }
@@ -54,7 +56,7 @@ public class LegendaryRegistryTests
         Assert.Equal(15, counts[LegendaryRegistry.FamilyLightArmor]);
         Assert.Equal(30, counts[LegendaryRegistry.FamilyShields]);
         Assert.Equal(20, counts[LegendaryRegistry.FamilyJewelry]);
-        Assert.Equal(5, counts[LegendaryRegistry.FamilyClothing]);
+        Assert.Equal(10, counts[LegendaryRegistry.FamilyClothing]); // 5 body relics + 5 hat relics
     }
 
     [Fact]
@@ -97,7 +99,7 @@ public class LegendaryRegistryTests
             }
             else if (entry.Family == LegendaryRegistry.FamilyClothing)
             {
-                Assert.InRange(entry.BaseIndex, (byte)0, (byte)4); // body sash..cloak
+                Assert.InRange(entry.BaseIndex, (byte)0, (byte)11); // body pieces 0-4, hats 8-11
                 Assert.True(
                     entry.Root is VariantRoot.Laurel or VariantRoot.Charis or VariantRoot.Maenad
                         or VariantRoot.Hestian or VariantRoot.Arachne,
@@ -250,12 +252,12 @@ public class LegendaryRegistryTests
         Assert.Equal(4, counts[VariantRoot.Nyxian]);
         Assert.Equal(4, counts[VariantRoot.Demetrian]);
 
-        // Clothing: exactly one relic per root, bound to a single piece (framework §1 cap).
-        Assert.Equal(1, counts[VariantRoot.Laurel]);
-        Assert.Equal(1, counts[VariantRoot.Charis]);
-        Assert.Equal(1, counts[VariantRoot.Maenad]);
-        Assert.Equal(1, counts[VariantRoot.Hestian]);
-        Assert.Equal(1, counts[VariantRoot.Arachne]);
+        // Clothing: two relics per root — a body piece + a hat (21-clothing.md §3).
+        Assert.Equal(2, counts[VariantRoot.Laurel]);
+        Assert.Equal(2, counts[VariantRoot.Charis]);
+        Assert.Equal(2, counts[VariantRoot.Maenad]);
+        Assert.Equal(2, counts[VariantRoot.Hestian]);
+        Assert.Equal(2, counts[VariantRoot.Arachne]);
     }
 
     [Fact]

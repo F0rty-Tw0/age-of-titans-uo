@@ -66,4 +66,18 @@ public class VariantRootTests
     {
         Assert.NotEqual(VariantRootInfo.GetStackGroup(VariantRoot.Polias), VariantRootInfo.GetStackGroup(VariantRoot.Cyclopean));
     }
+
+    [Fact]
+    public void EveryRoot_StackGroupIsWithinStackGroupCount()
+    {
+        // StackGroupCount is derived from the built stack-group table (VariantRoot.cs), not
+        // hand-counted — this is the consistency check that keeps it honest as roots are added.
+        for (var root = VariantRoot.None; root <= VariantRoot.Pnoe; root++)
+        {
+            Assert.True(
+                VariantRootInfo.GetStackGroup(root) < VariantRootInfo.StackGroupCount,
+                $"{root}'s stack group is not covered by StackGroupCount"
+            );
+        }
+    }
 }
