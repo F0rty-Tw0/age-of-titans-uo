@@ -10,19 +10,19 @@ bans a mechanic (movement speed, cooldowns, disarm-immunity — substitutions pe
 
 ## 1. Base ladder & damage matrix
 
-Damage = `ratio × D[rarity]`, D = (10, 15.6, 27.2, 46.2, 111). Speed = swing seconds (bigger =
+Damage = `ratio × D[rarity]`, D = (10, 13, 17, 22, 30). Speed = swing seconds (bigger =
 slower). DPS columns are base values before speed effects.
 
 | Base | Ratio | Speed | Common | Uncommon | Rare | Epic | Legendary | Leg. DPS |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Hatchet | 0.65 | 2.75s | 6.5 | 10.1 | 17.7 | 30.0 | 72.2 | 26.25 |
-| Axe | 0.70 | 2.85s | 7.0 | 10.9 | 19.0 | 32.3 | 77.7 | 27.26 |
-| Battle axe | 0.75 | 2.95s | 7.5 | 11.7 | 20.4 | 34.7 | 83.2 | 28.20 |
-| Double axe | 0.80 | 3.05s | 8.0 | 12.5 | 21.8 | 37.0 | 88.8 | 29.11 |
-| Executioner's axe | 0.85 | 3.15s | 8.5 | 13.3 | 23.1 | 39.3 | 94.3 | 29.94 |
-| Two-handed axe | 0.90 | 3.25s | 9.0 | 14.0 | 24.5 | 41.6 | 99.9 | 30.74 |
-| Large battle axe | 0.95 | 3.35s | 9.5 | 14.8 | 25.8 | 43.9 | 105.4 | 31.46 |
-| Ornate axe | 1.00 | 3.45s | 10.0 | 15.6 | 27.2 | 46.2 | 111.0 | 32.17 |
+| Hatchet | 0.65 | 2.75s | 6.5 | 8.5 | 11.1 | 14.3 | 19.5 | 7.09 |
+| Axe | 0.70 | 2.85s | 7.0 | 9.1 | 11.9 | 15.4 | 21.0 | 7.37 |
+| Battle axe | 0.75 | 2.95s | 7.5 | 9.8 | 12.8 | 16.5 | 22.5 | 7.63 |
+| Double axe | 0.80 | 3.05s | 8.0 | 10.4 | 13.6 | 17.6 | 24.0 | 7.87 |
+| Executioner's axe | 0.85 | 3.15s | 8.5 | 11.0 | 14.4 | 18.7 | 25.5 | 8.10 |
+| Two-handed axe | 0.90 | 3.25s | 9.0 | 11.7 | 15.3 | 19.8 | 27.0 | 8.31 |
+| Large battle axe | 0.95 | 3.35s | 9.5 | 12.3 | 16.1 | 20.9 | 28.5 | 8.51 |
+| Ornate axe | 1.00 | 3.45s | 10.0 | 13.0 | 17.0 | 22.0 | 30.0 | 8.70 |
 
 Commons are the plain base items: stock name, no hue, no effects.
 

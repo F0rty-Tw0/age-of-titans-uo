@@ -20,8 +20,8 @@ shapes stay T2A-recognizable (one deliberate exception: ornate axe, kept per app
    steps. No ties, no reversals (approved departure from real-UO stats — axe spec, 2026-07-07).
 3. **Legendaries are individuals.** Every base × theme combination at Legendary gets a unique
    proper-noun name from Greek myth and one unique bonus clause. Names never repeat, anywhere.
-4. **Offense scales steep, defense scales gentle.** Weapon damage grows ~11× Common→Legendary
-   (per approved axe spec); armor AR grows only ~2.2×. High-tier fights stay lethal; mixed-tier
+4. **Offense scales steep, defense scales gentle.** Weapon damage grows ~3× Common→Legendary
+   (softened `D` curve, §2 — 2026-07-11); armor AR grows only ~2.2×. High-tier fights stay lethal; mixed-tier
    PvP stays winnable. Deliberate asymmetry — do not "fix" it by inflating AR.
 5. **Effects compose from the primitive catalog (§5) only.** If an effect isn't in the catalog,
    it doesn't go on an item — extend the catalog first (one engine hook, many items).
@@ -34,14 +34,19 @@ Engine: `Projects/UOContent/Engines/Rarity/` — `ItemRarity` (Common..Legendary
 
 | Rarity | Item level | Budget | Damage anchor `D` | Armor anchor `A` | Shield anchor `S` |
 |---|---:|---:|---:|---:|---:|
-| Common | 1 | 10 | 10.0 | 12 | 8 |
-| Uncommon | 2 | 12 | 15.6 | 14 | 10 |
-| Rare | 4 | 16 | 27.2 | 17 | 12 |
-| Epic | 6 | 21 | 46.2 | 21 | 15 |
-| Legendary | 10 | 37 | 111.0 | 26 | 20 |
+| Common | 1 | 10 | 10 | 12 | 8 |
+| Uncommon | 2 | 12 | 13 | 14 | 10 |
+| Rare | 4 | 16 | 17 | 17 | 12 |
+| Epic | 6 | 21 | 22 | 21 | 15 |
+| Legendary | 10 | 37 | 30 | 26 | 20 |
 
-- **Weapon damage** = `base ratio × D[rarity]`, round to 1 decimal. This reproduces every number
-  in the approved axe spec (verified: battle axe 0.75×27.2 = 20.4 ✓).
+- **Damage anchor `D` (2026-07-11 directive):** softened curve `(10, 13, 17, 22, 30)` —
+  supersedes the original 11× anchors `(10, 15.6, 27.2, 46.2, 111)`; base ratios and the ladder
+  structure (§7) are unchanged.
+- **Weapon damage** = `base ratio × D[rarity]`, round to 1 decimal (verified: battle axe
+  0.75×17 = 12.75 ✓). Live items apply this at runtime — nothing is serialized, so retuning `D`
+  or a ratio retro-adjusts every dropped variant weapon. Combat rolls the anchor ±10% (min ≈0.9×,
+  max ≈1.1×, average on the anchor).
 - **DPS** = damage / swing seconds (base, before speed effects).
 - **Armor piece AR** = `material ratio × slot weight × A[rarity]`, round to integer.
 - **Shield AR** = `shield ratio × S[rarity]`.
@@ -346,38 +351,39 @@ kill (P23); "immune to disarm" → dropped (no disarm special in T2A).
 
 ## 7. Base ladders (all families — fixed here, do not re-derive)
 
-Legendary DPS parity target across melee families: **32.2 ±3%** at top base. Deliberate outliers:
+Legendary DPS parity target across melee families: **8.70 ±3%** at top base (recomputed for
+`D[Legendary]=30`; outlier %s are scale-invariant, so they carry over unchanged). Deliberate outliers:
 maces −1.5% (paid back by crush identity), archery −16% (ranged safety tax), staves −8%
 (caster utility budget).
 
 ### Weapons — `ratio / swing seconds` (Legendary DPS in parens)
 
 **Axes** (Swordsmanship) — per approved spec:
-hatchet .65/2.75 (26.25) · axe .70/2.85 (27.26) · battle axe .75/2.95 (28.20) ·
-double axe .80/3.05 (29.11) · executioner's axe .85/3.15 (29.94) · two-handed axe .90/3.25 (30.74) ·
-large battle axe .95/3.35 (31.46) · ornate axe 1.00/3.45 (32.17)
+hatchet .65/2.75 (7.09) · axe .70/2.85 (7.37) · battle axe .75/2.95 (7.63) ·
+double axe .80/3.05 (7.87) · executioner's axe .85/3.15 (8.10) · two-handed axe .90/3.25 (8.31) ·
+large battle axe .95/3.35 (8.51) · ornate axe 1.00/3.45 (8.70)
 
 **Swords** (Swordsmanship):
-butcher knife .60/2.55 (26.12) · cleaver .65/2.65 (27.23) · cutlass .70/2.75 (28.25) ·
-scimitar .75/2.85 (29.21) · katana .80/2.95 (30.10) · broadsword .85/3.05 (30.93) ·
-longsword .90/3.15 (31.71) · viking sword .95/3.25 (32.45)
+butcher knife .60/2.55 (7.06) · cleaver .65/2.65 (7.36) · cutlass .70/2.75 (7.64) ·
+scimitar .75/2.85 (7.89) · katana .80/2.95 (8.14) · broadsword .85/3.05 (8.36) ·
+longsword .90/3.15 (8.57) · viking sword .95/3.25 (8.77)
 
 **Polearms** (Swordsmanship):
-bardiche .90/3.25 (30.74) · halberd .98/3.40 (31.99)
+bardiche .90/3.25 (8.31) · halberd .98/3.40 (8.65)
 
 **Maces** (Mace Fighting):
-club .70/2.90 (26.79) · mace .75/3.00 (27.75) · maul .80/3.10 (28.65) · war axe .85/3.20 (29.48) ·
-hammer pick .90/3.30 (30.27) · war mace .95/3.40 (31.01) · war hammer 1.00/3.50 (31.71)
+club .70/2.90 (7.24) · mace .75/3.00 (7.50) · maul .80/3.10 (7.74) · war axe .85/3.20 (7.97) ·
+hammer pick .90/3.30 (8.18) · war mace .95/3.40 (8.38) · war hammer 1.00/3.50 (8.57)
 
 **Staves** (Mace Fighting, caster hybrid):
-quarter staff .65/2.70 (26.72) · gnarled staff .72/2.85 (28.04) · black staff .80/3.00 (29.60)
+quarter staff .65/2.70 (7.22) · gnarled staff .72/2.85 (7.58) · black staff .80/3.00 (8.00)
 
 **Fencing**:
-dagger .50/2.05 (27.07) · kryss .55/2.15 (28.40) · war fork .60/2.25 (29.60) ·
-pitchfork .65/2.35 (30.70) · short spear .70/2.45 (31.71) · spear .75/2.55 (32.65)
+dagger .50/2.05 (7.32) · kryss .55/2.15 (7.67) · war fork .60/2.25 (8.00) ·
+pitchfork .65/2.35 (8.30) · short spear .70/2.45 (8.57) · spear .75/2.55 (8.82)
 
 **Archery**:
-bow .70/3.10 (25.06) · crossbow .80/3.40 (26.12) · heavy crossbow .90/3.70 (27.00)
+bow .70/3.10 (6.77) · crossbow .80/3.40 (7.06) · heavy crossbow .90/3.70 (7.30)
 
 ### Armor — material ratio × slot weight
 
@@ -394,7 +400,9 @@ buckler .60 · wooden shield .68 · wooden kite .76 · metal shield .84 · metal
 
 No ladder — slot-based. Jewelry slots: ring, bracelet, necklace, earrings. Clothing pieces
 (curated, bonus-bearing): robe, cloak, doublet, tunic, sash, kilt, skirt, hat family (pick 4–6
-shapes), boots. Full effect budget goes to effects (no damage/AR share).
+shapes), pants (long/short), boots. Full effect budget goes to effects (no damage/AR share). Hats
+and cloth pants occupy armor layers (helm/pants) and so run at 2× the other clothing magnitudes —
+see `21-clothing.md` §1.
 
 ## 8. Distribution
 

@@ -10,24 +10,24 @@ no disarm-immunity).
 
 ## 1. Base ladder & damage matrix
 
-Damage = `ratio × D[rarity]`, D = (10, 15.6, 27.2, 46.2, 111). Speed = swing seconds (bigger =
+Damage = `ratio × D[rarity]`, D = (10, 13, 17, 22, 30). Speed = swing seconds (bigger =
 slower). DPS columns are base values before speed effects.
 
 | Base | Ratio | Speed | Common | Uncommon | Rare | Epic | Legendary | Leg. DPS |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Club | 0.70 | 2.90s | 7.0 | 10.9 | 19.0 | 32.3 | 77.7 | 26.79 |
-| Mace | 0.75 | 3.00s | 7.5 | 11.7 | 20.4 | 34.7 | 83.2 | 27.75 |
-| Maul | 0.80 | 3.10s | 8.0 | 12.5 | 21.8 | 37.0 | 88.8 | 28.65 |
-| War axe | 0.85 | 3.20s | 8.5 | 13.3 | 23.1 | 39.3 | 94.3 | 29.48 |
-| Hammer pick | 0.90 | 3.30s | 9.0 | 14.0 | 24.5 | 41.6 | 99.9 | 30.27 |
-| War mace | 0.95 | 3.40s | 9.5 | 14.8 | 25.8 | 43.9 | 105.4 | 31.01 |
-| War hammer | 1.00 | 3.50s | 10.0 | 15.6 | 27.2 | 46.2 | 111.0 | 31.71 |
+| Club | 0.70 | 2.90s | 7.0 | 9.1 | 11.9 | 15.4 | 21.0 | 7.24 |
+| Mace | 0.75 | 3.00s | 7.5 | 9.8 | 12.8 | 16.5 | 22.5 | 7.50 |
+| Maul | 0.80 | 3.10s | 8.0 | 10.4 | 13.6 | 17.6 | 24.0 | 7.74 |
+| War axe | 0.85 | 3.20s | 8.5 | 11.0 | 14.4 | 18.7 | 25.5 | 7.97 |
+| Hammer pick | 0.90 | 3.30s | 9.0 | 11.7 | 15.3 | 19.8 | 27.0 | 8.18 |
+| War mace | 0.95 | 3.40s | 9.5 | 12.3 | 16.1 | 20.9 | 28.5 | 8.38 |
+| War hammer | 1.00 | 3.50s | 10.0 | 13.0 | 17.0 | 22.0 | 30.0 | 8.57 |
 
 Commons are the plain base items: stock name, no hue, no theme/legendary effects — the crush
 identity below still applies; it is baseline, not a theme perk.
 
-**Family identity — crush (all rarities, all bases).** Maces sit under the 32.2 cross-family
-melee Legendary DPS parity target (top base, war hammer: 31.71 vs 32.2, ≈1.52% short — framework
+**Family identity — crush (all rarities, all bases).** Maces sit under the 8.70 cross-family
+melee Legendary DPS parity target (top base, war hammer: 8.57 vs 8.70, ≈1.5% short — framework
 §7 sanctions this shortfall for the family). The gap is paid back by a standing perk present on
 every mace, at every rarity from Common up, independent of root or theme: **every mace hit also
 deals +25% durability damage to the target's worn armor piece and drains 2 stamina from the

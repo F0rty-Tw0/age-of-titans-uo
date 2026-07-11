@@ -9,13 +9,13 @@ clauses lean into the polearm's reach/sweep identity where natural (splash, P26,
 
 ## 1. Base ladder & damage matrix
 
-Damage = `ratio × D[rarity]`, D = (10, 15.6, 27.2, 46.2, 111). Speed = swing seconds (bigger =
+Damage = `ratio × D[rarity]`, D = (10, 13, 17, 22, 30). Speed = swing seconds (bigger =
 slower). DPS columns are base values before speed effects.
 
 | Base | Ratio | Speed | Common | Uncommon | Rare | Epic | Legendary | Leg. DPS |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Bardiche | 0.90 | 3.25s | 9.0 | 14.0 | 24.5 | 41.6 | 99.9 | 30.74 |
-| Halberd | 0.98 | 3.40s | 9.8 | 15.3 | 26.7 | 45.3 | 108.8 | 31.99 |
+| Bardiche | 0.90 | 3.25s | 9.0 | 11.7 | 15.3 | 19.8 | 27.0 | 8.31 |
+| Halberd | 0.98 | 3.40s | 9.8 | 12.7 | 16.7 | 21.6 | 29.4 | 8.65 |
 
 Commons are the plain base items: stock name, no hue, no effects.
 

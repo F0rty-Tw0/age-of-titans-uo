@@ -7,20 +7,20 @@ ladder §7, balance rules §9). Format mirrors `01-axes.md` (canonical family do
 
 ## 1. Base ladder & damage matrix
 
-Damage = `ratio × D[rarity]`, D = (10, 15.6, 27.2, 46.2, 111), rounded to 1 decimal. Speed = swing
+Damage = `ratio × D[rarity]`, D = (10, 13, 17, 22, 30), rounded to 1 decimal. Speed = swing
 seconds (bigger = slower). Leg. DPS is computed from the unrounded legendary damage value, 2
 decimals — this reproduces the three Leg. DPS figures fixed in framework §7 exactly.
 
 | Base | Ratio | Speed | Common | Uncommon | Rare | Epic | Legendary | Leg. DPS |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Quarter staff | 0.65 | 2.70s | 6.5 | 10.1 | 17.7 | 30.0 | 72.2 | 26.72 |
-| Gnarled staff | 0.72 | 2.85s | 7.2 | 11.2 | 19.6 | 33.3 | 79.9 | 28.04 |
-| Black staff | 0.80 | 3.00s | 8.0 | 12.5 | 21.8 | 37.0 | 88.8 | 29.60 |
+| Quarter staff | 0.65 | 2.70s | 6.5 | 8.5 | 11.1 | 14.3 | 19.5 | 7.22 |
+| Gnarled staff | 0.72 | 2.85s | 7.2 | 9.4 | 12.2 | 15.8 | 21.6 | 7.58 |
+| Black staff | 0.80 | 3.00s | 8.0 | 10.4 | 13.6 | 17.6 | 24.0 | 8.00 |
 
 Commons are the plain base items: stock name, no hue, no effects.
 
 **Family identity — the caster lean.** Staves run ~8% under melee DPS parity (framework §7:
-32.2 ±3% target at top base; black staff lands at 29.60, ≈8% under). The gap is deliberate, not a
+8.70 ±3% target at top base; black staff lands at 8.00, ≈8% under). The gap is deliberate, not a
 shortfall: every staff drop-variant, regardless of root, additionally carries a flat mana-regen
 rider on top of its theme package — **+6% (Uncommon), +8% (Rare), +12% (Epic and Legendary)** mana
 regen. Framework §7 explicitly sanctions staves as a DPS outlier for this reason; the missing
