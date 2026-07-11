@@ -1,4 +1,6 @@
 using Server;
+using Server.Engines.Rarity;
+using Server.Items;
 using Server.Mobiles;
 using Xunit;
 
@@ -142,6 +144,60 @@ public class PoisonStackTests
         finally
         {
             player.Poison = null;
+            player.Delete();
+        }
+    }
+
+    [Fact]
+    public void SpellDrVsPoisonDot_EnablerReducesMergedPoisonTick()
+    {
+        var player = CreatePlayerMobile(new Point3D(4772, 600, 0));
+        var chest = new StuddedChest(); // Skia is the studded material root
+        // ChainCoif on purpose: its (Chainmail x Helm) slot signature is burst-gated (inactive at
+        // rest) — a LeatherCap would add SpellDrBoostFirstHit(10) and skew the expected pct.
+        var cap = new ChainCoif();
+
+        try
+        {
+            RarityEffects.ApplyLegendary(chest, 211); // Skylla — the SpellDrVsPoisonDot enabler
+            RarityEffects.ApplyVariant(cap, VariantRoot.Tritonian, ItemRarity.Epic); // spell DR source
+
+            Assert.True(player.EquipItem(chest));
+            Assert.True(player.EquipItem(cap));
+
+            // The enabler carries no spell DR itself — it routes whatever the suit has.
+            var pct = WornEffectState.GetAggregate(player).SpellDrPct;
+            Assert.True(pct > 0);
+
+            Assert.Equal(100 - pct, RarityEffects.ReducePoisonTickDamage(player, 100));
+        }
+        finally
+        {
+            chest.Delete();
+            cap.Delete();
+            player.Delete();
+        }
+    }
+
+    [Fact]
+    public void NoEnablerClause_PoisonTickIsNotReduced()
+    {
+        var player = CreatePlayerMobile(new Point3D(4774, 600, 0));
+        var chest = new LeatherChest();
+
+        try
+        {
+            // Tritonian carries spell DR but the (Leather x Chest) slot signature is not the
+            // poison-DoT enabler — the tick must pass through unreduced.
+            RarityEffects.ApplyVariant(chest, VariantRoot.Tritonian, ItemRarity.Epic);
+            Assert.True(player.EquipItem(chest));
+            Assert.True(WornEffectState.GetAggregate(player).SpellDrPct > 0);
+
+            Assert.Equal(100, RarityEffects.ReducePoisonTickDamage(player, 100));
+        }
+        finally
+        {
+            chest.Delete();
             player.Delete();
         }
     }

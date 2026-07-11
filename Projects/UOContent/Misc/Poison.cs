@@ -194,6 +194,9 @@ public class PoisonImpl : Poison
                 return;
             }
 
+            // SpellDrVsPoisonDot (rarity enabler clause): spell DR also reduces the merged tick.
+            total = Engines.Rarity.RarityEffects.ReducePoisonTickDamage(_mobile, total);
+
             if (total > 0)
             {
                 // One merged number. Attribution goes to the oldest stack's source (the timer's
