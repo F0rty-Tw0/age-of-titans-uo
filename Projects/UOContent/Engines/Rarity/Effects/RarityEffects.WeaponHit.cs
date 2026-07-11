@@ -889,7 +889,12 @@ public static partial class RarityEffects
             ForceCrit = priorForceCrit;
         }
 
-        FloatingCombatText.ShowOffensiveStatus(defender, attacker, FloatingCombatText.ExtraSwingLabel);
+        // Bows/xbows fire a real extra shot (BaseRanged.OnSwing consumes ammo + shows the
+        // projectile), so the float says "Extra Arrow" — bows don't swing.
+        var label = weapon is BaseRanged
+            ? FloatingCombatText.ExtraArrowLabel
+            : FloatingCombatText.ExtraSwingLabel;
+        FloatingCombatText.ShowOffensiveStatus(defender, attacker, label);
 
         if (stagger)
         {

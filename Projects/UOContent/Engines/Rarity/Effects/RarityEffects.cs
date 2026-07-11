@@ -62,6 +62,15 @@ public static partial class RarityEffects
 
         var clamped = RaritySystem.Clamp(rarity, ((IRarity)item).MaxRarity);
 
+        // A re-applied theme must not inherit the previous themed name — BuildRootName seeds
+        // from item.Name, so "Zephyr Katana" would become "Zephyr Zephyr Katana". Reset to the
+        // stock name (LabelNumber) whenever the item was already themed (variant re-roll, tier
+        // upgrade, ex-legendary). ApplyLegendary needs no twin: it sets entry.Name outright.
+        if (variant.VariantRoot != VariantRoot.None || variant.LegendaryId != 0)
+        {
+            item.Name = null;
+        }
+
         variant.VariantRoot = root;
         variant.LegendaryId = 0;
         ((IRarity)item).Rarity = clamped;

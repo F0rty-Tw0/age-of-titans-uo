@@ -52,6 +52,14 @@ public static class RarityConfig
         1, 2, 4, 8, 16
     };
 
+    // Index = CURRENT ItemRarity. Ichor cost to upgrade to the next tier; 0 = not upgradeable
+    // (Common has no theme to carry up, Epic is the upgrade ceiling, Legendary never upgrades).
+    // Placeholder costs, tune later.
+    private static readonly int[] _upgradeCost =
+    {
+        0, 20, 80, 0, 0
+    };
+
     public static string GetName(ItemRarity rarity) => _names[Math.Clamp((int)rarity, 0, _names.Length - 1)];
 
     public static string GetSuffix(ItemRarity rarity) => _suffixes[Math.Clamp((int)rarity, 0, _suffixes.Length - 1)];
@@ -69,4 +77,7 @@ public static class RarityConfig
 
     public static int SalvageMultiplier(ItemRarity rarity) =>
         _salvageMultiplier[Math.Clamp((int)rarity, 0, _salvageMultiplier.Length - 1)];
+
+    public static int UpgradeCost(ItemRarity rarity) =>
+        _upgradeCost[Math.Clamp((int)rarity, 0, _upgradeCost.Length - 1)];
 }

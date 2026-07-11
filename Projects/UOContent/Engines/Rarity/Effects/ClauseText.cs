@@ -20,6 +20,15 @@ public static class ClauseText
     private static string ExtraSwingText(short p1, string rider) =>
         p1 > 0 ? $"every {p1}th hit grants an extra swing{rider}" : $"natural crits grant an extra swing{rider}";
 
+    // Ranged weapons word the same proc as an "extra arrow" — bows don't swing. Cold path
+    // (OPL rebuild), so the Replace allocation is fine.
+    public static string Describe(ClauseType clause, short p1, short p2, short p3, bool ranged)
+    {
+        var text = Describe(clause, p1, p2, p3);
+
+        return ranged ? text?.Replace("extra swing", "extra arrow").Replace("swing", "shot") : text;
+    }
+
     public static string Describe(ClauseType clause, short p1, short p2, short p3) => clause switch
     {
         ClauseType.None => null,
