@@ -1,3 +1,5 @@
+using Server.Items;
+
 namespace Server.Engines.Rarity;
 
 // One row of jewelry/clothing theme magnitudes for a given [root, rarity, isClothing]. Percent
@@ -70,115 +72,38 @@ public readonly struct AccessoryEffectRow
     };
 }
 
-// Exact magnitudes from 20-jewelry.md §2 (jewelry, 4 rarities) and 21-clothing.md §2 (clothing,
-// 3 rarities — Epic duplicated into the Legendary slot for the 5 bound relics, §3).
+// Array-backed facade over the family registry (the single source of truth — jewelry magnitudes
+// live in JewelryFamily.cs, clothing in ClothingFamily.cs). Populated once at type init; zero
+// allocation per lookup.
 public static class AccessoryEffectTable
 {
-    private const int VariantRootCount = VariantRootInfo.RootCount; // VariantRoot.None..Pnoe
-    private const int RarityCount = 5;        // ItemRarity.Common..Legendary
+    private static readonly AccessoryEffectRow[,] _jewelryRows = FamilyRegistry.JewelryRows;
+    private static readonly AccessoryEffectRow[,] _clothingRows = FamilyRegistry.ClothingRows;
 
-    private static readonly AccessoryEffectRow[,] _jewelryRows = new AccessoryEffectRow[VariantRootCount, RarityCount];
-    private static readonly AccessoryEffectRow[,] _clothingRows = new AccessoryEffectRow[VariantRootCount, RarityCount];
+    // Armor-displacing cloth (21-clothing.md §1) — the two piece shapes that REPLACE an armor slot
+    // (hats replace helms, cloth pants replace leg armor) run at 2x the regular clothing magnitudes,
+    // sacrificing an armor slot for jewelry-level bonuses. Same [root, rarity] shape, doubled values.
+    private static readonly AccessoryEffectRow[,] _clothingDisplacingRows = FamilyRegistry.ClothingDisplacingRows;
 
-    static AccessoryEffectTable()
-    {
-        // ---- Jewelry (20-jewelry.md §2 — own Legendary column, a step above Epic) ----
+    // A worn clothing piece is "displacing" iff it occupies an armor layer (Helm or Pants) — the
+    // one classification helper both WornEffectState.Rebuild and RarityEffects.Tooltips key off.
+    public static bool IsDisplacingClothing(BaseClothing clothing) =>
+        clothing.Layer is Layer.Helm or Layer.Pants;
 
-        // Olympian — Zeus (might)
-        SetJewelry(VariantRoot.Olympian, ItemRarity.Uncommon, new AccessoryEffectRow { StatBonus = 2 });
-        SetJewelry(VariantRoot.Olympian, ItemRarity.Rare, new AccessoryEffectRow { StatBonus = 4 });
-        SetJewelry(VariantRoot.Olympian, ItemRarity.Epic, new AccessoryEffectRow { StatBonus = 6, LightningProcPct = 3 });
-        SetJewelry(VariantRoot.Olympian, ItemRarity.Legendary, new AccessoryEffectRow { StatBonus = 9, LightningProcPct = 5 });
-
-        // Hecatean — Hecate (sorcery)
-        SetJewelry(VariantRoot.Hecatean, ItemRarity.Uncommon, new AccessoryEffectRow { ManaRegenPct = 8 });
-        SetJewelry(VariantRoot.Hecatean, ItemRarity.Rare, new AccessoryEffectRow { ManaRegenPct = 12, SpellDamagePct = 4 });
-        SetJewelry(
-            VariantRoot.Hecatean, ItemRarity.Epic,
-            new AccessoryEffectRow { ManaRegenPct = 18, SpellDamagePct = 7, ManaLeechPct = 3 }
-        );
-        SetJewelry(
-            VariantRoot.Hecatean, ItemRarity.Legendary,
-            new AccessoryEffectRow { ManaRegenPct = 25, SpellDamagePct = 10, ManaLeechPct = 5 }
-        );
-
-        // Tychean — Tyche (fortune)
-        SetJewelry(VariantRoot.Tychean, ItemRarity.Uncommon, new AccessoryEffectRow { HitHalvedPct = 2 });
-        SetJewelry(VariantRoot.Tychean, ItemRarity.Rare, new AccessoryEffectRow { HitHalvedPct = 3 });
-        SetJewelry(VariantRoot.Tychean, ItemRarity.Epic, new AccessoryEffectRow { HitHalvedPct = 4, MissRerollPct = 4 });
-        SetJewelry(VariantRoot.Tychean, ItemRarity.Legendary, new AccessoryEffectRow { HitHalvedPct = 5, MissRerollPct = 6 });
-
-        // Nyxian — Nyx (night)
-        SetJewelry(VariantRoot.Nyxian, ItemRarity.Uncommon, new AccessoryEffectRow { HidingBonus = 5 });
-        SetJewelry(VariantRoot.Nyxian, ItemRarity.Rare, new AccessoryEffectRow { HidingBonus = 5, StealthBonus = 5 });
-        SetJewelry(
-            VariantRoot.Nyxian, ItemRarity.Epic,
-            new AccessoryEffectRow { HidingBonus = 10, StealthBonus = 10, NightSight = true }
-        );
-        SetJewelry(
-            VariantRoot.Nyxian, ItemRarity.Legendary,
-            new AccessoryEffectRow { HidingBonus = 15, StealthBonus = 15, NightSight = true, PoisonResistPct = 10 }
-        );
-
-        // Demetrian — Demeter (harvest)
-        SetJewelry(VariantRoot.Demetrian, ItemRarity.Uncommon, new AccessoryEffectRow { AllRegenPct = 4 });
-        SetJewelry(VariantRoot.Demetrian, ItemRarity.Rare, new AccessoryEffectRow { AllRegenPct = 6 });
-        SetJewelry(VariantRoot.Demetrian, ItemRarity.Epic, new AccessoryEffectRow { AllRegenPct = 8, PotionEffectPct = 10 });
-        SetJewelry(VariantRoot.Demetrian, ItemRarity.Legendary, new AccessoryEffectRow { AllRegenPct = 12, PotionEffectPct = 15 });
-
-        // ---- Clothing (21-clothing.md §2 — Uncommon..Epic; Epic duplicates into Legendary for
-        // the 5 bound relics, since drops themselves never reach Legendary, §1/§3) ----
-
-        // Laurel — Nike (victory)
-        SetClothing(VariantRoot.Laurel, ItemRarity.Uncommon, new AccessoryEffectRow { OnKillStamina = 5 });
-        SetClothing(VariantRoot.Laurel, ItemRarity.Rare, new AccessoryEffectRow { OnKillStamina = 10 });
-        var laurelEpic = new AccessoryEffectRow { OnKillStamina = 10, OnKillHp = 5 };
-        SetClothing(VariantRoot.Laurel, ItemRarity.Epic, laurelEpic);
-        SetClothing(VariantRoot.Laurel, ItemRarity.Legendary, laurelEpic);
-
-        // Charis — Aphrodite (charm)
-        SetClothing(VariantRoot.Charis, ItemRarity.Uncommon, new AccessoryEffectRow { KarmaGainPct = 5 });
-        SetClothing(VariantRoot.Charis, ItemRarity.Rare, new AccessoryEffectRow { KarmaGainPct = 10, VendorPricePct = 3 });
-        var charisEpic = new AccessoryEffectRow { KarmaGainPct = 15, VendorPricePct = 5 };
-        SetClothing(VariantRoot.Charis, ItemRarity.Epic, charisEpic);
-        SetClothing(VariantRoot.Charis, ItemRarity.Legendary, charisEpic);
-
-        // Maenad — Dionysos (frenzy)
-        SetClothing(VariantRoot.Maenad, ItemRarity.Uncommon, new AccessoryEffectRow { FrenzyChancePct = 2, FrenzyDamagePct = 10 });
-        SetClothing(VariantRoot.Maenad, ItemRarity.Rare, new AccessoryEffectRow { FrenzyChancePct = 3, FrenzyDamagePct = 10 });
-        var maenadEpic = new AccessoryEffectRow { FrenzyChancePct = 4, FrenzyDamagePct = 10, FrenzySwingPct = 10 };
-        SetClothing(VariantRoot.Maenad, ItemRarity.Epic, maenadEpic);
-        SetClothing(VariantRoot.Maenad, ItemRarity.Legendary, maenadEpic);
-
-        // Hestian — Hestia (hearth)
-        SetClothing(VariantRoot.Hestian, ItemRarity.Uncommon, new AccessoryEffectRow { StationaryRegenPct = 10 });
-        SetClothing(VariantRoot.Hestian, ItemRarity.Rare, new AccessoryEffectRow { StationaryRegenPct = 15 });
-        var hestianEpic = new AccessoryEffectRow { StationaryRegenPct = 20, StationaryAppliesMana = true };
-        SetClothing(VariantRoot.Hestian, ItemRarity.Epic, hestianEpic);
-        SetClothing(VariantRoot.Hestian, ItemRarity.Legendary, hestianEpic);
-
-        // Arachne — Arachne (web)
-        SetClothing(VariantRoot.Arachne, ItemRarity.Uncommon, new AccessoryEffectRow { DodgePct = 2 });
-        SetClothing(VariantRoot.Arachne, ItemRarity.Rare, new AccessoryEffectRow { DodgePct = 3, PoisonResistPct = 5 });
-        var arachneEpic = new AccessoryEffectRow { DodgePct = 4, PoisonResistPct = 10 };
-        SetClothing(VariantRoot.Arachne, ItemRarity.Epic, arachneEpic);
-        SetClothing(VariantRoot.Arachne, ItemRarity.Legendary, arachneEpic);
-    }
-
-    private static void SetJewelry(VariantRoot root, ItemRarity rarity, AccessoryEffectRow row) =>
-        _jewelryRows[(int)root, (int)rarity] = row;
-
-    private static void SetClothing(VariantRoot root, ItemRarity rarity, AccessoryEffectRow row) =>
-        _clothingRows[(int)root, (int)rarity] = row;
-
-    // Zero-allocation lookup. Returns an all-zero row for roots/rarities with no package.
-    public static AccessoryEffectRow Get(VariantRoot root, ItemRarity rarity, bool isClothing)
+    // Zero-allocation lookup. Returns an all-zero row for roots/rarities with no package. `displacing`
+    // only applies to clothing (jewelry ignores it), selecting the 2x armor-displacing row set.
+    public static AccessoryEffectRow Get(VariantRoot root, ItemRarity rarity, bool isClothing, bool displacing = false)
     {
         if (root == VariantRoot.None)
         {
             return default;
         }
 
-        return (isClothing ? _clothingRows : _jewelryRows)[(int)root, (int)rarity];
+        if (isClothing)
+        {
+            return (displacing ? _clothingDisplacingRows : _clothingRows)[(int)root, (int)rarity];
+        }
+
+        return _jewelryRows[(int)root, (int)rarity];
     }
 }

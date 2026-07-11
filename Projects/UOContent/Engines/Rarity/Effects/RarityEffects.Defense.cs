@@ -11,6 +11,15 @@ namespace Server.Engines.Rarity;
 
 public static partial class RarityEffects
 {
+    // Coverage list for AbsorbForDefender: the BlockGrantsDrBurst window, the reflect clauses, the
+    // blockFirstClause set, and RunBlockClause's switch below (ClauseDispatchCoverageTests).
+    internal static readonly ClauseType[] HandledByWeaponBlock =
+    {
+        ClauseType.BlockGrantsDrBurst, ClauseType.ReflectFirstHit, ClauseType.ReflectHealBlock,
+        ClauseType.BlockFirstHit, ClauseType.BlockRestoreStam, ClauseType.BlockDrainStam,
+        ClauseType.BlockManaLeech, ClauseType.BlockElemental, ClauseType.BlockNextShotCrit
+    };
+
     // Pre-AOS defensive absorb (Pallas). Called from BaseWeapon.AbsorbDamage; reads the DEFENDER's
     // wielded weapon (the block/parry belongs to the defender, not the attacking weapon).
     public static int AbsorbForDefender(Mobile attacker, Mobile defender, int damage)
@@ -177,6 +186,20 @@ public static partial class RarityEffects
     // Armor/shield defensive package (Polias bulwark + Cyclopean forge + their legendary
     // riders). Runs after the weapon-side AbsorbForDefender in BaseWeapon.AbsorbDamage. Order
     // per the P3a brief: shrug roll (halved, + legendary shrug riders) -> DR% -> reflect/flame-proc.
+    // Coverage list for AbsorbForDefenderArmor: the guaranteed-shrug set, the shrug-rider switch,
+    // the ShrugFirstHitDrBurst DR window, reflect-boost/crit-stun, the flame-proc chance modifiers
+    // and post-proc switch, and the EmergencyRegenTick check.
+    internal static readonly ClauseType[] HandledByArmorDefense =
+    {
+        ClauseType.ShrugFirstHitGuaranteed, ClauseType.ShrugFirstHitPoisonAttacker,
+        ClauseType.ShrugFirstHitDrainStam, ClauseType.ShrugFirstHitDrBurst, ClauseType.ShrugStunAttacker,
+        ClauseType.ShrugReflect, ClauseType.ShrugReflectStun, ClauseType.HitHalvedRegenPulse,
+        ClauseType.HitHalvedDurabilityImmunity, ClauseType.HitHalvedResistBurst, ClauseType.ReflectBoostFirstHit,
+        ClauseType.ReflectCritStun, ClauseType.FlameProcDoubleFirstHit, ClauseType.FlameProcBoostLowHp,
+        ClauseType.FlameProcDoubleLowDurability, ClauseType.FlameProcEveryN, ClauseType.FlameProcHealBlock,
+        ClauseType.FlameProcPoison, ClauseType.FlameProcSplash, ClauseType.EmergencyRegenTick
+    };
+
     public static int AbsorbForDefenderArmor(Mobile attacker, Mobile defender, int damage)
     {
         var agg = WornEffectState.GetAggregate(defender);
@@ -479,6 +502,18 @@ public static partial class RarityEffects
     // Additive Aegis parry% + guaranteed-parry clause riders. Called from BaseShield.OnHit
     // before the Parry skill check. Registers this hit-taken for the owner so "first hit of
     // fight" and "every Nth parry" clauses share the same counter the armor absorb step uses.
+    // Coverage list for the shield-parry path: AdjustShieldParryChance's guaranteed-parry checks
+    // (incl. the IsBlockClause set gated by IsShieldSourced) + FirstHitNoSecondaryEffect, and
+    // OnShieldParried's rider switch below.
+    internal static readonly ClauseType[] HandledByShieldParry =
+    {
+        ClauseType.ParryFirstHitGuaranteed, ClauseType.ParryFirstHitGuaranteedStun, ClauseType.BlockFirstHit,
+        ClauseType.BlockRestoreStam, ClauseType.BlockDrainStam, ClauseType.BlockManaLeech,
+        ClauseType.BlockElemental, ClauseType.BlockNextShotCrit, ClauseType.LowHpGuaranteedParry,
+        ClauseType.FirstHitNoSecondaryEffect, ClauseType.ParryExtraReflect, ClauseType.ParryCritStun,
+        ClauseType.ParryRepairsEveryN, ClauseType.SelfRepairBurstOnCritBlock, ClauseType.ParryRestoresStam
+    };
+
     public static double AdjustShieldParryChance(Mobile owner, double chance)
     {
         var agg = WornEffectState.GetAggregate(owner);

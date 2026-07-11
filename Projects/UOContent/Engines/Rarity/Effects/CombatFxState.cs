@@ -188,7 +188,7 @@ public static class CombatFxState
         }
 
         _marks[target] = new MarkInfo(marker, Core.TickCount + (long)duration.TotalMilliseconds, bonusPct, allSources);
-        BuffHelper.AddCustomBuff(target, BuffIcon.EnemyOfOneDebuff, "Marked", duration);
+        BuffHelper.AddCustomBuff(target, BuffIcon.EnemyOfOneDebuff, $"Marked: +{bonusPct}% damage taken", duration);
         target.InvalidateProperties(); // show the "Marked" tooltip line
         StartIndicatorPulse(target);
     }
@@ -377,7 +377,7 @@ public static class CombatFxState
         {
             var ms = (long)Math.Min(duration.TotalMilliseconds, 3000);
             _healBlockUntil[target] = Core.TickCount + ms;
-            BuffHelper.AddCustomBuff(target, BuffIcon.MortalStrike, "Heal Block", TimeSpan.FromMilliseconds(ms));
+            BuffHelper.AddCustomBuff(target, BuffIcon.MortalStrike, "Heal Block: healing is suppressed", TimeSpan.FromMilliseconds(ms));
             target.InvalidateProperties(); // show the "Heal Block" tooltip line
             StartIndicatorPulse(target);
         }
@@ -452,13 +452,25 @@ public static class CombatFxState
     // Next-hit-guaranteed-crit flag (Kydon): a successful block arms the blocker's next hit.
     public static void SetNextHitCrit(Mobile attacker)
     {
-        if (attacker != null)
+        if (attacker != null && _nextHitCrit.Add(attacker))
         {
-            _nextHitCrit.Add(attacker);
+            // Indefinite icon — removed when the primed hit lands (ConsumeNextHitCrit) or the mobile
+            // is evicted. Icon choice reuses an anachronistic strike icon (buff bar is intentionally
+            // enabled on T2A); in-client rendering flagged for verification in the text-pass report.
+            BuffHelper.AddCustomBuff(attacker, BuffIcon.LightningStrike, "Crit Ready: your next hit is a guaranteed crit");
         }
     }
 
-    public static bool ConsumeNextHitCrit(Mobile attacker) => attacker != null && _nextHitCrit.Remove(attacker);
+    public static bool ConsumeNextHitCrit(Mobile attacker)
+    {
+        if (attacker == null || !_nextHitCrit.Remove(attacker))
+        {
+            return false;
+        }
+
+        BuffHelper.RemoveBuff(attacker, BuffIcon.LightningStrike);
+        return true;
+    }
 
     // Maenad: arms (or refreshes) the struck-frenzy buff.
     public static void ArmFrenzy(Mobile m, int dmgPct, int swingPct, TimeSpan duration)
@@ -466,7 +478,8 @@ public static class CombatFxState
         if (m != null)
         {
             _frenzy[m] = (dmgPct, swingPct, Core.TickCount + (long)duration.TotalMilliseconds);
-            BuffHelper.AddCustomBuff(m, BuffIcon.Rage, "Frenzy", duration);
+            var frenzyText = swingPct > 0 ? $"Frenzy: +{dmgPct}% damage, +{swingPct}% swing" : $"Frenzy: +{dmgPct}% damage";
+            BuffHelper.AddCustomBuff(m, BuffIcon.Rage, frenzyText, duration);
         }
     }
 
@@ -485,7 +498,7 @@ public static class CombatFxState
         if (m != null)
         {
             _wardSurgeUntil[m] = Core.TickCount + (long)duration.TotalMilliseconds;
-            BuffHelper.AddCustomBuff(m, BuffIcon.Protection, "Ward-Surge", duration);
+            BuffHelper.AddCustomBuff(m, BuffIcon.Protection, "Ward-Surge: max damage reduction", duration);
         }
     }
 
@@ -539,7 +552,11 @@ public static class CombatFxState
         }
 
         _hitStacks.Remove(m);
-        _nextHitCrit.Remove(m);
+
+        if (_nextHitCrit.Remove(m))
+        {
+            BuffHelper.RemoveBuff(m, BuffIcon.LightningStrike);
+        }
 
         if (_frenzy.Remove(m))
         {
