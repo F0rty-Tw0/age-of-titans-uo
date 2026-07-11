@@ -306,7 +306,7 @@ hook structure; each needs its engine task before first use.)
 | P2 | Damage % | weapon damage computation |
 | P3 | Hit chance % | `BaseWeapon.CheckHit` |
 | P4 | Crit chance % / crit damage % | custom roll in `OnHit` |
-| P5 | Extra-swing proc | `OnHit` → next-swing time credit |
+| P5 | Extra-swing proc (lands at 65% damage — 2026-07-11 balance pass: a full-strength free hit measured +25-60% family DPS on the cadence lanes; the scalar prices the class, cadences/procs unchanged) | `OnHit` → next-swing time credit |
 | P6 | Lifesteal % | `OnHit` heal attacker |
 | P7 | Stamina leech / stam regen | `OnHit` / regen rate hook |
 | P8 | Mana leech / mana regen | `OnHit` / regen rate hook |

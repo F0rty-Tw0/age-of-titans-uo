@@ -34,7 +34,7 @@ reflecting Fencing's higher swing count in T2A.
 
 | Root | Lane | Uncommon | Rare | Epic (+ signature) |
 |---|---|---|---|---|
-| **Aiolos** | flurry | +8% swing speed | +8% swing speed, +6% hit chance | +10% swing speed, +8% hit chance, 10% extra-swing proc — **an extra swing has a chance to chain into another extra swing** |
+| **Aiolos** | flurry | +8% swing speed | +8% swing speed, +6% hit chance | +10% swing speed, +8% hit chance, 10% extra-swing proc — **every 7th hit grants an extra swing that may chain into one more** (cadence 5→7, 2026-07-11 DPS-sim pass: at 5 the lane measured ~+60% over the family pack) |
 | **Ephodos** | lunge | +15% damage on the first hit of any fight (P14) | +20% first-hit damage, +8% crit chance | +25% first-hit damage, +10% crit chance — **the first hit of any fight is a guaranteed crit that also refunds its stamina cost** |
 | **Ios** | venom | 8% poison apply chance (P10) | 10% poison apply chance, +6% hit chance | 12% poison apply chance, +8% hit chance — **poison severity tiers up (Lesser → Greater)** |
 | **Kentron** | puncture | 10% armor penetration (P27) | 15% armor penetration, +6% hit chance | 20% armor penetration, +8% hit chance — **every 3rd hit fully ignores armor** |

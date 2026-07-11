@@ -37,7 +37,7 @@ signature clause. Hues: placeholder runs until the in-client pass.
 |---|---|---|---|---|
 | **Phoibos** | precision | +6% hit chance | +6% hit chance, +8% crit chance | +8% hit chance, +10% crit chance — **the first hit of each fight always crits** |
 | **Areia** | riposte | +6% block | +6% block, 8% DR on block | +8% block, 12% DR on block — **a block guarantees your next hit crits** |
-| **Menis** | wrath-ramp | +2% dmg per consecutive hit on one target, max 5 stacks (P28) | +3%/stack, max 5, +8% damage | +3%/stack, max 6, +10% damage — **reaching max stacks bursts 12% splash (≤3 targets)** |
+| **Menis** | wrath-ramp | +2% dmg per consecutive hit on one target, max 5 stacks (P28) | +3%/stack, max 5, +8% damage | +3%/stack, max 6, +8% damage — **reaching max stacks bursts 12% splash (≤3 targets)** (flat rider 10→8, 2026-07-11 DPS-sim pass; the ramp identity is untouched) |
 | **Aristeia** | glory | on-kill: restore 10% max stam | on-kill: 15% stam, +8% damage | on-kill: 20% stam, +10% damage — **on-kill: full stam + your next swing within 5s crits** |
 | **Haima** | bleed | 8% gash chance (poison tick, P10) | 10% gash chance, +6% lifesteal | 12% gash chance, +8% lifesteal — **targets bleeding from your gash take +10% damage from you** |
 
