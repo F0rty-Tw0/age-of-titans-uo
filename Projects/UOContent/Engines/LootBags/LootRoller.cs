@@ -1,6 +1,5 @@
 using System;
 using Server.Engines.Rarity;
-using Server.Items;
 using Server.Mobiles;
 
 namespace Server.Engines.LootBags;
@@ -9,6 +8,11 @@ namespace Server.Engines.LootBags;
 // Roll order: rarity -> category -> family -> theme -> base -> [construction-only] slot.
 // The pure decision (RollDecision) is kept separate from item construction (Roll) so the
 // table/weight/ceiling logic is unit-testable without the world fixture.
+//
+// The family taxonomy — weapon/armor/shield/jewelry/clothing themes, the concrete item factories,
+// and the ladder counts — is sourced from FamilyRegistry (the single source of truth, Families/*.cs)
+// at static init. Only the DATA moved; the rarity/category weights, base-pick curve, and every
+// rolling decision below are unchanged.
 public static class LootRoller
 {
     public enum LootCategory : byte
@@ -59,67 +63,72 @@ public static class LootRoller
         CategoryWeightWeapon + CategoryWeightArmor + CategoryWeightShield + CategoryWeightJewelry + CategoryWeightClothing;
 
     private const int MaterialsPerArmorFamily = 3; // ring/chain/plate or leather/studded/bone
-    private const int ShieldShapeCount = 6;
-    private const int JewelrySlotCount = 4;
-    private const int ClothingPieceCount = 12;
 
-    // Per-family weapon roots (framework §3, 2026-07-07 re-theme). Aligned index-for-index with
-    // _weaponFamilies below: each family drops only its own five bespoke roots. Axes keep the
-    // original five; every other family carries its lane-unique set.
-    private static readonly VariantRoot[][] _weaponThemesByFamily =
+    // ---- Family taxonomy, sourced from FamilyRegistry at static init ----------------------
+    // Per-family weapon roots, aligned index-for-index with _weaponFamilies (framework §3). Per-
+    // material armor roots are keyed by material ladder position; the theme rolls AFTER the material
+    // so each material drops only its own five roots. Factories/ladder counts come from the same
+    // definitions, so the roller, root validation, and re-theme migration agree on one source.
+    private static readonly byte[] _weaponFamilies;
+    private static readonly int[] _weaponFamilyBaseCount;
+    private static readonly VariantRoot[][] _weaponThemesByFamily;
+    private static readonly Func<Item>[][] _weaponFactories;
+
+    private static readonly VariantRoot[][] _metalArmorThemesByMaterial;
+    private static readonly VariantRoot[][] _lightArmorThemesByMaterial;
+    private static readonly Func<Item>[][] _metalArmorSlotFactories;
+    private static readonly Func<Item>[][] _lightArmorSlotFactories;
+
+    private static readonly VariantRoot[] _shieldThemes;
+    private static readonly Func<Item>[] _shieldFactories;
+    private static readonly VariantRoot[] _jewelryThemes;
+    private static readonly Func<Item>[] _jewelryFactories;
+    private static readonly VariantRoot[] _clothingThemes;
+    private static readonly Func<Item>[] _clothingFactories;
+
+    static LootRoller()
     {
-        new[] { VariantRoot.Zephyr, VariantRoot.Phobos, VariantRoot.Agrotera, VariantRoot.Pallas, VariantRoot.Stygian },
-        new[] { VariantRoot.Phoibos, VariantRoot.Areia, VariantRoot.Menis, VariantRoot.Aristeia, VariantRoot.Haima },
-        new[] { VariantRoot.Theristes, VariantRoot.Sarisa, VariantRoot.Phalanx, VariantRoot.Horme, VariantRoot.Zophos },
-        new[] { VariantRoot.Ennosigaios, VariantRoot.Kataigis, VariantRoot.Rhaistes, VariantRoot.Eryma, VariantRoot.Kamatos },
-        new[] { VariantRoot.Empousa, VariantRoot.Prester, VariantRoot.Alexikakos, VariantRoot.Manteia, VariantRoot.Baskania },
-        new[] { VariantRoot.Ios, VariantRoot.Ephodos, VariantRoot.Aiolos, VariantRoot.Kentron, VariantRoot.Ophis },
-        new[] { VariantRoot.Hekatos, VariantRoot.Belos, VariantRoot.Pede, VariantRoot.Toxikon, VariantRoot.Skopos }
-    };
+        var weaponFamilies = FamilyRegistry.WeaponFamilies; // family-id order (0=axes..6=archery)
+        _weaponFamilies = new byte[weaponFamilies.Length];
+        _weaponFamilyBaseCount = new int[weaponFamilies.Length];
+        _weaponThemesByFamily = new VariantRoot[weaponFamilies.Length][];
+        _weaponFactories = new Func<Item>[weaponFamilies.Length][];
 
-    // Per-material armor roots (framework §3, 2026-07-07 re-theme). Outer index = material
-    // ladder position (0 ring/leather, 1 chain/studded, 2 plate/bone) — the theme is rolled
-    // AFTER the material so each material drops only its own five roots.
-    private static readonly VariantRoot[][] _metalArmorThemesByMaterial =
-    {
-        new[] { VariantRoot.Hoplites, VariantRoot.Taxis, VariantRoot.Dromos, VariantRoot.Zoster, VariantRoot.Alkimos },
-        new[] { VariantRoot.Phylax, VariantRoot.Egregoros, VariantRoot.Teichos, VariantRoot.Halysis, VariantRoot.Phrourion },
-        new[] { VariantRoot.Adamas, VariantRoot.Kaminos, VariantRoot.Kolossos, VariantRoot.Panoplia, VariantRoot.Akamatos }
-    };
+        for (var i = 0; i < weaponFamilies.Length; i++)
+        {
+            var fam = weaponFamilies[i];
+            _weaponFamilies[i] = fam.Family;
+            _weaponFamilyBaseCount[i] = fam.LadderTypes.Length;
+            _weaponThemesByFamily[i] = FamilyRegistry.LaneRoots(fam.Lanes);
+            _weaponFactories[i] = fam.Factories;
+        }
 
-    private static readonly VariantRoot[][] _lightArmorThemesByMaterial =
-    {
-        new[] { VariantRoot.Naias, VariantRoot.Dryas, VariantRoot.Oreias, VariantRoot.Melissa, VariantRoot.Panika },
-        new[] { VariantRoot.Kynegis, VariantRoot.Batos, VariantRoot.Arkas, VariantRoot.Elaphis, VariantRoot.Skia },
-        new[] { VariantRoot.Melinoe, VariantRoot.Makaria, VariantRoot.Tymbos, VariantRoot.Nekyia, VariantRoot.Katachthon }
-    };
+        var metal = FamilyRegistry.MetalArmorFamilies; // ladder order 0..2 (ring/chain/plate)
+        var light = FamilyRegistry.LightArmorFamilies; // ladder order 0..2 (leather/studded/bone)
+        _metalArmorThemesByMaterial = new VariantRoot[metal.Length][];
+        _metalArmorSlotFactories = new Func<Item>[metal.Length][];
+        _lightArmorThemesByMaterial = new VariantRoot[light.Length][];
+        _lightArmorSlotFactories = new Func<Item>[light.Length][];
 
-    // Shields keep Aegis; the other four are shield-only (framework §3).
-    private static readonly VariantRoot[] _shieldThemes =
-    {
-        VariantRoot.Aegis, VariantRoot.Amyntor, VariantRoot.Probolos, VariantRoot.Herkos, VariantRoot.Pnoe
-    };
+        for (var i = 0; i < metal.Length; i++)
+        {
+            _metalArmorThemesByMaterial[i] = FamilyRegistry.LaneRoots(metal[i].Lanes);
+            _metalArmorSlotFactories[i] = metal[i].SlotFactories;
+        }
 
-    private static readonly VariantRoot[] _jewelryThemes =
-    {
-        VariantRoot.Olympian, VariantRoot.Hecatean, VariantRoot.Tychean, VariantRoot.Nyxian, VariantRoot.Demetrian
-    };
+        for (var i = 0; i < light.Length; i++)
+        {
+            _lightArmorThemesByMaterial[i] = FamilyRegistry.LaneRoots(light[i].Lanes);
+            _lightArmorSlotFactories[i] = light[i].SlotFactories;
+        }
 
-    private static readonly VariantRoot[] _clothingThemes =
-    {
-        VariantRoot.Laurel, VariantRoot.Charis, VariantRoot.Maenad, VariantRoot.Hestian, VariantRoot.Arachne
-    };
-
-    private static readonly byte[] _weaponFamilies =
-    {
-        LegendaryRegistry.FamilyAxes, LegendaryRegistry.FamilySwords, LegendaryRegistry.FamilyPolearms,
-        LegendaryRegistry.FamilyMaces, LegendaryRegistry.FamilyStaves, LegendaryRegistry.FamilyFencing,
-        LegendaryRegistry.FamilyArchery
-    };
-
-    // Ladder length per weapon family (framework §7), indexed the same as _weaponFamilies.
-    // Axes 8, swords 8, polearms 2, maces 7, staves 3, fencing 6, archery 3.
-    private static readonly int[] _weaponFamilyBaseCount = { 8, 8, 2, 7, 3, 6, 3 };
+        _shieldThemes = FamilyRegistry.LaneRoots(FamilyRegistry.ShieldFamilyDef.Lanes);
+        _shieldFactories = FamilyRegistry.ShieldFamilyDef.ShieldFactories;
+        _jewelryThemes = FamilyRegistry.LaneRoots(FamilyRegistry.JewelryFamilyDef.Lanes);
+        _jewelryFactories = FamilyRegistry.JewelryFamilyDef.Factories;
+        _clothingThemes = FamilyRegistry.LaneRoots(FamilyRegistry.ClothingFamilyDef.Lanes);
+        _clothingFactories = FamilyRegistry.ClothingFamilyDef.Factories;
+    }
 
     public static LootRollDecision RollDecision(int bagLevel)
     {
@@ -268,7 +277,7 @@ public static class LootRoller
 
     private static LootRollDecision RollShieldDecision(ItemRarity rarity, int bagLevel)
     {
-        var baseIndex = RollWeightedBaseIndex(bagLevel, ShieldShapeCount);
+        var baseIndex = RollWeightedBaseIndex(bagLevel, _shieldFactories.Length);
         var theme = _shieldThemes[Utility.Random(_shieldThemes.Length)];
 
         return new LootRollDecision(rarity, LootCategory.Shield, LegendaryRegistry.FamilyShields, theme, baseIndex);
@@ -277,153 +286,49 @@ public static class LootRoller
     // Jewelry has no ladder (framework §7) — slot is uniform, not bag-level weighted.
     private static LootRollDecision RollJewelryDecision(ItemRarity rarity)
     {
-        var slot = Utility.Random(JewelrySlotCount);
+        var slot = Utility.Random(_jewelryFactories.Length);
         var theme = _jewelryThemes[Utility.Random(_jewelryThemes.Length)];
 
         return new LootRollDecision(rarity, LootCategory.Jewelry, LegendaryRegistry.FamilyJewelry, theme, slot);
     }
 
     // Clothing has no ladder either (21-clothing.md §1) — piece is uniform. Drop-variants cap at
-    // Epic; Legendary clothing exists only as the 5 bound relics, one per theme, so at Legendary
-    // the "piece" is forced to that relic's bound shape instead of a free uniform pick.
+    // Epic; Legendary clothing exists only as the bound relics, and each theme now has TWO (a body
+    // piece + a hat, §3), so at Legendary the "piece" is a uniform pick between the theme's two
+    // bound shapes instead of a free uniform pick over every piece.
     private static LootRollDecision RollClothingDecision(ItemRarity rarity)
     {
         var theme = _clothingThemes[Utility.Random(_clothingThemes.Length)];
 
         var piece = rarity == ItemRarity.Legendary
             ? ClothingRelicPieceIndex(theme)
-            : Utility.Random(ClothingPieceCount);
+            : Utility.Random(_clothingFactories.Length);
 
         return new LootRollDecision(rarity, LootCategory.Clothing, LegendaryRegistry.FamilyClothing, theme, piece);
     }
 
-    private static byte ClothingRelicPieceIndex(VariantRoot theme) => theme switch
+    // The theme's bound relic shapes, sourced from the registry so the mapping never drifts from the
+    // legendary data. Each clothing theme has exactly two entries (a body piece + a hat); pick one
+    // uniformly. Cold path (a Legendary roll on mob death), so the linear scan is fine.
+    private static byte ClothingRelicPieceIndex(VariantRoot theme)
     {
-        VariantRoot.Laurel => LegendaryRegistry.ClothingPieceBodySash,
-        VariantRoot.Charis => LegendaryRegistry.ClothingPieceFancyShirt,
-        VariantRoot.Maenad => LegendaryRegistry.ClothingPieceKilt,
-        VariantRoot.Hestian => LegendaryRegistry.ClothingPieceRobe,
-        _ => LegendaryRegistry.ClothingPieceCloak // Arachne
-    };
+        Span<byte> pieces = stackalloc byte[2];
+        var count = 0;
 
-    // ---- Item construction (type maps) ----------------------------------------------------
+        var entries = LegendaryRegistry.Entries;
 
-    private static readonly Func<Item>[][] _weaponFactories =
-    {
-        // Axes — hatchet, axe, battle axe, double axe, executioner's axe, two-handed axe,
-        // large battle axe, ornate axe (framework §7 ladder order).
-        new Func<Item>[]
+        for (var i = 0; i < entries.Count && count < pieces.Length; i++)
         {
-            () => new Hatchet(), () => new Axe(), () => new BattleAxe(), () => new DoubleAxe(),
-            () => new ExecutionersAxe(), () => new TwoHandedAxe(), () => new LargeBattleAxe(), () => new OrnateAxe()
-        },
-        // Swords — butcher knife, cleaver, cutlass, scimitar, katana, broadsword, longsword, viking sword.
-        new Func<Item>[]
-        {
-            () => new ButcherKnife(), () => new Cleaver(), () => new Cutlass(), () => new Scimitar(),
-            () => new Katana(), () => new Broadsword(), () => new Longsword(), () => new VikingSword()
-        },
-        // Polearms — bardiche, halberd.
-        new Func<Item>[] { () => new Bardiche(), () => new Halberd() },
-        // Maces — club, mace, maul, war axe, hammer pick, war mace, war hammer. "War axe" is
-        // mechanically a mace (DefSkill = Macing) despite the axe-family class name/model.
-        new Func<Item>[]
-        {
-            () => new Club(), () => new Mace(), () => new Maul(), () => new WarAxe(),
-            () => new HammerPick(), () => new WarMace(), () => new WarHammer()
-        },
-        // Staves — quarter staff, gnarled staff, black staff.
-        new Func<Item>[] { () => new QuarterStaff(), () => new GnarledStaff(), () => new BlackStaff() },
-        // Fencing — dagger, kryss, war fork, pitchfork, short spear, spear.
-        new Func<Item>[]
-        {
-            () => new Dagger(), () => new Kryss(), () => new WarFork(), () => new Pitchfork(),
-            () => new ShortSpear(), () => new Spear()
-        },
-        // Archery — bow, crossbow, heavy crossbow.
-        new Func<Item>[] { () => new Bow(), () => new Crossbow(), () => new HeavyCrossbow() }
-    };
+            var entry = entries[i];
 
-    // Metal materials, ladder-ordered to match LegendaryRegistry's BaseIndex (ring 0, chain 1,
-    // plate 2). Each material's factory then picks uniformly among its real T2A slot pieces —
-    // the slot itself carries no rarity/legendary meaning, only the material does (framework §7).
-    private static readonly Func<Item>[][] _metalArmorSlotFactories =
-    {
-        // Ring — chest, legs, arms, gloves. No helm/gorget piece exists in T2A.
-        new Func<Item>[]
-        {
-            () => new RingmailChest(), () => new RingmailLegs(), () => new RingmailArms(), () => new RingmailGloves()
-        },
-        // Chain — chest, legs, coif (helm slot). No arms/gloves/gorget piece exists in T2A.
-        new Func<Item>[] { () => new ChainChest(), () => new ChainLegs(), () => new ChainCoif() },
-        // Plate — chest, legs, arms, gorget, gloves, helm (5 interchangeable shape variants).
-        new Func<Item>[]
-        {
-            () => new PlateChest(), () => new PlateLegs(), () => new PlateArms(),
-            () => new PlateGorget(), () => new PlateGloves(), RollPlateHelm
+            if (entry.Family == LegendaryRegistry.FamilyClothing && entry.Root == theme)
+            {
+                pieces[count++] = entry.BaseIndex;
+            }
         }
-    };
 
-    // Light materials, ladder-ordered (leather 0, studded 1, bone 2).
-    private static readonly Func<Item>[][] _lightArmorSlotFactories =
-    {
-        // Leather — chest, legs, cap (helm slot), arms, gorget, gloves.
-        new Func<Item>[]
-        {
-            () => new LeatherChest(), () => new LeatherLegs(), RollLeatherHelm,
-            () => new LeatherArms(), () => new LeatherGorget(), () => new LeatherGloves()
-        },
-        // Studded — chest, legs, arms, gorget, gloves. No studded helm exists in T2A.
-        new Func<Item>[]
-        {
-            () => new StuddedChest(), () => new StuddedLegs(), () => new StuddedArms(),
-            () => new StuddedGorget(), () => new StuddedGloves()
-        },
-        // Bone — chest, legs, helmet, arms, gloves. No bone gorget exists in T2A.
-        new Func<Item>[]
-        {
-            () => new BoneChest(), () => new BoneLegs(), () => new BoneHelm(), () => new BoneArms(), () => new BoneGloves()
-        }
-    };
-
-    // Plate helm slot: uniform among the five interchangeable metal-helm shapes (same AR row,
-    // model only — 10-armor-metal.md §1).
-    private static Item RollPlateHelm() => Utility.Random(5) switch
-    {
-        0 => new Helmet(),
-        1 => new Bascinet(),
-        2 => new NorseHelm(),
-        3 => new CloseHelm(),
-        _ => new PlateHelm()
-    };
-
-    // Substitution flag: 11-armor-light.md §1 claims "orc helm is a bone-helm shape variant,"
-    // but in this codebase OrcHelm.MaterialType is Leather, not Bone (Bone has no true orc-helm
-    // reskin here). Treated as a Leather-material helm alternate instead — code truth wins over
-    // the doc's claim, and it stays a real Leather-material item either way.
-    private static Item RollLeatherHelm() => Utility.RandomBool() ? new LeatherCap() : new OrcHelm();
-
-    private static readonly Func<Item>[] _shieldFactories =
-    {
-        () => new Buckler(), () => new WoodenShield(), () => new WoodenKiteShield(),
-        () => new MetalShield(), () => new MetalKiteShield(), () => new HeaterShield()
-    };
-
-    // Gold variants only (cosmetic silver alternates skipped — ponytail: not requested).
-    private static readonly Func<Item>[] _jewelryFactories =
-    {
-        () => new GoldRing(), () => new GoldBracelet(), () => new GoldNecklace(), () => new GoldEarrings()
-    };
-
-    // Order matches LegendaryRegistry.ClothingPieceXxx for indices 0-4 (BodySash, FancyShirt,
-    // Kilt, Robe, Cloak) so the same array serves both the Legendary relic path and the general
-    // Uncommon-Epic uniform pick (21-clothing.md §1/§3).
-    private static readonly Func<Item>[] _clothingFactories =
-    {
-        () => new BodySash(), () => new FancyShirt(), () => new Kilt(), () => new Robe(), () => new Cloak(),
-        () => new Doublet(), () => new Tunic(), () => new Skirt(),
-        () => new StrawHat(), () => new WideBrimHat(), () => new FeatheredHat(), () => new Cap()
-    };
+        return count > 0 ? pieces[Utility.Random(count)] : LegendaryRegistry.ClothingPieceCloak;
+    }
 
     private static Item Construct(in LootRollDecision d) => d.Category switch
     {

@@ -70,25 +70,12 @@ public static class RarityTestCommands
         );
     }
 
-    // The five thematic roots per material (framework §3's 30 material roots). With no explicit
-    // root, GenArmorSet deals these round-robin across the set — closer to real mixed drops, and
-    // it exercises §9.4 stacking plus the P5 dedupe in one equip.
-    private static VariantRoot[] MaterialRoots(ArmorMaterialType material) => material switch
-    {
-        ArmorMaterialType.Leather =>
-            [VariantRoot.Naias, VariantRoot.Dryas, VariantRoot.Oreias, VariantRoot.Melissa, VariantRoot.Panika],
-        ArmorMaterialType.Studded =>
-            [VariantRoot.Kynegis, VariantRoot.Batos, VariantRoot.Arkas, VariantRoot.Elaphis, VariantRoot.Skia],
-        ArmorMaterialType.Bone =>
-            [VariantRoot.Melinoe, VariantRoot.Makaria, VariantRoot.Tymbos, VariantRoot.Nekyia, VariantRoot.Katachthon],
-        ArmorMaterialType.Ringmail =>
-            [VariantRoot.Hoplites, VariantRoot.Taxis, VariantRoot.Dromos, VariantRoot.Zoster, VariantRoot.Alkimos],
-        ArmorMaterialType.Chainmail =>
-            [VariantRoot.Phylax, VariantRoot.Egregoros, VariantRoot.Teichos, VariantRoot.Halysis, VariantRoot.Phrourion],
-        ArmorMaterialType.Plate =>
-            [VariantRoot.Adamas, VariantRoot.Kaminos, VariantRoot.Kolossos, VariantRoot.Panoplia, VariantRoot.Akamatos],
-        _ => null
-    };
+    // The five thematic roots per material (framework §3's 30 material roots), sourced from the
+    // material's armor family definition (Families/*.cs) via the registry. With no explicit root,
+    // GenArmorSet deals these round-robin across the set — closer to real mixed drops, and it
+    // exercises §9.4 stacking plus the P5 dedupe in one equip.
+    private static VariantRoot[] MaterialRoots(ArmorMaterialType material) =>
+        FamilyRegistry.ArmorFamilyByMaterial.TryGetValue(material, out var def) ? FamilyRegistry.LaneRoots(def.Lanes) : null;
 
     [Usage("GenArmorSet <material> [rarity=Epic] [root]")]
     [Description("Fills your backpack with a full armor set of the given material (Leather/Studded/Bone/Ringmail/Chainmail/Plate). Without a root, the material's five thematic roots are dealt round-robin; pass a root for a uniform set.")]
@@ -116,44 +103,22 @@ public static class RarityTestCommands
             return;
         }
 
-        var materialRoots = MaterialRoots(material);
-
-        // One piece per body slot the material actually has (mempo shares the gorget layer, so
-        // the studded set uses StuddedGorget — see BaseArmor.BodyPosition: Layer.Neck => Gorget).
-        BaseArmor[] pieces = material switch
-        {
-            ArmorMaterialType.Leather =>
-            [
-                new LeatherCap(), new LeatherGorget(), new LeatherChest(),
-                new LeatherArms(), new LeatherGloves(), new LeatherLegs()
-            ],
-            ArmorMaterialType.Studded =>
-            [
-                new StuddedGorget(), new StuddedChest(), new StuddedArms(),
-                new StuddedGloves(), new StuddedLegs()
-            ],
-            ArmorMaterialType.Bone =>
-            [
-                new BoneHelm(), new BoneChest(), new BoneArms(),
-                new BoneGloves(), new BoneLegs()
-            ],
-            ArmorMaterialType.Ringmail =>
-            [
-                new RingmailChest(), new RingmailArms(), new RingmailGloves(), new RingmailLegs()
-            ],
-            ArmorMaterialType.Chainmail => [new ChainCoif(), new ChainChest(), new ChainLegs()],
-            ArmorMaterialType.Plate =>
-            [
-                new PlateHelm(), new PlateGorget(), new PlateChest(),
-                new PlateArms(), new PlateGloves(), new PlateLegs()
-            ],
-            _ => null
-        };
-
-        if (pieces == null)
+        if (!FamilyRegistry.ArmorFamilyByMaterial.TryGetValue(material, out var def))
         {
             e.Mobile.SendMessage($"{material} is not a slot-set material (use Leather/Studded/Bone/Ringmail/Chainmail/Plate).");
             return;
+        }
+
+        var materialRoots = FamilyRegistry.LaneRoots(def.Lanes);
+
+        // One piece per body slot the material actually has, from the family's SetPieces factories
+        // (mempo shares the gorget layer, so the studded set uses StuddedGorget — see
+        // BaseArmor.BodyPosition: Layer.Neck => Gorget).
+        var pieces = new Item[def.SetPieces.Length];
+
+        for (var i = 0; i < pieces.Length; i++)
+        {
+            pieces[i] = def.SetPieces[i]();
         }
 
         for (var i = 0; i < pieces.Length; i++)
