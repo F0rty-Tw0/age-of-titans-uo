@@ -493,7 +493,12 @@ public abstract partial class BaseWeapon
     [CommandProperty(AccessLevel.GameMaster)]
     public int MinDamage
     {
-        get => _minDamage == -1 ? Core.AOS ? AosMinDamage : OldMinDamage : _minDamage;
+        // Variant weapons resolve their base damage from the runtime rarity anchor (framework §2/§7;
+        // 2026-07-11 directive) instead of the stock value — never serialized, so a rebalance
+        // retro-tunes live items. Plain weapons fall through to the stock resolution.
+        get => RarityEffects.TryGetAnchorDamage(this, out var min, out _)
+            ? min
+            : _minDamage == -1 ? Core.AOS ? AosMinDamage : OldMinDamage : _minDamage;
         set
         {
             _minDamage = value;
@@ -512,7 +517,10 @@ public abstract partial class BaseWeapon
     [CommandProperty(AccessLevel.GameMaster)]
     public int MaxDamage
     {
-        get => _maxDamage == -1 ? Core.AOS ? AosMaxDamage : OldMaxDamage : _maxDamage;
+        // See MinDamage: variant weapons take the runtime rarity anchor's max (non-serialized).
+        get => RarityEffects.TryGetAnchorDamage(this, out _, out var max)
+            ? max
+            : _maxDamage == -1 ? Core.AOS ? AosMaxDamage : OldMaxDamage : _maxDamage;
         set
         {
             _maxDamage = value;
@@ -569,6 +577,13 @@ public abstract partial class BaseWeapon
     {
         get
         {
+            // Variant weapons anchor their swing speed to the base's §7 swing-seconds (non-serialized;
+            // 2026-07-11 directive). Stamina keeps scaling the live delay around this anchor.
+            if (RarityEffects.TryGetAnchorSpeed(this, out var anchorSpeed))
+            {
+                return anchorSpeed;
+            }
+
             if (_speed != -1)
             {
                 return _speed;

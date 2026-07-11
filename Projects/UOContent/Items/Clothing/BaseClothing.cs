@@ -376,6 +376,10 @@ namespace Server.Items
         public virtual int InitMinHits => 0;
         public virtual int InitMaxHits => 0;
 
+        // Coverage list for OnHit's DurabilityLossImmunity (Ariadne robe) check below — the only
+        // ClauseType dispatch outside Engines/Rarity. Cross-checked by ClauseDispatchCoverageTests.
+        internal static readonly ClauseType[] HandledByDurabilityLoss = { ClauseType.DurabilityLossImmunity };
+
         public virtual int OnHit(BaseWeapon weapon, int damageTaken)
         {
             var absorbed = Utility.RandomMinMax(1, 4);
