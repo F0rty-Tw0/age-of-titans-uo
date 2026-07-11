@@ -345,6 +345,20 @@ public static class LootRoller
         return slotFactories[Utility.Random(slotFactories.Length)]();
     }
 
+    // Constructs the concrete base item a legendary entry is bound to, from the same factories
+    // the drop path uses: weapon/shield/jewelry/clothing entries name an exact shape (BaseIndex);
+    // armor entries name a material (BaseIndex = material index) and pick a random piece of it.
+    // Consumers: the Pantheon altar's domain reroll and the clause-reachability tests.
+    public static Item ConstructForLegendary(in LegendaryEntry entry) => entry.Family switch
+    {
+        <= LegendaryRegistry.FamilyArchery => _weaponFactories[entry.Family][entry.BaseIndex](),
+        LegendaryRegistry.FamilyMetalArmor or LegendaryRegistry.FamilyLightArmor =>
+            ConstructArmor(entry.Family, entry.BaseIndex),
+        LegendaryRegistry.FamilyShields => _shieldFactories[entry.BaseIndex](),
+        LegendaryRegistry.FamilyJewelry => _jewelryFactories[entry.BaseIndex](),
+        _ => _clothingFactories[entry.BaseIndex]()
+    };
+
     private static void ApplyRarity(Item item, in LootRollDecision decision)
     {
         if (decision.Rarity == ItemRarity.Common)
