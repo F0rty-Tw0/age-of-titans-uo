@@ -178,6 +178,10 @@ public static partial class RarityEffects
                 LegendaryRegistry.ClothingPieceKilt => item is Kilt,
                 LegendaryRegistry.ClothingPieceRobe => item is Robe,
                 LegendaryRegistry.ClothingPieceCloak => item is Cloak,
+                LegendaryRegistry.ClothingPieceStrawHat => item is StrawHat,
+                LegendaryRegistry.ClothingPieceWideBrimHat => item is WideBrimHat,
+                LegendaryRegistry.ClothingPieceFeatheredHat => item is FeatheredHat,
+                LegendaryRegistry.ClothingPieceCap => item is Cap,
                 _ => false
             };
 
@@ -348,41 +352,11 @@ public static partial class RarityEffects
     }
 
     // Per-material armor roots (framework §3 re-theme): a material-locked root is valid only on
-    // body armor of exactly that material — a naias plate chest throws. Returns false for any
-    // root that is not one of the 30 material roots.
-    private static bool TryGetArmorRootMaterial(VariantRoot root, out ArmorMaterialType material)
-    {
-        switch (root)
-        {
-            case VariantRoot.Naias or VariantRoot.Dryas or VariantRoot.Oreias or VariantRoot.Melissa
-                or VariantRoot.Panika:
-                material = ArmorMaterialType.Leather;
-                return true;
-            case VariantRoot.Kynegis or VariantRoot.Batos or VariantRoot.Arkas or VariantRoot.Elaphis
-                or VariantRoot.Skia:
-                material = ArmorMaterialType.Studded;
-                return true;
-            case VariantRoot.Melinoe or VariantRoot.Makaria or VariantRoot.Tymbos or VariantRoot.Nekyia
-                or VariantRoot.Katachthon:
-                material = ArmorMaterialType.Bone;
-                return true;
-            case VariantRoot.Hoplites or VariantRoot.Taxis or VariantRoot.Dromos or VariantRoot.Zoster
-                or VariantRoot.Alkimos:
-                material = ArmorMaterialType.Ringmail;
-                return true;
-            case VariantRoot.Phylax or VariantRoot.Egregoros or VariantRoot.Teichos or VariantRoot.Halysis
-                or VariantRoot.Phrourion:
-                material = ArmorMaterialType.Chainmail;
-                return true;
-            case VariantRoot.Adamas or VariantRoot.Kaminos or VariantRoot.Kolossos or VariantRoot.Panoplia
-                or VariantRoot.Akamatos:
-                material = ArmorMaterialType.Plate;
-                return true;
-            default:
-                material = default;
-                return false;
-        }
-    }
+    // body armor of exactly that material — a naias plate chest throws. Returns false for any root
+    // that is not one of the 30 material roots. The root->material mapping is sourced from the
+    // armor family definitions (Families/*.cs) via the registry.
+    private static bool TryGetArmorRootMaterial(VariantRoot root, out ArmorMaterialType material) =>
+        FamilyRegistry.TryGetArmorMaterial(root, out material);
 
     // A per-family weapon root (Phoibos, Rhaistes, …) is valid only on a weapon whose concrete type
     // maps to the same family (framework §3). An unmapped/subclassed weapon type fails closed.

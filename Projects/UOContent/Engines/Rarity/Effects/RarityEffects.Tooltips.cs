@@ -24,19 +24,19 @@ public static partial class RarityEffects
 
         if (variant.LegendaryId != 0)
         {
-            list.Add(item.LabelNumber); // base shape, e.g. "a double axe"
+            list.Add(item.LabelNumber); // base shape subtitle, e.g. "a double axe" (framework §6)
         }
 
-        if (item is BaseWeapon)
+        // Approved layout (2026-07-11): [stats] -> [<myth tag> — effects] -> [lane/slot signature]
+        // -> [legendary unique clause]. The OPL has no line cap, so the shape subtitle above stays
+        // its own line; the single-click mirror (LabelVariantDetails) merges it to fit the 5-line cap.
+        if (item is BaseWeapon weapon)
         {
             var (root, rarity) = ResolveRootRarity(variant, ((IRarity)item).Rarity);
             var row = WeaponEffectTable.Get(root, rarity);
 
-            if (!row.IsEmpty)
-            {
-                list.Add(BuildWeaponSummary(row));
-            }
-
+            list.Add(WeaponStatsLine(weapon, row));
+            AddEffectsLine(list, root, row.IsEmpty ? null : BuildWeaponSummary(row));
             AddClauseLine(list, row.Signature, row.S1, row.S2, row.S3);
             AddLegendaryClauseLine(list, variant);
         }
@@ -46,10 +46,8 @@ public static partial class RarityEffects
             var (root, rarity) = ResolveRootRarity(variant, ((IRarity)item).Rarity);
             var row = ArmorEffectTable.Get(root, rarity, isShield);
 
-            if (!row.IsEmpty)
-            {
-                list.Add(BuildArmorSummary(row));
-            }
+            list.Add(ArmorStatsLine(armor));
+            AddEffectsLine(list, root, row.IsEmpty ? null : BuildArmorSummary(row));
 
             // Option A milestone: armor (not shields) at Epic+ shows the (material x slot)
             // signature instead of the per-root one. Shields/sub-Epic keep the row's signature.
@@ -62,47 +60,67 @@ public static partial class RarityEffects
         }
         else if (item is BaseJewel or BaseClothing)
         {
+            // Jewelry/clothing carry no damage/AR, so they have no stats line (framework §7).
             var (root, rarity) = ResolveRootRarity(variant, ((IRarity)item).Rarity);
-            var row = AccessoryEffectTable.Get(root, rarity, isClothing: item is BaseClothing);
+            var displacing = item is BaseClothing displacingCloth && AccessoryEffectTable.IsDisplacingClothing(displacingCloth);
+            var row = AccessoryEffectTable.Get(root, rarity, isClothing: item is BaseClothing, displacing);
 
-            if (!row.IsEmpty)
-            {
-                list.Add(BuildAccessorySummary(row));
-            }
-
+            AddEffectsLine(list, root, row.IsEmpty ? null : BuildAccessorySummary(row));
             AddLegendaryClauseLine(list, variant);
+        }
+    }
+
+    // Effects line: the theme's numeric summary prefixed with its short myth tag (framework §3),
+    // e.g. "Ares — damage +10%, crit chance +10%". Skipped when the theme has no printable effects.
+    private static void AddEffectsLine(IPropertyList list, VariantRoot root, string effects)
+    {
+        var text = PrefixMythTag(root, effects);
+
+        if (!string.IsNullOrEmpty(text))
+        {
+            list.Add(text);
         }
     }
 
     // ---- Single-click (pre-UOTD) mirror of the OPL lines above ---------------------------
 
     // T2A/pre-UOTD clients never see the OPL tooltip built by AddVariantProperties — only
-    // single-click overhead text, capped at ~5 lines per item by the classic client (oldest
-    // dropped first, which would otherwise push the item's own name off the label). Mirrors the
-    // OPL content (base shape / numeric summary / clause text) via LabelTo instead of list.Add,
-    // but compressed to at most 2 lines: shape+summary merged on one line, signature clause +
-    // legendary clause merged with "; " on the other. Called from each
-    // BaseWeapon/BaseArmor/BaseJewel/BaseClothing OnSingleClickPreUOTD after their existing label
-    // output.
+    // single-click overhead text, capped at 5 lines per item by the classic client (oldest dropped
+    // first, which would otherwise push the item's own name off the label). Mirrors the OPL content
+    // via LabelTo instead of list.Add, but the legendary base-shape shares the effects line (rather
+    // than taking its own) so the worst case — name + stats + effects + signature clause + legendary
+    // clause — lands at exactly 5. Called from each BaseWeapon/BaseArmor/BaseJewel/BaseClothing
+    // OnSingleClickPreUOTD after their existing label output.
     public static void LabelVariantDetails(Mobile from, Item item)
+    {
+        var lines = new List<string>(4);
+        CollectSingleClickLines(item, lines);
+
+        for (var i = 0; i < lines.Count; i++)
+        {
+            item.LabelTo(from, lines[i]);
+        }
+    }
+
+    // The ordered, non-empty single-click lines a variant item emits below its name (which the
+    // caller labels first). Internal + Mobile-free so the 5-line budget can be unit-tested without a
+    // live client: name is 1 line, so this list must stay <= 4 for the classic cap to hold.
+    internal static void CollectSingleClickLines(Item item, List<string> lines)
     {
         if (item is not IVariantItem variant || variant.VariantRoot == VariantRoot.None && variant.LegendaryId == 0)
         {
             return;
         }
 
-        // Base shape text, e.g. "a halberd" — item.Name is already the legendary's proper noun
-        // (e.g. "Klytios") at this point, so (unlike BuildRootName) it must NOT be consulted here;
-        // LabelNumber is derived from ItemID alone and is unaffected by Name.
-        var shape = variant.LegendaryId != 0 ? Localization.GetText(item.LabelNumber) : null;
-
-        if (item is BaseWeapon)
+        if (item is BaseWeapon weapon)
         {
             var (root, rarity) = ResolveRootRarity(variant, ((IRarity)item).Rarity);
             var row = WeaponEffectTable.Get(root, rarity);
 
-            LabelShapeSummaryLine(from, item, shape, row.IsEmpty ? null : BuildWeaponSummary(row));
-            LabelCombinedClauseLine(from, item, variant, row.Signature, row.S1, row.S2, row.S3);
+            AddLine(lines, WeaponStatsLine(weapon, row));
+            AddLine(lines, EffectsLine(root, row.IsEmpty ? null : BuildWeaponSummary(row)));
+            AddLine(lines, CapFirst(ClauseText.Describe(row.Signature, row.S1, row.S2, row.S3)));
+            AddLine(lines, LegendaryClauseText(variant));
         }
         else if (item is BaseArmor armor)
         {
@@ -110,69 +128,44 @@ public static partial class RarityEffects
             var (root, rarity) = ResolveRootRarity(variant, ((IRarity)item).Rarity);
             var row = ArmorEffectTable.Get(root, rarity, isShield);
 
-            LabelShapeSummaryLine(from, item, shape, row.IsEmpty ? null : BuildArmorSummary(row));
+            AddLine(lines, ArmorStatsLine(armor));
+            AddLine(lines, EffectsLine(root, row.IsEmpty ? null : BuildArmorSummary(row)));
 
             // Option A milestone: same slot-table redirect as AddVariantProperties above.
             var (signature, s1, s2, s3) = !isShield && rarity >= ItemRarity.Epic
                 ? ArmorSlotSignatureTable.Get(armor.MaterialType, armor.BodyPosition)
                 : (row.Signature, row.S1, row.S2, row.S3);
 
-            LabelCombinedClauseLine(from, item, variant, signature, s1, s2, s3);
+            AddLine(lines, CapFirst(ClauseText.Describe(signature, s1, s2, s3)));
+            AddLine(lines, LegendaryClauseText(variant));
         }
         else if (item is BaseJewel or BaseClothing)
         {
+            // No stats line (no damage/AR) and no lane signature on this path — just effects + unique.
             var (root, rarity) = ResolveRootRarity(variant, ((IRarity)item).Rarity);
-            var row = AccessoryEffectTable.Get(root, rarity, isClothing: item is BaseClothing);
+            var displacing = item is BaseClothing displacingCloth && AccessoryEffectTable.IsDisplacingClothing(displacingCloth);
+            var row = AccessoryEffectTable.Get(root, rarity, isClothing: item is BaseClothing, displacing);
 
-            LabelShapeSummaryLine(from, item, shape, row.IsEmpty ? null : BuildAccessorySummary(row));
-            LabelLegendaryClauseLine(from, item, variant); // no signature lane on this path
+            AddLine(lines, EffectsLine(root, row.IsEmpty ? null : BuildAccessorySummary(row)));
+            AddLine(lines, LegendaryClauseText(variant));
         }
     }
 
-    // Merges the legendary base-shape with the numeric effect summary into a single line
-    // ("Halberd: lifesteal 10%") so a legendary item never spends 2 of its 5-line budget on
-    // shape and summary separately. Non-legendary variants have no shape, so this degrades to
-    // just the summary (or nothing, unchanged from before).
-    private static void LabelShapeSummaryLine(Mobile from, Item item, string shape, string summary)
-    {
-        var text = shape == null ? summary : string.IsNullOrEmpty(summary) ? shape : $"{shape}: {summary}";
-        LabelIfNotEmpty(from, item, text);
-    }
+    // Single-click effects line: the myth-tagged effect summary. The legendary base shape is NOT
+    // shown on single-click (user directive 2026-07-11 — the item graphic already shows the shape);
+    // the OPL subtitle line keeps it for modern clients per framework §6.
+    private static string EffectsLine(VariantRoot root, string effects) => PrefixMythTag(root, effects);
 
-    // Merges the lane signature's clause text with the legendary's own unique clause text ("; "
-    // between when both exist) into a single line, instead of one line each.
-    private static void LabelCombinedClauseLine(
-        Mobile from, Item item, IVariantItem variant, ClauseType signature, short s1, short s2, short s3
-    )
-    {
-        var signatureText = ClauseText.Describe(signature, s1, s2, s3);
-        string legendaryText = null;
+    private static string LegendaryClauseText(IVariantItem variant) =>
+        variant.LegendaryId != 0 && LegendaryRegistry.TryGet(variant.LegendaryId, out var entry)
+            ? CapFirst(ClauseText.Describe(entry.Clause, entry.P1, entry.P2, entry.P3))
+            : null;
 
-        if (variant.LegendaryId != 0 && LegendaryRegistry.TryGet(variant.LegendaryId, out var entry))
-        {
-            legendaryText = ClauseText.Describe(entry.Clause, entry.P1, entry.P2, entry.P3);
-        }
-
-        var text = !string.IsNullOrEmpty(signatureText) && !string.IsNullOrEmpty(legendaryText)
-            ? $"{signatureText}; {legendaryText}"
-            : string.IsNullOrEmpty(signatureText) ? legendaryText : signatureText;
-
-        LabelIfNotEmpty(from, item, CapFirst(text));
-    }
-
-    private static void LabelLegendaryClauseLine(Mobile from, Item item, IVariantItem variant)
-    {
-        if (variant.LegendaryId != 0 && LegendaryRegistry.TryGet(variant.LegendaryId, out var entry))
-        {
-            LabelIfNotEmpty(from, item, CapFirst(ClauseText.Describe(entry.Clause, entry.P1, entry.P2, entry.P3)));
-        }
-    }
-
-    private static void LabelIfNotEmpty(Mobile from, Item item, string text)
+    private static void AddLine(List<string> lines, string text)
     {
         if (!string.IsNullOrEmpty(text))
         {
-            item.LabelTo(from, text);
+            lines.Add(text);
         }
     }
 
@@ -197,28 +190,81 @@ public static partial class RarityEffects
         }
     }
 
+    // ---- Stats line (line 2) + myth-tag prefix (line 3) --------------------------------------
+
+    // A tooltip is built with no wielder, so the classic-era swing formula (BaseWeapon.GetDelay's
+    // pre-AOS branch, 15000 / ((stam + 100) * speed)) is evaluated at a fixed reference stamina.
+    // 100 is a round baseline that keeps this in step with GetDelay; the real in-fight interval
+    // still scales with the wielder's actual stamina.
+    private const int ReferenceStamina = 100;
+
+    // Weapon stats line. weapon.MinDamage/MaxDamage now resolve the runtime rarity anchor for variant
+    // weapons (framework §2/§7; 2026-07-11 directive) — the shown range is that anchor folded with the
+    // theme's row.DamagePct bonus, exactly what combat rolls. weapon.Speed likewise resolves the base's
+    // swing-seconds anchor, so SwingSeconds folds the wired SwingSpeedPct over that anchored base time.
+    private static string WeaponStatsLine(BaseWeapon weapon, in WeaponEffectRow row)
+    {
+        var min = weapon.MinDamage + weapon.MinDamage * row.DamagePct / 100;
+        var max = weapon.MaxDamage + weapon.MaxDamage * row.DamagePct / 100;
+        var damage = min == max ? $"{min}" : $"{min}-{max}";
+        var seconds = SwingSeconds(weapon, row.SwingSpeedPct);
+
+        return seconds > 0 ? $"Damage {damage}, speed {seconds:0.0}s" : $"Damage {damage}";
+    }
+
+    private static double SwingSeconds(BaseWeapon weapon, int swingSpeedPct)
+    {
+        double speed = weapon.Speed;
+
+        if (speed <= 0)
+        {
+            return 0;
+        }
+
+        var baseSeconds = 15000.0 / ((ReferenceStamina + 100) * speed);
+
+        return baseSeconds * 100.0 / (100 + swingSpeedPct);
+    }
+
+    // Armor/shield effective rating — BaseArmor.ArmorRating already folds in the variant bonus AR
+    // (RarityEffects.GetBonusArmorRating) and durability scaling, so it is the live effective value.
+    private static string ArmorStatsLine(BaseArmor armor) => $"Armor {(int)Math.Round(armor.ArmorRating)}";
+
+    // Prefixes the theme's short myth tag (framework §3) onto its effect summary. Cold display path,
+    // so the single tag-join allocation is fine (mirrors the ClauseText/Build*Summary convention).
+    // Tags are stored lowercase where they are concepts ("unbreakable") — capitalize uniformly so
+    // god names and concept tags read the same way at line start ("Ares —", "Unbreakable —").
+    private static string PrefixMythTag(VariantRoot root, string effects) =>
+        string.IsNullOrEmpty(effects) ? null : $"{CapFirst(VariantRootInfo.GetMythTag(root))} — {effects}";
+
     private static string BuildArmorSummary(in ArmorEffectRow row)
     {
         var sb = ValueStringBuilder.Create();
 
-        AppendPct(ref sb, "AR +", row.BonusAr);
-        AppendPct(ref sb, "DR +", row.DrPct);
+        // Bonus AR is a flat armor value (folded into the "Armor N" stats line), not a percent — so
+        // it uses a flat "+N" append, unlike the "%" effects below.
+        if (row.BonusAr > 0)
+        {
+            sb.Append($"armor +{row.BonusAr}");
+        }
+
+        AppendPct(ref sb, "damage reduction +", row.DrPct);
         AppendPct(ref sb, "shrug ", row.ShrugPct);
         AppendPct(ref sb, "reflect ", row.ReflectPct);
         AppendPct(ref sb, "flame proc ", row.FlameProcPct);
         AppendPct(ref sb, "HP regen +", row.HpRegenPct);
         AppendPct(ref sb, "heals +", row.HealsReceivedPct);
-        AppendPct(ref sb, "spell DR ", row.SpellDrPct);
-        AppendPct(ref sb, "para resist ", row.ParaResistPct);
+        AppendPct(ref sb, "spell damage reduction ", row.SpellDrPct);
+        AppendPct(ref sb, "paralyze resist ", row.ParaResistPct);
         AppendPct(ref sb, "weight -", row.WeightReductionPct);
-        AppendPct(ref sb, "stam regen +", row.StamRegenPct);
+        AppendPct(ref sb, "stamina regen +", row.StamRegenPct);
         AppendPct(ref sb, "dodge ", row.DodgePct);
         AppendPct(ref sb, "parry ", row.ParryPct);
-        AppendPct(ref sb, "parry DR ", row.ParryDrPct);
+        AppendPct(ref sb, "parry damage reduction ", row.ParryDrPct);
 
         // Re-theme lane fields + previously unprinted bool effects.
         AppendPct(ref sb, "poison resist ", row.PoisonResistPct);
-        AppendPct(ref sb, "on-kill stam ", row.OnKillStamPct);
+        AppendPct(ref sb, "on-kill stamina ", row.OnKillStamPct);
         AppendPct(ref sb, "on-kill HP ", row.OnKillHpPct);
 
         if (row.HidingBonus > 0)
@@ -230,19 +276,19 @@ public static partial class RarityEffects
         if (row.SelfRepair)
         {
             AppendSeparator(ref sb);
-            sb.Append("Self-repair");
+            sb.Append("self-repair");
         }
 
         if (row.AutoCure)
         {
             AppendSeparator(ref sb);
-            sb.Append("Auto-cure");
+            sb.Append("auto-cure");
         }
 
         if (row.ParryThorns)
         {
             AppendSeparator(ref sb);
-            sb.Append("Parry thorns");
+            sb.Append("parry thorns");
         }
 
         var result = sb.ToString();
@@ -257,12 +303,12 @@ public static partial class RarityEffects
         AppendPct(ref sb, "stat +", row.StatBonus);
         AppendPct(ref sb, "lightning proc ", row.LightningProcPct);
         AppendPct(ref sb, "mana regen +", row.ManaRegenPct);
-        AppendPct(ref sb, "spell dmg +", row.SpellDamagePct);
+        AppendPct(ref sb, "spell damage +", row.SpellDamagePct);
         AppendPct(ref sb, "mana leech ", row.ManaLeechPct);
         AppendPct(ref sb, "hit halved ", row.HitHalvedPct);
         AppendPct(ref sb, "reroll miss ", row.MissRerollPct);
-        AppendPct(ref sb, "Hiding +", row.HidingBonus);
-        AppendPct(ref sb, "Stealth +", row.StealthBonus);
+        AppendPct(ref sb, "hiding +", row.HidingBonus);
+        AppendPct(ref sb, "stealth +", row.StealthBonus);
         AppendPct(ref sb, "poison resist ", row.PoisonResistPct);
         AppendPct(ref sb, "all regen +", row.AllRegenPct);
         AppendPct(ref sb, "potion effect +", row.PotionEffectPct);
@@ -281,7 +327,7 @@ public static partial class RarityEffects
                 sb.Append(", ");
             }
 
-            sb.Append("Night sight");
+            sb.Append("night sight");
         }
 
         var result = sb.ToString();
@@ -296,50 +342,50 @@ public static partial class RarityEffects
         AppendPct(ref sb, "swing +", row.SwingSpeedPct);
         AppendPct(ref sb, "hit +", row.HitChancePct);
         AppendPct(ref sb, "extra-swing ", row.ExtraSwingPct);
-        AppendPct(ref sb, "dmg +", row.DamagePct);
+        AppendPct(ref sb, "damage +", row.DamagePct);
         AppendPct(ref sb, "crit +", row.CritChancePct);
-        AppendPct(ref sb, "crit dmg +", row.CritDamagePct);
+        AppendPct(ref sb, "crit damage +", row.CritDamagePct);
         AppendPct(ref sb, "mark ", row.MarkChancePct);
         AppendPct(ref sb, "block ", row.BlockPct);
-        AppendPct(ref sb, "block DR ", row.BlockDrPct);
+        AppendPct(ref sb, "block damage reduction ", row.BlockDrPct);
         AppendPct(ref sb, "lifesteal ", row.LifestealPct);
-        AppendPct(ref sb, "stam regen +", row.StamRegenPct);
+        AppendPct(ref sb, "stamina regen +", row.StamRegenPct);
 
         // Re-theme lane fields (framework §4 menu).
         AppendPct(ref sb, "splash ", row.SplashPct);
-        AppendPct(ref sb, "armor pen ", row.ArmorPenPct);
+        AppendPct(ref sb, "armor penetration ", row.ArmorPenPct);
         AppendPct(ref sb, "stagger ", row.StaggerProcPct);
         AppendPct(ref sb, "poison ", row.PoisonApplyPct);
         AppendPct(ref sb, "mana leech ", row.ManaLeechPct);
-        AppendPct(ref sb, "elem proc ", row.ElementalProcPct);
+        AppendPct(ref sb, row.ElementalKind == 1 ? "fire proc " : "lightning proc ", row.ElementalProcPct);
         AppendPct(ref sb, "heal-block ", row.HealBlockProcPct);
         AppendPct(ref sb, "first hit +", row.FirstHitBonusPct);
 
         if (row.NthHitBonusPct > 0)
         {
             AppendSeparator(ref sb);
-            sb.Append($"Every {row.NthHitN}th +{row.NthHitBonusPct}%");
+            sb.Append($"every {row.NthHitN}th +{row.NthHitBonusPct}%");
         }
 
         if (row.RampPerStackPct > 0)
         {
             AppendSeparator(ref sb);
-            sb.Append($"Ramp +{row.RampPerStackPct}%/hit (max {row.RampMaxStacks})");
+            sb.Append($"ramp +{row.RampPerStackPct}%/hit (max {row.RampMaxStacks})");
         }
 
-        AppendPct(ref sb, "on-kill stam ", row.OnKillStamPct);
+        AppendPct(ref sb, "on-kill stamina ", row.OnKillStamPct);
 
         if (row.DefenderStamDrainFlat > 0)
         {
             AppendSeparator(ref sb);
-            sb.Append($"Drain {row.DefenderStamDrainFlat} stam");
+            sb.Append($"drain {row.DefenderStamDrainFlat} stamina");
         }
 
         // Worn-side utility (held-weapon passives — staves/fencing/archery lanes).
-        AppendPct(ref sb, "spell DR ", row.SpellDrPct);
+        AppendPct(ref sb, "spell damage reduction ", row.SpellDrPct);
         AppendPct(ref sb, "mana regen +", row.ManaRegenPct);
         AppendPct(ref sb, "dodge ", row.DodgePct);
-        AppendPct(ref sb, "heals recv +", row.HealsReceivedPct);
+        AppendPct(ref sb, "heals received +", row.HealsReceivedPct);
 
         if (row.ResistSkillBonus > 0)
         {
@@ -350,7 +396,7 @@ public static partial class RarityEffects
         if (row.AutoCure)
         {
             AppendSeparator(ref sb);
-            sb.Append("Auto-cure");
+            sb.Append("auto-cure");
         }
 
         var result = sb.ToString();
@@ -386,10 +432,10 @@ public static partial class RarityEffects
         Span<char> number = stackalloc char[8];
         pct.TryFormat(number, out var written);
 
-        // Capitalize the first letter so each effect reads as its own capitalized item
-        // ("Swing +5%", "Stam regen +5%"). Labels are non-empty; idempotent for already-caps ones.
-        sb.Append(char.ToUpperInvariant(label[0]));
-        sb.Append(label.AsSpan(1));
+        // Labels are authored in final casing (lowercase words, acronyms like "AR"/"HP" kept) so
+        // the effects read as a lowercase list after the capitalized myth tag ("Ares — damage +10%,
+        // crit chance +10%"). Appended verbatim — no per-item capitalization.
+        sb.Append(label);
         sb.Append(number[..written]);
         sb.Append("%");
     }

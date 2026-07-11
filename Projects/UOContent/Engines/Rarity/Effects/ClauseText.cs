@@ -44,8 +44,8 @@ public static class ClauseText
             ? $"every {p1}th hit crits and ignores {p2}% of the target's armor"
             : $"natural crits ignore {p2}% of the target's armor",
         ClauseType.CritExecuteUnder15 => p1 > 0
-            ? $"every {p1}th hit crits; crits deal double damage vs targets under 15% health"
-            : "crits deal double damage vs targets under 15% health",
+            ? $"every {p1}th hit crits; crits deal double damage vs targets under {(p2 > 0 ? p2 : 15)}% health"
+            : $"crits deal double damage vs targets under {(p2 > 0 ? p2 : 15)}% health",
 
         // Mark family (Agrotera)
         ClauseType.MarkFirstHit => "the first hit of every fight marks the target for bonus damage",
@@ -61,7 +61,7 @@ public static class ClauseText
         ClauseType.ReflectFirstHit => $"the first hit taken each fight reflects {p1}% damage back and staggers the attacker",
 
         // Drain family (Stygian)
-        ClauseType.LifestealOnCrit => "crits heal the wielder for a portion of the damage dealt",
+        ClauseType.LifestealOnCrit => "crits heal you for a portion of the damage dealt",
         ClauseType.OnKillRestore => p1 >= 2 ? "on-kill: restores stamina and mana" : "on-kill: restores stamina",
         ClauseType.StamDrainOnCrit => "crits drain the target's stamina",
         ClauseType.PoisonTickDoubled => "the first hit of every fight marks the target; poison ticks vs a mark are doubled",
@@ -114,15 +114,15 @@ public static class ClauseText
         // ---- P3a additions: armor + shields (families 7-9) ----------------------------------
 
         // Polias/Aegis shrug riders (metal + light armor)
-        ClauseType.ShrugStunAttacker => "a fully shrugged blow briefly stuns the attacker",
-        ClauseType.ShrugReflect => $"a fully shrugged blow reflects {p1}% of its damage back",
+        ClauseType.ShrugStunAttacker => "a fully shrugged hit briefly stuns the attacker",
+        ClauseType.ShrugReflect => $"a fully shrugged hit reflects {p1}% of its damage back",
         ClauseType.ShrugFirstHitGuaranteed => "the first hit taken each fight is always shrugged",
 
         // Option A slot-set signatures (armor-slotsets plan, Phase 3)
         ClauseType.ShrugFirstHitPoisonAttacker => "the first hit taken each fight is shrugged, poisoning the attacker",
         ClauseType.ShrugFirstHitDrainStam => $"the first hit taken each fight is shrugged, draining {AmountOr(p1)} stamina from the attacker",
         ClauseType.ShrugFirstHitDrBurst => $"the first hit taken each fight is shrugged, granting +{p1}% damage reduction for {SecsOr(p2)}",
-        ClauseType.ShrugReflectStun => $"a fully shrugged blow reflects {p1}% of its damage back and briefly stuns the attacker",
+        ClauseType.ShrugReflectStun => $"a fully shrugged hit reflects {p1}% of its damage back and briefly stuns the attacker",
 
         // Cyclopean flame-proc riders
         ClauseType.FlameProcDoubleFirstHit => "the flame proc chance doubles vs the first hit of any fight",
@@ -139,7 +139,7 @@ public static class ClauseText
         ClauseType.AutoCureClearsDebuffsOnce => "the auto-cure tick also clears mark and heal-block, once per fight",
         ClauseType.AutoCureRestoresHpPct => $"the auto-cure tick also restores {PctOr(p1)} missing health",
         ClauseType.LowHpEmergencyCure => $"once per fight below {p1}% health: a free cure and {PctOr(p2)} health restored",
-        ClauseType.EmergencyRegenTick => $"once per fight, a hit dropping the wearer under {p1}% health fires a full regen tick",
+        ClauseType.EmergencyRegenTick => $"once per fight, a hit dropping you under {p1}% health fires a full regen tick",
 
         // Tritonian ward riders
         ClauseType.ParaResistBoostsSpellDr => $"resisting a paralyze raises spell resist to {p1}% for {SecsOr(p2)}",
@@ -176,7 +176,7 @@ public static class ClauseText
         ClauseType.SelfRepairRestoresHp => $"each self-repair tick also restores {PctOr(p1)} max health",
         ClauseType.ReflectCritStun => "reflect damage from a blocked crit briefly stuns the attacker",
         ClauseType.HpRegenBurstOnCritTaken => $"health regen rate triples for {SecsOr(p1)} after taking a crit",
-        ClauseType.OnKillRestoreExtraHp => $"on the wearer's first kill each fight, restores an extra {PctOr(p1)} max health",
+        ClauseType.OnKillRestoreExtraHp => $"on your first kill each fight, restores an extra {PctOr(p1)} max health",
         ClauseType.HealBlockOnFirstHitLanded => $"the first hit landed each fight heal-blocks its target for {SecsOr(p1)}",
         ClauseType.ManaRegenMirrorsHp => "mana regen rate gains the same bonus as health regen",
         ClauseType.StamRegenMirrorsHp => "stamina regen rate gains the same bonus as health regen",
@@ -223,6 +223,10 @@ public static class ClauseText
         ClauseType.DurabilityLossImmunity => "immune to durability loss while worn",
         ClauseType.DodgeSnare => $"a successful dodge webs the attacker, slowing their swings by {p1}% for {SecsOr(p2)}",
 
+        // Hat-bound clothing relics (displacing-cloth cycle)
+        ClauseType.HealsReceivedBonusPct => $"+{p1}% to all healing received while worn",
+        ClauseType.StationaryRegenFaster => $"the hearth-calm settles after {SecsOr(p1)} of standing still instead of 10 seconds",
+
         // ---- P2 (re-theme 2026-07-07): per-family Epic signature clauses ---------------------
         ClauseType.RampMaxStacksSplash => $"when a consecutive-hit ramp maxes out, splashes {p1}% to {p2} targets",
         ClauseType.OnKillFullStamNextHitCrit => $"on-kill: full stamina and the next hit crits within {SecsOr(p1)}",
@@ -232,8 +236,8 @@ public static class ClauseText
         ClauseType.NthHitFullArmorPen => $"every {p1}th hit ignores armor entirely",
         ClauseType.ExtraSwingChain => ExtraSwingText(p1, " that may itself chain once more"),
         ClauseType.CritFirstHitStamRefund => "the first hit of every fight is a guaranteed crit and refunds its swing's stamina cost",
-        ClauseType.PoisonedTargetsMarked => $"targets the wielder poisons are marked, taking +{p1}% damage",
-        ClauseType.DodgeGrantsCounterWindow => $"for {SecsOr(p1)} after a dodge, the wielder's next swing crits",
+        ClauseType.PoisonedTargetsMarked => $"targets you poison are marked, taking +{p1}% damage",
+        ClauseType.DodgeGrantsCounterWindow => $"for {SecsOr(p1)} after a dodge, your next swing crits",
         ClauseType.ParryRestoresStam => $"a successful parry restores {p1}% max stamina",
 
         _ => null

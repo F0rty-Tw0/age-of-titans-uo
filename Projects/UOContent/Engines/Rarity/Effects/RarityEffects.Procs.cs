@@ -11,6 +11,16 @@ namespace Server.Engines.Rarity;
 
 public static partial class RarityEffects
 {
+    // Coverage list for the mark path: ApplyMark's inline PoisonTickDoubled + AccumulateMark's and
+    // RunMarkRider's switches below. (MarkSpreadOnDeath's other dispatch site is in Hooks.cs.)
+    internal static readonly ClauseType[] HandledByMark =
+    {
+        ClauseType.MarkFirstHit, ClauseType.MarkNearbyAllies, ClauseType.MarkSpreadOnDeath,
+        ClauseType.PoisonTickDoubled, ClauseType.MarkManaLeech, ClauseType.MarkElemental,
+        ClauseType.MarkHealBlockFirstHit, ClauseType.MarkAllSources25, ClauseType.MarkOnCrit,
+        ClauseType.MarkHealBlock
+    };
+
     private static void ApplyMark(Mobile attacker, Mobile defender, in WeaponHitContext ctx)
     {
         if (WornEffectState.ConsumeSecondaryEffectSuppression(defender)) // Hyperbios
@@ -115,6 +125,14 @@ public static partial class RarityEffects
     // Dual-invoked per hit — once for the lane signature slot, once for the legendary's unique
     // clause. Each side effect fires at most once per hit because the signature-type and
     // unique-type differ within a lane (audit invariant). ctx supplies the shared IsCrit/Row.
+    // Coverage list for RunClauseProcs' switch below (ClauseDispatchCoverageTests).
+    internal static readonly ClauseType[] HandledByClauseProcs =
+    {
+        ClauseType.CritFirstHit, ClauseType.CritSplash, ClauseType.LifestealOnCrit, ClauseType.StamDrainOnCrit,
+        ClauseType.OnKillRestore, ClauseType.CritPoisonTick, ClauseType.CritStagger, ClauseType.CritElemental,
+        ClauseType.CritManaLeech, ClauseType.CritHealBlock, ClauseType.MarkManaLeech
+    };
+
     private static void RunClauseProcs(
         Mobile attacker, Mobile defender, int damageGiven, ClauseType clause, short p1, short p2, short p3,
         in WeaponHitContext ctx

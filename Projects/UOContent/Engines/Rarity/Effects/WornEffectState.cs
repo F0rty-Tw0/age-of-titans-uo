@@ -75,7 +75,7 @@ public static class WornEffectState
     // §9.4 stacking is keyed by mechanic StackGroup, not raw root: the strongest piece in a
     // group counts full, every other piece in that group at half, so cross-material same-mechanic
     // pieces (e.g. a Talarian suit + an Ophis weapon) pool instead of each counting in full.
-    private const int GroupCount = VariantRootInfo.StackGroupCount;
+    private static readonly int GroupCount = VariantRootInfo.StackGroupCount;
 
     // Suit-wide hard ceilings (framework §9.8). DrCap/ReflectCap/HpRegenCap are public: the
     // burst consume sites in RarityEffects.Defense/.Worn clamp their effective totals against
@@ -119,6 +119,12 @@ public static class WornEffectState
 
     public static IReadOnlyList<LegendaryEntry> GetLegendaries(Mobile wearer) =>
         wearer != null && _legendaries.TryGetValue(wearer, out var list) ? list : Array.Empty<LegendaryEntry>();
+
+    // Coverage list for Rebuild's StatBonusSplashSecondStat (Aither) check in the accessory loop.
+    internal static readonly ClauseType[] HandledByRebuildAggregate = { ClauseType.StatBonusSplashSecondStat };
+
+    // Coverage list for Rebuild's HealsReceivedBonusPct (Diadema) fold-in above.
+    internal static readonly ClauseType[] HandledByHealsReceived = { ClauseType.HealsReceivedBonusPct };
 
     // Rebuilds the wearer's aggregate + legendary list from scratch by walking their worn
     // items (armor/shields, then jewelry/clothing). Called after any piece is added or removed.
@@ -200,7 +206,7 @@ public static class WornEffectState
                      (clothingVariant.VariantRoot != VariantRoot.None || clothingVariant.LegendaryId != 0))
             {
                 var (root, rarity) = RarityEffects.ResolveRootRarity(clothingVariant, clothing.Rarity);
-                var row = AccessoryEffectTable.Get(root, rarity, isClothing: true);
+                var row = AccessoryEffectTable.Get(root, rarity, isClothing: true, AccessoryEffectTable.IsDisplacingClothing(clothing));
 
                 accessoryItems.Add((root, rarity, row, clothing));
 
@@ -417,6 +423,19 @@ public static class WornEffectState
 
         DedupeClauses(legendaries);
 
+        // Diadema (Charis hat relic): +P1% to all healing received, folded into the heals-received
+        // pool on Rebuild (WornStatMod) so the single AdjustHealAmount choke point picks it up.
+        if (legendaries != null)
+        {
+            for (var i = 0; i < legendaries.Count; i++)
+            {
+                if (legendaries[i].Clause == ClauseType.HealsReceivedBonusPct)
+                {
+                    healsReceived += legendaries[i].P1 > 0 ? legendaries[i].P1 : 15;
+                }
+            }
+        }
+
         // P4 — armor slot-set capstone: min(4, available slots) Epic+ pieces of one material
         // completes the set. First match wins; the slot math makes a second match impossible.
         var hasCapstone = false;
@@ -525,37 +544,19 @@ public static class WornEffectState
         );
     }
 
-    // P4 capstone metadata. Threshold = min(4, available slots): chainmail only has 3 piece
-    // shapes (helm/chest/legs); every other set material requires 4. Non-set materials return 0.
-    private static int CapstoneThreshold(ArmorMaterialType material) => material switch
-    {
-        ArmorMaterialType.Chainmail => 3,
-        ArmorMaterialType.Leather or ArmorMaterialType.Studded or ArmorMaterialType.Bone
-            or ArmorMaterialType.Ringmail or ArmorMaterialType.Plate => 4,
-        _ => 0
-    };
+    // P4 capstone metadata — sourced from each ArmorFamilyDefinition (Families/*.cs) via the
+    // registry. Threshold = min(4, available slots): chainmail only has 3 piece shapes, so 3; every
+    // other set material 4; non-set materials 0. Name/icon default to Plate's ("Siege-Shock"/
+    // Knockout) for any material without a capstone, preserving the legacy switch defaults.
+    private static int CapstoneThreshold(ArmorMaterialType material) => FamilyRegistry.CapstoneThreshold(material);
 
-    internal static string CapstoneName(ArmorMaterialType material) => material switch
-    {
-        ArmorMaterialType.Leather => "Evasion",
-        ArmorMaterialType.Studded => "Venom",
-        ArmorMaterialType.Bone => "Grave-Chill",
-        ArmorMaterialType.Ringmail => "Phalanx-Thorns",
-        ArmorMaterialType.Chainmail => "Ward-Surge",
-        _ => "Siege-Shock" // Plate
-    };
+    internal static string CapstoneName(ArmorMaterialType material) => FamilyRegistry.CapstoneName(material);
 
-    // Icons chosen to not collide with ones the rarity engine already adds/removes
-    // (EnemyOfOneDebuff, MortalStrike, Rage) or the timed Ward-Surge burst (Protection).
-    internal static BuffIcon CapstoneIcon(ArmorMaterialType material) => material switch
-    {
-        ArmorMaterialType.Leather => BuffIcon.Evasion,
-        ArmorMaterialType.Studded => BuffIcon.InjectedStrike,
-        ArmorMaterialType.Bone => BuffIcon.DeathStrike,
-        ArmorMaterialType.Ringmail => BuffIcon.Block,
-        ArmorMaterialType.Chainmail => BuffIcon.Toughness,
-        _ => BuffIcon.Knockout // Plate
-    };
+    // Icons chosen to not collide with ones the rarity engine already adds/removes: the mark
+    // (EnemyOfOneDebuff), heal-block (MortalStrike), frenzy (Rage), Ward-Surge burst (Protection),
+    // crit-ready flag (LightningStrike), and the dodge/regen burst icons armed in ArmClauseBurst
+    // (Invigorate, GiftOfLife, GiftOfRenewal, OrangePetals).
+    internal static BuffIcon CapstoneIcon(ArmorMaterialType material) => FamilyRegistry.CapstoneIcon(material);
 
     // Keeps the indefinite set-bonus buff icon in step with the rebuilt aggregate; duration
     // default = indefinite, so completing a set shows the icon until the set is broken.
@@ -568,9 +569,22 @@ public static class WornEffectState
 
         if (hasCapstone && (!previous.HasCapstone || previous.CapstoneMaterial != material))
         {
-            BuffHelper.AddCustomBuff(wearer, CapstoneIcon(material), CapstoneName(material));
+            BuffHelper.AddCustomBuff(wearer, CapstoneIcon(material), $"{CapstoneName(material)}: {CapstoneEffectText(material)}");
         }
     }
+
+    // One-line description of what a completed set's capstone does (RarityEffects.WeaponHit/.Defense
+    // apply these; §P4). Feeds the capstone buff-bar readout alongside its themed name.
+    private static string CapstoneEffectText(ArmorMaterialType material) => material switch
+    {
+        ArmorMaterialType.Leather   => "+6% dodge",
+        ArmorMaterialType.Studded   => "your hits poison the target",
+        ArmorMaterialType.Bone      => "your hits heal-block the target",
+        ArmorMaterialType.Ringmail  => "+8% reflect while struck",
+        ArmorMaterialType.Chainmail => "damage reduction maxes briefly after you take a crit",
+        ArmorMaterialType.Plate     => "your hits briefly stun the target",
+        _                           => "full set bonus"
+    };
 
     // P5 — suit-wide dedupe safety net: a ClauseType dispatches at most once per wearer, even
     // when a real legendary and a slot/lane signature (or two worn legendaries) carry the same
@@ -694,6 +708,9 @@ public static class WornEffectState
     private static void SyncResistSkillMod(Mobile wearer, int bonus) =>
         SyncSkillMod(wearer, _resistSkillMods, SkillName.MagicResist, "RarityResistingSpells", bonus);
 
+    // Coverage list for SyncAnimalTamingSkillMod's AnimalTamingSkillBonus (Lachesis) check below.
+    internal static readonly ClauseType[] HandledByAnimalTaming = { ClauseType.AnimalTamingSkillBonus };
+
     private static void SyncAnimalTamingSkillMod(Mobile wearer, List<LegendaryEntry> legendaries)
     {
         var bonus = 0;
@@ -752,9 +769,30 @@ public static class WornEffectState
 
     public static void ArmClauseBurst(Mobile wearer, ClauseType clause, TimeSpan duration)
     {
-        if (wearer != null)
+        if (wearer == null)
         {
-            _clauseBursts[(wearer, clause)] = Core.TickCount + (long)duration.TotalMilliseconds;
+            return;
+        }
+
+        _clauseBursts[(wearer, clause)] = Core.TickCount + (long)duration.TotalMilliseconds;
+
+        // Dodge/regen bursts previously surfaced only floating text; add a timed buff-bar icon too.
+        // Timed icons auto-expire with `duration`, so no removal bookkeeping is needed. Icons reuse
+        // anachronistic regen/stamina buff art (buff bar intentionally enabled on T2A) and are chosen
+        // not to collide with the mark/heal-block/frenzy/ward-surge/capstone/crit-ready icons already
+        // in use; in-client rendering flagged for verification in the text-pass report.
+        var (icon, label) = clause switch
+        {
+            ClauseType.DodgeRegenBurst         => (BuffIcon.Invigorate, "Dodge Surge: stamina regen up"),
+            ClauseType.HpRegenBurstOnCritTaken => (BuffIcon.GiftOfLife, "Regen Surge: health regen up"),
+            ClauseType.HitHalvedRegenPulse     => (BuffIcon.GiftOfRenewal, "Regen Pulse: health/stamina/mana regen up"),
+            ClauseType.RegenDoubleAfterPotion  => (BuffIcon.OrangePetals, "Elixir: regen doubled"),
+            _                                  => (default(BuffIcon), null)
+        };
+
+        if (label != null)
+        {
+            BuffHelper.AddCustomBuff(wearer, icon, label, duration);
         }
     }
 

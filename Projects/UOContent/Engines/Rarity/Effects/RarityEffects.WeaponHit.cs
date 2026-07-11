@@ -39,6 +39,10 @@ public static partial class RarityEffects
         return delaySeconds * 100.0 / divisor;
     }
 
+    // Coverage list for AdjustHitChance's DodgeDoubleFirstAttack check (ClauseDispatchCoverageTests).
+    internal static readonly ClauseType[] HandledByHitChance =
+        { ClauseType.DodgeDoubleFirstAttack };
+
     // P3 — hit chance. Adds the weapon's HitChancePct to the to-hit roll (chance is 0..1), then
     // subtracts the defender's worn Talarian dodge% (armor/shield P3a).
     public static void AdjustHitChance(BaseWeapon weapon, Mobile attacker, Mobile defender, ref double chance)
@@ -100,6 +104,13 @@ public static partial class RarityEffects
     // reads this to suppress the generic "Miss" float for them.
     public static bool HasDodgePackage(Mobile defender) =>
         WornEffectState.GetAggregate(defender).DodgePct > 0;
+
+    // Coverage list for OnMeleeMiss's dodge-rider switch (+ the DodgeGrantsCounterWindow read above).
+    internal static readonly ClauseType[] HandledByMeleeMiss =
+    {
+        ClauseType.DodgeGrantsCounterWindow, ClauseType.DodgeRefundStam, ClauseType.DodgeRestoreMana,
+        ClauseType.DodgeRegenBurst, ClauseType.WeightReductionSuiteBurstOnDodge, ClauseType.DodgeSnare
+    };
 
     // Called from BaseWeapon.CheckHit only when the swing actually missed. A miss suffered by a
     // defender with no Talarian dodge% is an ordinary whiff, not a themed "dodge" — riders only
@@ -177,6 +188,14 @@ public static partial class RarityEffects
             }
         }
     }
+
+    // Coverage list for BeginWeaponHit's inline damage/armor-pen clause checks (bonus vs poisoned,
+    // low-HP / full-HP execute, Nth-hit armor pen). ArmClauseCritSwing below has its own list.
+    internal static readonly ClauseType[] HandledByHitDamage =
+    {
+        ClauseType.PoisonedTakeBonusDamage, ClauseType.CritExecuteUnder15, ClauseType.CritFullHpDouble,
+        ClauseType.NthHitFullArmorPen, ClauseType.CritArmorPen
+    };
 
     // Computed once per landed hit. Rolls crit + legendary cadence and returns the damage-bonus
     // percent to fold into OnHit's percentageBonus, plus the context for the post-hit procs.
@@ -293,6 +312,18 @@ public static partial class RarityEffects
             signature, s1, s2, s3, hitCount, rampReachedMax
         );
     }
+
+    // Coverage list for ArmClauseCritSwing's switch below (ClauseDispatchCoverageTests).
+    internal static readonly ClauseType[] HandledByCritSwingArm =
+    {
+        ClauseType.CritFirstHit, ClauseType.CritFirstHitStamRefund, ClauseType.CritEveryN, ClauseType.CritSplash,
+        ClauseType.CritArmorPen, ClauseType.CritExecuteUnder15, ClauseType.CritPoisonTick, ClauseType.CritStagger,
+        ClauseType.CritElemental, ClauseType.CritManaLeech, ClauseType.CritHealBlock, ClauseType.CritFullHpDouble,
+        ClauseType.ExtraSwingEveryN, ClauseType.DoubleStrikeEveryN, ClauseType.ExtraSwingSplash,
+        ClauseType.ExtraSwingGuaranteedHit, ClauseType.ExtraSwingManaLeech, ClauseType.ExtraSwingHealBlock,
+        ClauseType.ExtraSwingChain, ClauseType.ExtraSwingElemental, ClauseType.ExtraSwingFirstHit,
+        ClauseType.ExtraSwingStackingHit
+    };
 
     // Dual-invoked crit/extra-swing arming for one clause slot. Only touches the ref bools (safe
     // to run twice); the ExtraSwingStackingHit stack mutation is guarded by its clause matching
@@ -445,6 +476,14 @@ public static partial class RarityEffects
         }
     }
 
+    // Coverage list for RunRowNumericProcs' inline signature checks below (Nth-hit splash, ramp-max
+    // splash, poisoned-targets-marked, first-hit-crit stam refund).
+    internal static readonly ClauseType[] HandledByRowNumericProcs =
+    {
+        ClauseType.NthHitSplash, ClauseType.RampMaxStacksSplash, ClauseType.PoisonedTargetsMarked,
+        ClauseType.CritFirstHitStamRefund
+    };
+
     // Always-on numeric lane hooks (row fields) plus the cadence/ramp/poison signatures that ride
     // the landed hit. Runs once per hit (fields are slot-independent).
     private static void RunRowNumericProcs(Mobile attacker, Mobile defender, int damageGiven, in WeaponHitContext ctx)
@@ -526,6 +565,13 @@ public static partial class RarityEffects
         }
     }
 
+    // Coverage list for ApplyOlympianLightningProc's rider switch below.
+    internal static readonly ClauseType[] HandledByLightningProc =
+    {
+        ClauseType.LightningProcRefundStam, ClauseType.LightningProcChanceRestoreMana,
+        ClauseType.LightningProcResistBurst
+    };
+
     // Olympian: a % chance the wearer's own landed melee hit also triggers a lightning proc.
     private static void ApplyOlympianLightningProc(Mobile attacker, Mobile defender)
     {
@@ -580,6 +626,20 @@ public static partial class RarityEffects
     // of whether the attacker's weapon carries a rarity variant; these are the wearer's armor,
     // not the weapon. ctx may be default() for a plain weapon, so the ctx.IsCrit / ctx.IsFirstHit
     // branches below stay dormant then, while the weapon-independent on-kill block still runs.
+    // Coverage lists for ApplyArmorHitRiders. The first covers its crit-taken bursts + landed-hit
+    // riders (heal-block-on-landed, frenzy stagger); the second covers its trailing on-kill block.
+    internal static readonly ClauseType[] HandledByArmorHitRider =
+    {
+        ClauseType.HpRegenBurstOnCritTaken, ClauseType.SpellDrBurstOnCritTaken,
+        ClauseType.HealBlockOnFirstHitLanded, ClauseType.FrenzyStaggerChance
+    };
+
+    internal static readonly ClauseType[] HandledByOnKillWeapon =
+    {
+        ClauseType.OnKillRestoreMissingHpPct, ClauseType.OnKillRestoreExtraHp, ClauseType.OnKillRestoreHpPct,
+        ClauseType.OnKillDodgeDoubleDuration, ClauseType.OnKillStamRestoreExtendImmunity
+    };
+
     private static void ApplyArmorHitRiders(Mobile attacker, Mobile defender, in WeaponHitContext ctx)
     {
         if (ctx.IsCrit)
@@ -730,6 +790,15 @@ public static partial class RarityEffects
             }
         }
     }
+
+    // Coverage list for the extra-swing riders: DoExtraSwing's inline clause reads (Notos stagger,
+    // double-strike, guaranteed-hit) plus ApplyExtraSwingRider's switch (splash/leech/heal-block/elem).
+    internal static readonly ClauseType[] HandledByExtraSwingRider =
+    {
+        ClauseType.ExtraSwingEveryN, ClauseType.DoubleStrikeEveryN, ClauseType.ExtraSwingGuaranteedHit,
+        ClauseType.ExtraSwingSplash, ClauseType.ExtraSwingManaLeech, ClauseType.ExtraSwingHealBlock,
+        ClauseType.ExtraSwingElemental
+    };
 
     private static void DoExtraSwing(BaseWeapon weapon, Mobile attacker, Mobile defender, in WeaponHitContext ctx)
     {

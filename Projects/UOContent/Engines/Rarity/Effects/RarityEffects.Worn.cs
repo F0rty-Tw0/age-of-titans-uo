@@ -36,6 +36,13 @@ public static partial class RarityEffects
     // handler right after each tick fires. Doubles as the periodic hook for the auto-cure roll
     // and the low-HP emergency-cure clause so no second per-mobile timer is needed (CLAUDE.md
     // rule 6). `baseRate` already reflects era (AOS vs pre-AOS) — only the rarity bonus is added.
+    // Coverage list for AdjustHitsRegenRate's clause reads (hidden-double + the burst multipliers).
+    internal static readonly ClauseType[] HandledByHitsRegen =
+    {
+        ClauseType.RegenDoubleWhileHidden, ClauseType.HpRegenBurstOnCritTaken, ClauseType.HitHalvedRegenPulse,
+        ClauseType.RegenDoubleAfterPotion, ClauseType.StationaryRegenFaster
+    };
+
     public static TimeSpan AdjustHitsRegenRate(Mobile m, TimeSpan baseRate)
     {
         var agg = WornEffectState.GetAggregate(m);
@@ -45,7 +52,7 @@ public static partial class RarityEffects
 
         var pct = agg.HpRegenPct;
 
-        if (agg.StationaryRegenPct > 0 && IsStationary(m))
+        if (agg.StationaryRegenPct > 0 && IsStationary(m, legendaries))
         {
             pct += agg.StationaryRegenPct; // Hestian
         }
@@ -88,7 +95,30 @@ public static partial class RarityEffects
     }
 
     // Hestian: the stationary-regen bonus only applies once the wearer hasn't moved in >=10s.
-    private static bool IsStationary(Mobile m) => Core.TickCount - m.LastMoveTime >= 10_000;
+    // Kalyptra (Hestian hat relic, StationaryRegenFaster) lowers that threshold to P1 seconds.
+    private static bool IsStationary(Mobile m, IReadOnlyList<LegendaryEntry> legendaries)
+    {
+        var thresholdMs = 10_000;
+
+        for (var i = 0; i < legendaries.Count; i++)
+        {
+            if (legendaries[i].Clause == ClauseType.StationaryRegenFaster) // Kalyptra
+            {
+                thresholdMs = (legendaries[i].P1 > 0 ? legendaries[i].P1 : 5) * 1000;
+                break;
+            }
+        }
+
+        return Core.TickCount - m.LastMoveTime >= thresholdMs;
+    }
+
+    // Coverage list for RunHitsTickSideEffects' auto-cure riders + low-HP cure + resist-skill switches.
+    internal static readonly ClauseType[] HandledByHitsTickSideEffects =
+    {
+        ClauseType.AutoCureRestoresStamMana, ClauseType.AutoCureClearsDebuffsOnce, ClauseType.AutoCureRestoresHpPct,
+        ClauseType.LowHpEmergencyCure, ClauseType.ResistSkillDoubleLowHp, ClauseType.ParaResistBoostsResistSkill,
+        ClauseType.ResistSkillBoostLowHp
+    };
 
     private static void RunHitsTickSideEffects(Mobile m, in WornAggregate agg, IReadOnlyList<LegendaryEntry> legendaries)
     {
@@ -181,6 +211,10 @@ public static partial class RarityEffects
     // Cyclopean "slow self-repair" (Rare+). No exact rate is specified in the design docs, so
     // this rolls a modest 10% chance per HP-regen tick per qualifying piece — a deliberately
     // slow trickle, tunable later. Danaos additionally mirrors 1% max HP per tick on its shield.
+    // Coverage list for TryArmorSelfRepairTick's SelfRepair burst + Danaos HP-mirror checks below.
+    internal static readonly ClauseType[] HandledBySelfRepair =
+        { ClauseType.SelfRepairBurstOnCritBlock, ClauseType.SelfRepairRestoresHp };
+
     private static void TryArmorSelfRepairTick(Mobile m)
     {
         var items = m.Items;
@@ -221,6 +255,14 @@ public static partial class RarityEffects
     // Talarian stam regen + Boutes' "mirrors HP regen" + dodge-regen bursts. Lasthenes' "ticks
     // also restore mana" rides the same cadence (approximated at the same rate rather than a
     // literal half — there is no fractional-tick primitive to halve against).
+    // Coverage list for AdjustStamRegenRate's clause switch below.
+    internal static readonly ClauseType[] HandledByStamRegen =
+    {
+        ClauseType.StamRegenMirrorsHp, ClauseType.DodgeRegenBurst, ClauseType.StamRegenMirrorsManaHalf,
+        ClauseType.RegenDoubleWhileHidden, ClauseType.OnKillStamRegenBurstStacking, ClauseType.HitHalvedRegenPulse,
+        ClauseType.RegenDoubleAfterPotion
+    };
+
     public static TimeSpan AdjustStamRegenRate(Mobile m, TimeSpan baseRate)
     {
         var agg = WornEffectState.GetAggregate(m);
@@ -275,13 +317,20 @@ public static partial class RarityEffects
     // Aristaios: mana regen rate gains the same bonus as HP regen. Also carries Hecatean's own
     // mana-regen% (P3a's "regen mechanism" family), Phoibe's low-mana double, and the same
     // Khaos/Ananke/Rhea burst riders as the other two regen hooks.
+    // Coverage list for AdjustManaRegenRate's clause switch below.
+    internal static readonly ClauseType[] HandledByManaRegen =
+    {
+        ClauseType.ManaRegenMirrorsHp, ClauseType.ManaRegenDoubleLowMana, ClauseType.RegenDoubleWhileHidden,
+        ClauseType.HitHalvedRegenPulse, ClauseType.RegenDoubleAfterPotion
+    };
+
     public static TimeSpan AdjustManaRegenRate(Mobile m, TimeSpan baseRate)
     {
         var agg = WornEffectState.GetAggregate(m);
         var legendaries = WornEffectState.GetLegendaries(m);
         var pct = agg.ManaRegenPct;
 
-        if (agg.StationaryAppliesMana && agg.StationaryRegenPct > 0 && IsStationary(m))
+        if (agg.StationaryAppliesMana && agg.StationaryRegenPct > 0 && IsStationary(m, legendaries))
         {
             pct += agg.StationaryRegenPct; // Hestian Epic
         }

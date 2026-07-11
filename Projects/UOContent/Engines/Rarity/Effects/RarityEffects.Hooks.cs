@@ -22,6 +22,9 @@ public static partial class RarityEffects
     // ENABLER clause — while worn, the wearer's spell DR also reduces poison damage-over-time.
     // Called from PoisonImpl.PoisonTimer on the merged tick total. With no spell DR from the
     // rest of the suit it correctly reduces nothing.
+    // Coverage list for ReducePoisonTickDamage's SpellDrVsPoisonDot enabler check below.
+    internal static readonly ClauseType[] HandledBySpellDrPoisonDot = { ClauseType.SpellDrVsPoisonDot };
+
     public static int ReducePoisonTickDamage(Mobile defender, int damage)
     {
         var legendaries = WornEffectState.GetLegendaries(defender);
@@ -53,6 +56,10 @@ public static partial class RarityEffects
 
     // Hecatean: mana leech on spell damage — runs at the same choke points, right after the
     // damage lands.
+    // Coverage list for ApplyHecateanSpellManaLeech's rider switch below.
+    internal static readonly ClauseType[] HandledBySpellManaLeech =
+        { ClauseType.ManaLeechRestoresStam, ClauseType.ManaLeechResistBurst };
+
     public static void ApplyHecateanSpellManaLeech(Mobile caster, Mobile target, int damageGiven)
     {
         if (caster == null || target == null || damageGiven <= 0)
@@ -98,6 +105,10 @@ public static partial class RarityEffects
     // Demetrian: healing-potion effect % + Gaia/Tethys flat stam/mana riders + Rhea's
     // regen-double burst. Called from BaseHealPotion.DoHeal — the single choke point shared by
     // every heal potion tier on this shard.
+    // Coverage list for AdjustPotionHeal's rider switch below.
+    internal static readonly ClauseType[] HandledByPotion =
+        { ClauseType.PotionRestoresStam, ClauseType.PotionRestoresMana, ClauseType.RegenDoubleAfterPotion };
+
     public static int AdjustPotionHeal(Mobile from, int amount)
     {
         var agg = WornEffectState.GetAggregate(from);
@@ -164,6 +175,9 @@ public static partial class RarityEffects
 
     // Nyxian/Arachne: a % chance to fully shrug a poison application (Achlys doubles it while
     // hidden). Called from PlayerMobile/BaseCreature's existing CheckPoisonImmunity overrides.
+    // Coverage list for TryResistPoisonApplication's PoisonResistDoubleWhileHidden check below.
+    internal static readonly ClauseType[] HandledByPoisonResist = { ClauseType.PoisonResistDoubleWhileHidden };
+
     public static bool TryResistPoisonApplication(Mobile defender)
     {
         var agg = WornEffectState.GetAggregate(defender);
@@ -201,6 +215,9 @@ public static partial class RarityEffects
 
     // Moros: successfully hiding restores mana. Called from Skills/Hiding.cs's single "hide
     // succeeded" branch.
+    // Coverage list for OnSuccessfulHide's HideRestoresMana check below.
+    internal static readonly ClauseType[] HandledByHide = { ClauseType.HideRestoresMana };
+
     public static void OnSuccessfulHide(Mobile m)
     {
         var legendaries = WornEffectState.GetLegendaries(m);
@@ -235,6 +252,9 @@ public static partial class RarityEffects
 
     // Metis: when the reroll itself also misses, the swing still counts as a guaranteed graze
     // that restores stamina rather than a total whiff.
+    // Coverage list for OnMissRerollFailed's MissRerollGrazeRestoreStam check below.
+    internal static readonly ClauseType[] HandledByMissReroll = { ClauseType.MissRerollGrazeRestoreStam };
+
     public static void OnMissRerollFailed(Mobile attacker)
     {
         var legendaries = WornEffectState.GetLegendaries(attacker);
@@ -251,6 +271,13 @@ public static partial class RarityEffects
             }
         }
     }
+
+    // Coverage list for GetSpellDrPct's burst/boost switch below (the spell-DR aggregate query).
+    internal static readonly ClauseType[] HandledBySpellDr =
+    {
+        ClauseType.SpellDrBurstOnCritTaken, ClauseType.SpellDrBoostFirstHit, ClauseType.ParaResistBoostsSpellDr,
+        ClauseType.LightningProcResistBurst, ClauseType.ManaLeechResistBurst, ClauseType.HitHalvedResistBurst
+    };
 
     private static int GetSpellDrPct(Mobile defender)
     {
@@ -296,6 +323,14 @@ public static partial class RarityEffects
     // Tritonian paralyze/stun resist. Returns true when the attempt is fully resisted (the
     // caller — ParalyzeSpell — then skips applying the paralysis). This is the only paralyze
     // effect live on this pre-AOS T2A shard, so "stun resist" in the design docs maps to it.
+    // Coverage list for TryResistParalyze: the auto-fail/reroll checks + the resisted-para rider
+    // switch below.
+    internal static readonly ClauseType[] HandledByParaResist =
+    {
+        ClauseType.FirstParaAutoFails, ClauseType.RerollFirstResist, ClauseType.ParaResistStunsAttacker,
+        ClauseType.ParaResistBoostsSpellDr, ClauseType.ParaResistBoostsResistSkill
+    };
+
     public static bool TryResistParalyze(Mobile attacker, Mobile defender)
     {
         var agg = WornEffectState.GetAggregate(defender);
@@ -372,6 +407,10 @@ public static partial class RarityEffects
 
     // ---- Death / delete: mark spread + eviction -----------------------------------------
 
+    // Coverage list for OnMobileGone's MarkSpreadOnDeath spread check (the mark's second dispatch
+    // site; its arming site is in Procs.cs, covered by HandledByMark).
+    internal static readonly ClauseType[] HandledByMarkSpread = { ClauseType.MarkSpreadOnDeath };
+
     [OnEvent(nameof(PlayerMobile.PlayerDeathEvent))]
     [OnEvent(nameof(PlayerMobile.PlayerDeletedEvent))]
     [OnEvent(nameof(BaseCreature.CreatureDeathEvent))]
@@ -414,6 +453,14 @@ public static partial class RarityEffects
     public static void OnPlayerLogin(PlayerMobile pm) => WornEffectState.Rebuild(pm);
 
     // Laurel's flat on-kill restores + the Klotho/Asteria/Okeanos legendary riders.
+    // Coverage list for ApplyOnKillEffects' rider switch below (LastKiller-driven worn/jewelry/
+    // clothing on-kill). The weapon-side on-kill block lives in WeaponHit.cs (HandledByOnKillWeapon).
+    internal static readonly ClauseType[] HandledByOnKillWorn =
+    {
+        ClauseType.OnKillFullManaRestore, ClauseType.OnKillStamRegenBurstStacking,
+        ClauseType.OnKillTriggerHeldPotion, ClauseType.OnKillFullStamNextHitCrit
+    };
+
     private static void ApplyOnKillEffects(Mobile killer)
     {
         var agg = WornEffectState.GetAggregate(killer);
