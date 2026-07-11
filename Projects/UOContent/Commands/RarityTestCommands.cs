@@ -17,6 +17,23 @@ public static class RarityTestCommands
         CommandSystem.Register("ClearVariant", AccessLevel.GameMaster, ClearVariant_OnCommand);
         CommandSystem.Register("GenArmorSet", AccessLevel.GameMaster, GenArmorSet_OnCommand);
         CommandSystem.Register("PantheonFxTest", AccessLevel.GameMaster, PantheonFxTest_OnCommand);
+        CommandSystem.Register("GrantIchor", AccessLevel.GameMaster, GrantIchor_OnCommand);
+    }
+
+    [Usage("GrantIchor [amount=100]")]
+    [Description("Adds a stack of ichor (the altar salvage material) to your backpack for salvage/upgrade testing.")]
+    private static void GrantIchor_OnCommand(CommandEventArgs e)
+    {
+        var amount = Math.Clamp(e.Length >= 1 ? e.GetInt32(0) : 100, 1, 60000);
+        var from = e.Mobile;
+        var ichor = new PantheonIchor(amount);
+
+        if (!from.AddToBackpack(ichor))
+        {
+            ichor.MoveToWorld(from.Location, from.Map);
+        }
+
+        from.SendMessage($"Granted {amount} ichor.");
     }
 
     [Usage("PantheonFxTest")]

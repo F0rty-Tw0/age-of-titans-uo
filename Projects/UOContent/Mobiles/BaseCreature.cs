@@ -3031,14 +3031,10 @@ namespace Server.Mobiles
                     if (Utility.RandomDouble() < Engines.LootBags.LootBagConfig.ChanceForMobLevel(mobLevel))
                     {
                         var lootBag = new LootBag(mobLevel);
-                        var finder = LastKiller;
 
-                        if (finder is BaseCreature finderPet)
-                        {
-                            finder = finderPet.GetMaster();
-                        }
-
-                        lootBag.DropItem(Engines.LootBags.LootRoller.Roll(mobLevel, finder));
+                        // Announce happens when the bag is opened (LootBag.OnDoubleClick), so
+                        // the roll no longer needs the killer.
+                        lootBag.DropItem(Engines.LootBags.LootRoller.Roll(mobLevel));
                         PackItem(lootBag);
                     }
                 }

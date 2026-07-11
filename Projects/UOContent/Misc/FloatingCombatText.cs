@@ -40,6 +40,7 @@ public static class FloatingCombatText
     // as consts rather than scattering the string.
     public const string MissLabel = "Miss";
     public const string ExtraSwingLabel = "Extra Swing";
+    public const string ExtraArrowLabel = "Extra Arrow"; // ranged flavor of the same proc
 
     // Ambient damage context — single-threaded game loop, set right before
     // Mobile.Damage()/AOS.Damage() and cleared right after.
@@ -76,6 +77,7 @@ public static class FloatingCombatText
         public bool Shrug;
         public bool Parry;
         public int ExtraSwings;
+        public string ExtraSwingText; // ExtraSwingLabel or ExtraArrowLabel (one weapon per frame)
         public bool ExtraSwingMissed;
         public readonly List<string> Statuses = new();
 
@@ -95,6 +97,7 @@ public static class FloatingCombatText
             Captured = false;
             Crit = Shrug = Parry = false;
             ExtraSwings = 0;
+            ExtraSwingText = null;
             ExtraSwingMissed = false;
             Statuses.Clear();
             OtherPending = 0;
@@ -203,7 +206,7 @@ public static class FloatingCombatText
             EmitPairedLines(
                 frame.Subject, frame.Other, frame.Hue, frame.IncomingHue,
                 frame.Captured, frame.Amount, frame.Crit, frame.Shrug, frame.Parry, frame.ExtraSwings,
-                frame.Statuses
+                frame.ExtraSwingText, frame.Statuses
             );
 
             if (frame.ExtraSwingMissed)
@@ -227,7 +230,8 @@ public static class FloatingCombatText
     // ("-88 Stunned"). Every remaining status floats on its own line — effects are never merged.
     private static void EmitPairedLines(
         Mobile subject, Mobile other, int otherHue, int subjectHue,
-        bool captured, int amount, bool crit, bool shrug, bool parry, int extraSwings, List<string> statuses
+        bool captured, int amount, bool crit, bool shrug, bool parry, int extraSwings, string extraSwingText,
+        List<string> statuses
     )
     {
         Span<char> text = stackalloc char[256];
@@ -243,7 +247,7 @@ public static class FloatingCombatText
             AppendSuffix(text, ref pos, parry, " Parried");
         }
 
-        AppendExtraSwing(text, ref pos, extraSwings);
+        AppendExtraSwing(text, ref pos, extraSwings, extraSwingText);
 
         var firstStatus = 0;
 
@@ -282,16 +286,17 @@ public static class FloatingCombatText
         pos += label.Length;
     }
 
-    // RarityEffects.DoExtraSwing adds one "Extra Swing" per bonus swing; multiple collapse to
-    // "Extra Swing x2". Folded onto the hit line (it describes the swing, not a separate effect).
-    private static void AppendExtraSwing(Span<char> text, ref int pos, int extraSwings)
+    // RarityEffects.DoExtraSwing adds one "Extra Swing" (melee) or "Extra Arrow" (ranged) per
+    // bonus swing; multiple collapse to "Extra Swing x2". Folded onto the hit line (it describes
+    // the swing, not a separate effect).
+    private static void AppendExtraSwing(Span<char> text, ref int pos, int extraSwings, string label)
     {
         if (extraSwings <= 0)
         {
             return;
         }
 
-        AppendLabel(text, ref pos, ExtraSwingLabel);
+        AppendLabel(text, ref pos, label ?? ExtraSwingLabel);
 
         if (extraSwings > 1 && pos + 4 <= text.Length) // " x" + up to two digits
         {
@@ -455,9 +460,10 @@ public static class FloatingCombatText
 
         if (frame != null && target == frame.Subject)
         {
-            if (label == ExtraSwingLabel)
+            if (label is ExtraSwingLabel or ExtraArrowLabel)
             {
                 frame.ExtraSwings++;
+                frame.ExtraSwingText = label;
             }
             else if (label == MissLabel)
             {

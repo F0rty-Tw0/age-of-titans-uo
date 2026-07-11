@@ -27,7 +27,7 @@ public static class LootTest
         for (var i = 0; i < count; i++)
         {
             var bag = new LootBag(level);
-            bag.DropItem(LootRoller.Roll(level, e.Mobile));
+            bag.DropItem(LootRoller.Roll(level));
 
             if (e.Mobile.Backpack != null)
             {
