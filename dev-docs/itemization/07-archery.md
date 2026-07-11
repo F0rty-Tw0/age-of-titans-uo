@@ -11,19 +11,19 @@ identities no longer copy `01-axes.md` verbatim.
 
 ## 1. Base ladder & damage matrix
 
-Damage = `ratio × D[rarity]`, D = (10, 15.6, 27.2, 46.2, 111). Speed = swing seconds (bigger =
+Damage = `ratio × D[rarity]`, D = (10, 13, 17, 22, 30). Speed = swing seconds (bigger =
 slower). DPS columns are base values before speed effects.
 
 | Base | Ratio | Speed | Common | Uncommon | Rare | Epic | Legendary | Leg. DPS |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Bow | 0.70 | 3.10s | 7.0 | 10.9 | 19.0 | 32.3 | 77.7 | 25.06 |
-| Crossbow | 0.80 | 3.40s | 8.0 | 12.5 | 21.8 | 37.0 | 88.8 | 26.12 |
-| Heavy crossbow | 0.90 | 3.70s | 9.0 | 14.0 | 24.5 | 41.6 | 99.9 | 27.00 |
+| Bow | 0.70 | 3.10s | 7.0 | 9.1 | 11.9 | 15.4 | 21.0 | 6.77 |
+| Crossbow | 0.80 | 3.40s | 8.0 | 10.4 | 13.6 | 17.6 | 24.0 | 7.06 |
+| Heavy crossbow | 0.90 | 3.70s | 9.0 | 11.7 | 15.3 | 19.8 | 27.0 | 7.30 |
 
 Commons are the plain base items: stock name, no hue, no effects.
 
-**Family identity — the ranged safety tax.** Top-of-ladder heavy crossbow lands at 27.00 Legendary
-DPS against the cross-family melee parity target of 32.2 (framework §7) — 27.00 / 32.2 ≈ 0.84, i.e.
+**Family identity — the ranged safety tax.** Top-of-ladder heavy crossbow lands at 7.30 Legendary
+DPS against the cross-family melee parity target of 8.70 (framework §7) — 7.30 / 8.70 ≈ 0.84, i.e.
 **~16% under melee parity**, exactly the outlier the framework calls out. This is deliberate, not a
 gap to close: archery buys its damage back in range and safety (no reach disadvantage, no counter
 from parry/block-on-approach), so its DPS ceiling sits below swords/axes on purpose. Do not raise

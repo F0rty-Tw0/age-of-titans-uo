@@ -10,19 +10,19 @@ dedicated namespace lane: Trojan War heroes, the Perseid cycle, and named mythic
 
 ## 1. Base ladder & damage matrix
 
-Damage = `ratio × D[rarity]`, D = (10, 15.6, 27.2, 46.2, 111). Speed = swing seconds (bigger =
+Damage = `ratio × D[rarity]`, D = (10, 13, 17, 22, 30). Speed = swing seconds (bigger =
 slower). DPS columns are base values before speed effects.
 
 | Base | Ratio | Speed | Common | Uncommon | Rare | Epic | Legendary | Leg. DPS |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Butcher knife | 0.60 | 2.55s | 6.0 | 9.4 | 16.3 | 27.7 | 66.6 | 26.12 |
-| Cleaver | 0.65 | 2.65s | 6.5 | 10.1 | 17.7 | 30.0 | 72.2 | 27.23 |
-| Cutlass | 0.70 | 2.75s | 7.0 | 10.9 | 19.0 | 32.3 | 77.7 | 28.25 |
-| Scimitar | 0.75 | 2.85s | 7.5 | 11.7 | 20.4 | 34.7 | 83.2 | 29.21 |
-| Katana | 0.80 | 2.95s | 8.0 | 12.5 | 21.8 | 37.0 | 88.8 | 30.10 |
-| Broadsword | 0.85 | 3.05s | 8.5 | 13.3 | 23.1 | 39.3 | 94.3 | 30.93 |
-| Longsword | 0.90 | 3.15s | 9.0 | 14.0 | 24.5 | 41.6 | 99.9 | 31.71 |
-| Viking sword | 0.95 | 3.25s | 9.5 | 14.8 | 25.8 | 43.9 | 105.4 | 32.45 |
+| Butcher knife | 0.60 | 2.55s | 6.0 | 7.8 | 10.2 | 13.2 | 18.0 | 7.06 |
+| Cleaver | 0.65 | 2.65s | 6.5 | 8.5 | 11.1 | 14.3 | 19.5 | 7.36 |
+| Cutlass | 0.70 | 2.75s | 7.0 | 9.1 | 11.9 | 15.4 | 21.0 | 7.64 |
+| Scimitar | 0.75 | 2.85s | 7.5 | 9.8 | 12.8 | 16.5 | 22.5 | 7.89 |
+| Katana | 0.80 | 2.95s | 8.0 | 10.4 | 13.6 | 17.6 | 24.0 | 8.14 |
+| Broadsword | 0.85 | 3.05s | 8.5 | 11.0 | 14.4 | 18.7 | 25.5 | 8.36 |
+| Longsword | 0.90 | 3.15s | 9.0 | 11.7 | 15.3 | 19.8 | 27.0 | 8.57 |
+| Viking sword | 0.95 | 3.25s | 9.5 | 12.3 | 16.1 | 20.9 | 28.5 | 8.77 |
 
 Commons are the plain base items: stock name, no hue, no effects.
 

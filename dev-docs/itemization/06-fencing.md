@@ -10,17 +10,17 @@ Greek pantheon per framework §3/§10; effect text stays inside the primitive ca
 
 ## 1. Base ladder & damage matrix
 
-Damage = `ratio × D[rarity]`, D = (10, 15.6, 27.2, 46.2, 111). Speed = swing seconds (bigger =
+Damage = `ratio × D[rarity]`, D = (10, 13, 17, 22, 30). Speed = swing seconds (bigger =
 slower). DPS columns are base values before speed effects.
 
 | Base | Ratio | Speed | Common | Uncommon | Rare | Epic | Legendary | Leg. DPS |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Dagger | 0.50 | 2.05s | 5.0 | 7.8 | 13.6 | 23.1 | 55.5 | 27.07 |
-| Kryss | 0.55 | 2.15s | 5.5 | 8.6 | 15.0 | 25.4 | 61.1 | 28.40 |
-| War fork | 0.60 | 2.25s | 6.0 | 9.4 | 16.3 | 27.7 | 66.6 | 29.60 |
-| Pitchfork | 0.65 | 2.35s | 6.5 | 10.1 | 17.7 | 30.0 | 72.2 | 30.70 |
-| Short spear | 0.70 | 2.45s | 7.0 | 10.9 | 19.0 | 32.3 | 77.7 | 31.71 |
-| Spear | 0.75 | 2.55s | 7.5 | 11.7 | 20.4 | 34.7 | 83.2 | 32.65 |
+| Dagger | 0.50 | 2.05s | 5.0 | 6.5 | 8.5 | 11.0 | 15.0 | 7.32 |
+| Kryss | 0.55 | 2.15s | 5.5 | 7.2 | 9.4 | 12.1 | 16.5 | 7.67 |
+| War fork | 0.60 | 2.25s | 6.0 | 7.8 | 10.2 | 13.2 | 18.0 | 8.00 |
+| Pitchfork | 0.65 | 2.35s | 6.5 | 8.5 | 11.1 | 14.3 | 19.5 | 8.30 |
+| Short spear | 0.70 | 2.45s | 7.0 | 9.1 | 11.9 | 15.4 | 21.0 | 8.57 |
+| Spear | 0.75 | 2.55s | 7.5 | 9.8 | 12.8 | 16.5 | 22.5 | 8.82 |
 
 Commons are the plain base items: stock name, no hue, no effects.
 
