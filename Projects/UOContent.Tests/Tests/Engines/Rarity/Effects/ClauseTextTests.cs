@@ -29,6 +29,33 @@ public class ClauseTextTests
     }
 
     [Fact]
+    public void NoLegendary_RendersAZerothCadence()
+    {
+        // A cadence clause left at N=0 used to print the nonsensical "every 0th ...". Every legendary
+        // must degrade to a sensible phrase (e.g. Kalchas → "natural crits grant an extra swing ...").
+        foreach (var entry in LegendaryRegistry.Entries)
+        {
+            if (entry.Clause == ClauseType.None)
+            {
+                continue;
+            }
+
+            var text = ClauseText.Describe(entry.Clause, entry.P1, entry.P2, entry.P3);
+
+            // " 0th" (space before) is a bare zero cadence; "10th"/"20th" have a digit before the 0.
+            Assert.DoesNotContain(" 0th", text);
+        }
+    }
+
+    [Fact]
+    public void ExtraSwingClause_WithNoCadence_ReadsAsNaturalCrit()
+    {
+        var text = ClauseText.Describe(ClauseType.ExtraSwingManaLeech, 0, 8, 0);
+
+        Assert.StartsWith("natural crits grant an extra swing", text);
+    }
+
+    [Fact]
     public void EveryLegendary_WithARealClause_ProducesNonEmptyText()
     {
         foreach (var entry in LegendaryRegistry.Entries)

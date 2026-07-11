@@ -1,3 +1,6 @@
+using Server.Engines.BuffIcons;
+using Server.Misc;
+
 namespace Server.Spells.Sixth
 {
     public class MassCurseSpell : MagerySpell, ITargetingSpell<IPoint3D>
@@ -49,6 +52,9 @@ namespace Server.Spells.Sixth
 
                         m.FixedParticles(0x374A, 10, 15, 5028, EffectLayer.Waist);
                         m.PlaySound(0x1FB);
+
+                        BuffHelper.AddCustomBuff(m, BuffIcon.MassCurse, "Mass Curse", length);
+                        FloatingCombatText.ShowOffensiveStatus(m, Caster, "Cursed");
 
                         HarmfulSpell(m);
                     }

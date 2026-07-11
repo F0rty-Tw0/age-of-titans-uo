@@ -12,13 +12,10 @@ public class FloatingCombatTextTests
 {
     static FloatingCombatTextTests()
     {
-        Core.ApplicationAssembly = typeof(FloatingCombatTextTests).Assembly;
-        ServerConfiguration.Load(true);
-        Core.LoopContext = new EventLoopContext();
-        NetState.Configure();
-        TestMapDefinitions.ConfigureTestMapDefinitions();
-        World.Configure();
-        Timer.Init(0);
+        // Process-wide once-guarded boot. The old hand-rolled boot re-ran ServerConfiguration
+        // .Load(true) whenever this class initialized mid-suite, dropping the boot-added data
+        // directory and flaking the pathfinding tests (empty lazily-loaded map sectors).
+        TestServerInitializer.Initialize();
     }
 
     [Fact]
@@ -186,7 +183,7 @@ public class FloatingCombatTextTests
     }
 
     [Fact]
-    public void ReflectDamageAndStatusesShareOneAttackerLine()
+    public void ReflectDamagePairsWithFirstStatusRestFloatSeparately()
     {
         using var attackerNs = PacketTestUtilities.CreateTestNetState();
         using var defenderNs = PacketTestUtilities.CreateTestNetState();
@@ -201,8 +198,9 @@ public class FloatingCombatTextTests
         FloatingCombatText.ShowOffensiveStatus(attacker, defender, "Stunned");
         FloatingCombatText.EndHit();
 
-        // One combined line over the ATTACKER, seen by both parties.
-        var expected = new UnicodeMessage(
+        // The reflect number pairs with its label ("-1 Reflect"); the stun floats on its own line.
+        // Both lines are over the ATTACKER, seen by both parties. Effects are never merged.
+        var reflectLine = new UnicodeMessage(
             attacker.Serial,
             attacker.Body,
             MessageType.Regular,
@@ -210,11 +208,116 @@ public class FloatingCombatTextTests
             3,
             "ENU",
             attacker.Name,
-            "-1 Reflect Stunned"
+            "-1 Reflect"
         ).Compile();
 
-        AssertThat.Equal(attackerNs.SendBuffer.GetReadSpan(), expected);
-        AssertThat.Equal(defenderNs.SendBuffer.GetReadSpan(), expected);
+        var stunLine = new UnicodeMessage(
+            attacker.Serial,
+            attacker.Body,
+            MessageType.Regular,
+            FloatingCombatText.DebuffHue,
+            3,
+            "ENU",
+            attacker.Name,
+            "Stunned"
+        ).Compile();
+
+        var sentToAttacker = attackerNs.SendBuffer.GetReadSpan();
+        AssertThat.Equal(sentToAttacker[..reflectLine.Length], reflectLine);
+        AssertThat.Equal(sentToAttacker[reflectLine.Length..], stunLine);
+
+        var sentToDefender = defenderNs.SendBuffer.GetReadSpan();
+        AssertThat.Equal(sentToDefender[..reflectLine.Length], reflectLine);
+        AssertThat.Equal(sentToDefender[reflectLine.Length..], stunLine);
+    }
+
+    [Fact]
+    public void TwoNumberedRetaliationsEachPairWithOwnLabelNoSum()
+    {
+        using var attackerNs = PacketTestUtilities.CreateTestNetState();
+        using var defenderNs = PacketTestUtilities.CreateTestNetState();
+        var attacker = CreateMobile(attackerNs, 0x1024);
+        var defender = CreateMobile(defenderNs, 0x1025);
+
+        FloatingCombatText.ClearContext();
+        FloatingCombatText.BeginHit(defender, attacker);
+        // Attacker takes two separate retaliation procs: 5 reflected, then an 88-damage stun.
+        FloatingCombatText.ShowDamage(attacker, defender, 5);
+        FloatingCombatText.ShowOffensiveStatus(attacker, defender, "Reflect");
+        FloatingCombatText.ShowDamage(attacker, defender, 88);
+        FloatingCombatText.ShowOffensiveStatus(attacker, defender, "Stunned");
+        FloatingCombatText.EndHit();
+
+        // Each proc keeps its own number+label — never summed into "-93".
+        var reflectLine = new UnicodeMessage(
+            attacker.Serial,
+            attacker.Body,
+            MessageType.Regular,
+            FloatingCombatText.DebuffHue,
+            3,
+            "ENU",
+            attacker.Name,
+            "-5 Reflect"
+        ).Compile();
+
+        var stunLine = new UnicodeMessage(
+            attacker.Serial,
+            attacker.Body,
+            MessageType.Regular,
+            FloatingCombatText.DebuffHue,
+            3,
+            "ENU",
+            attacker.Name,
+            "-88 Stunned"
+        ).Compile();
+
+        var sent = attackerNs.SendBuffer.GetReadSpan();
+        AssertThat.Equal(sent[..reflectLine.Length], reflectLine);
+        AssertThat.Equal(sent[reflectLine.Length..], stunLine);
+    }
+
+    [Fact]
+    public void DefenderHitPairsFirstStatusRestFloatSeparately()
+    {
+        using var attackerNs = PacketTestUtilities.CreateTestNetState();
+        using var defenderNs = PacketTestUtilities.CreateTestNetState();
+        var attacker = CreateMobile(attackerNs, 0x1024);
+        var defender = CreateMobile(defenderNs, 0x1025);
+
+        FloatingCombatText.ClearContext();
+        FloatingCombatText.BeginHit(defender, attacker);
+        // Main hit lands for 88 and applies a stun plus a poison to the defender.
+        FloatingCombatText.ShowDamage(defender, attacker, 88);
+        FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Stunned");
+        FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Poisoned");
+        FloatingCombatText.EndHit();
+
+        // "-88 Stunned" is the hit line (number + first status); "Poisoned" floats on its own line.
+        var hitLine = new UnicodeMessage(
+            defender.Serial,
+            defender.Body,
+            MessageType.Regular,
+            0x490, // defender sees the incoming-damage hue for their own line
+            3,
+            "ENU",
+            defender.Name,
+            "-88 Stunned"
+        ).Compile();
+
+        var poisonLine = new UnicodeMessage(
+            defender.Serial,
+            defender.Body,
+            MessageType.Regular,
+            FloatingCombatText.DebuffHue,
+            3,
+            "ENU",
+            defender.Name,
+            "Poisoned"
+        ).Compile();
+
+        var sent = defenderNs.SendBuffer.GetReadSpan();
+        AssertThat.Equal(sent[..hitLine.Length], hitLine);
+        AssertThat.Equal(sent[hitLine.Length..], poisonLine);
     }
 
     [Fact]
@@ -246,7 +349,7 @@ public class FloatingCombatTextTests
     }
 
     [Fact]
-    public void MissedExtraSwingFoldsIntoOneTail()
+    public void MissedExtraSwingFloatsSeparately()
     {
         using var attackerNs = PacketTestUtilities.CreateTestNetState();
         using var defenderNs = PacketTestUtilities.CreateTestNetState();
@@ -262,7 +365,9 @@ public class FloatingCombatTextTests
         FloatingCombatText.ShowOffensiveStatus(defender, attacker, FloatingCombatText.ExtraSwingLabel);
         FloatingCombatText.EndHit();
 
-        var expected = new UnicodeMessage(
+        // "-15 Extra Swing" is the hit line; the whiffed bonus swing's "Miss" floats on its own
+        // line (a damage number next to "Miss" would read as a contradiction).
+        var hitLine = new UnicodeMessage(
             defender.Serial,
             defender.Body,
             MessageType.Regular,
@@ -270,10 +375,23 @@ public class FloatingCombatTextTests
             3,
             "ENU",
             defender.Name,
-            "-15 Extra Swing Miss"
+            "-15 Extra Swing"
         ).Compile();
 
-        AssertThat.Equal(defenderNs.SendBuffer.GetReadSpan(), expected);
+        var missLine = new UnicodeMessage(
+            defender.Serial,
+            defender.Body,
+            MessageType.Regular,
+            FloatingCombatText.MissHue,
+            3,
+            "ENU",
+            defender.Name,
+            "Miss"
+        ).Compile();
+
+        var sent = defenderNs.SendBuffer.GetReadSpan();
+        AssertThat.Equal(sent[..hitLine.Length], hitLine);
+        AssertThat.Equal(sent[hitLine.Length..], missLine);
     }
 
     [Fact]
@@ -303,6 +421,51 @@ public class FloatingCombatTextTests
         ).Compile();
 
         AssertThat.Equal(defenderNs.SendBuffer.GetReadSpan(), expected);
+    }
+
+    [Fact]
+    public void NestedExtraSwingOwnsItsDamageAndStun()
+    {
+        using var attackerNs = PacketTestUtilities.CreateTestNetState();
+        using var defenderNs = PacketTestUtilities.CreateTestNetState();
+        var attacker = CreateMobile(attackerNs, 0x1024);
+        var defender = CreateMobile(defenderNs, 0x1025);
+
+        FloatingCombatText.ClearContext();
+        FloatingCombatText.BeginHit(defender, attacker);                    // main swing
+        FloatingCombatText.ShowDamage(defender, attacker, 25);
+        FloatingCombatText.BeginHit(defender, attacker);                    // re-entrant extra swing
+        FloatingCombatText.ShowDamage(defender, attacker, 1);
+        FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Stunned"); // proc of the extra swing
+        FloatingCombatText.EndHit();                                        // -> "-1 Stunned"
+        FloatingCombatText.ShowOffensiveStatus(defender, attacker, FloatingCombatText.ExtraSwingLabel);
+        FloatingCombatText.EndHit();                                        // -> "-25 Extra Swing"
+
+        var nested = new UnicodeMessage(
+            defender.Serial,
+            defender.Body,
+            MessageType.Regular,
+            0x490, // defender sees the incoming-damage hue for their own line
+            3,
+            "ENU",
+            defender.Name,
+            "-1 Stunned"
+        ).Compile();
+
+        var main = new UnicodeMessage(
+            defender.Serial,
+            defender.Body,
+            MessageType.Regular,
+            0x490,
+            3,
+            "ENU",
+            defender.Name,
+            "-25 Extra Swing"
+        ).Compile();
+
+        var sent = defenderNs.SendBuffer.GetReadSpan();
+        AssertThat.Equal(sent[..nested.Length], nested);
+        AssertThat.Equal(sent[nested.Length..], main);
     }
 
     private static Mobile CreateMobile(NetState ns, uint serial = 0x1024)

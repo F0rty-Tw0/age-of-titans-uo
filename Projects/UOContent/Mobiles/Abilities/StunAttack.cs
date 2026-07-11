@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Server.Engines.BuffIcons;
 using Server.Items;
 
 namespace Server.Mobiles;
@@ -29,6 +30,7 @@ public abstract class StunAttack : MonsterAbility
         if (target.Alive)
         {
             target.Frozen = true;
+            BuffHelper.AddCustomBuff(target, BuffIcon.Paralyze, "Stunned", StunDuration);
             Timer.DelayCall(StunDuration, Recover, target);
         }
 
@@ -39,5 +41,6 @@ public abstract class StunAttack : MonsterAbility
     {
         defender.Frozen = false;
         defender.Combatant = null;
+        BuffHelper.RemoveBuff(defender, BuffIcon.Paralyze);
     }
 }

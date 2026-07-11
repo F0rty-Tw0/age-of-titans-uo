@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Server.Engines.BuffIcons;
+using Server.Misc;
 using Server.Mobiles;
 using Server.Targeting;
 
@@ -83,6 +84,7 @@ namespace Server.Spells.Fourth
             var args = $"{percentage}\t{percentage}\t{percentage}\t{10}\t{10}\t{10}\t{10}";
 
             (m as PlayerMobile)?.AddBuff(new BuffInfo(BuffIcon.Curse, 1075835, 1075836, duration, args));
+            FloatingCombatText.ShowOffensiveStatus(m, caster, "Cursed");
             return true;
         }
 

@@ -331,7 +331,8 @@ public partial class Mobile : IHued, IComparable<Mobile>, ISpawnable, IObjectPro
     private bool m_Paralyzed;
     private TimerExecutionToken _paraTimerToken;
     private bool m_Player;
-    private Poison m_Poison;
+    private Poison m_Poison; // mirror of the strongest active stack (legacy reads: Poisoned, healthbar, cure levels)
+    private List<PoisonStack> _poisonStacks;
     private Prompt m_Prompt;
     private ObjectPropertyList m_PropertyList;
     private Race m_Race;
@@ -2154,12 +2155,23 @@ public partial class Mobile : IHued, IComparable<Mobile>, ISpawnable, IObjectPro
 
     public Timer PoisonTimer { get; private set; }
 
+    // Stackable poison: up to this many concurrent stacks; further applications are ignored.
+    public const int MaxPoisonStacks = 5;
+
+    // Live poison stacks, mutated only via AppendPoisonStack/OnPoisonStackExpired/the Poison
+    // setter. The merged tick (content-side PoisonTimer) iterates and prunes through this.
+    public IReadOnlyList<PoisonStack> PoisonStacks =>
+        _poisonStacks ?? (IReadOnlyList<PoisonStack>)Array.Empty<PoisonStack>();
+
     [CommandProperty(AccessLevel.GameMaster)]
     public Poison Poison
     {
         get => m_Poison;
         set
         {
+            // Direct assignment keeps its legacy single-poison meaning: null clears every
+            // stack; non-null replaces the whole stack set with one fresh (sourceless) stack.
+            _poisonStacks?.Clear();
             m_Poison = value;
             Delta(MobileDelta.HealthbarPoison);
 
@@ -2171,12 +2183,61 @@ public partial class Mobile : IHued, IComparable<Mobile>, ISpawnable, IObjectPro
 
             if (m_Poison != null)
             {
+                (_poisonStacks ??= new List<PoisonStack>(MaxPoisonStacks)).Add(new PoisonStack(m_Poison, null));
                 PoisonTimer = m_Poison.ConstructTimer(this);
 
                 PoisonTimer?.Start();
             }
 
             CheckStatTimers();
+        }
+    }
+
+    // Appends one stack; the FIRST stack constructs the merged tick timer (its poison donates
+    // the delay/interval cadence), later stacks ride the same timer.
+    private void AppendPoisonStack(Mobile from, Poison poison)
+    {
+        (_poisonStacks ??= new List<PoisonStack>(MaxPoisonStacks)).Add(new PoisonStack(poison, from));
+
+        if (m_Poison == null || poison.Level > m_Poison.Level)
+        {
+            m_Poison = poison;
+            Delta(MobileDelta.HealthbarPoison);
+        }
+
+        if (PoisonTimer == null)
+        {
+            PoisonTimer = poison.ConstructTimer(this);
+            PoisonTimer?.Start();
+        }
+
+        CheckStatTimers();
+    }
+
+    // Called by the merged tick when one stack's duration runs out: the tick shrinks while the
+    // remaining stacks keep running. An emptied set is the TIMER's cue to end the poison — it
+    // owns the wear-off message and stops itself by setting Poison = null.
+    public void OnPoisonStackExpired(PoisonStack stack)
+    {
+        if (_poisonStacks == null || !_poisonStacks.Remove(stack) || _poisonStacks.Count == 0)
+        {
+            return;
+        }
+
+        var strongest = _poisonStacks[0].Poison;
+
+        for (var i = 1; i < _poisonStacks.Count; i++)
+        {
+            if (_poisonStacks[i].Poison.Level > strongest.Level)
+            {
+                strongest = _poisonStacks[i].Poison;
+            }
+        }
+
+        if (m_Poison != strongest)
+        {
+            m_Poison = strongest;
+            Delta(MobileDelta.HealthbarPoison);
         }
     }
 
@@ -8549,7 +8610,7 @@ public partial class Mobile : IHued, IComparable<Mobile>, ISpawnable, IObjectPro
 
     /// <summary>
     ///     Overridable. Virtual event invoked when a call to <see cref="ApplyPoison" /> failed because
-    ///     <see cref="CheckHigherPoison" /> returned false: the Mobile was already poisoned by an equal or greater strength poison.
+    ///     <see cref="CheckHigherPoison" /> returned true: the Mobile's poison stack set is already full.
     ///     <seealso cref="CheckHigherPoison" />
     ///     <seealso cref="ApplyPoison" />
     ///     <seealso cref="Poison" />
@@ -8584,21 +8645,25 @@ public partial class Mobile : IHued, IComparable<Mobile>, ISpawnable, IObjectPro
     public virtual bool CheckPoisonImmunity(Mobile from, Poison poison) => false;
 
     /// <summary>
-    ///     Overridable. Called from <see cref="ApplyPoison" />, this method checks if the Mobile is already poisoned by some
-    ///     <see cref="Poison" /> of equal or greater strength. If true, <see cref="OnHigherPoison" /> will be invoked and
-    ///     <see cref="ApplyPoisonResult.HigherPoisonActive" /> is returned.
+    ///     Overridable. Called from <see cref="ApplyPoison" />. Stackable-poison model: poisons no longer
+    ///     block on an equal-or-higher active level — every direct application appends a stack until the
+    ///     <see cref="MaxPoisonStacks" /> cap is reached. Returns true (blocking the application, reported
+    ///     as <see cref="ApplyPoisonResult.HigherPoisonActive" />) only when the stack set is full.
     ///     <seealso cref="OnHigherPoison" />
     ///     <seealso cref="ApplyPoison" />
     ///     <seealso cref="Poison" />
     /// </summary>
     public virtual bool CheckHigherPoison(Mobile from, Poison poison) =>
-        m_Poison != null && m_Poison.Level >= poison.Level;
+        _poisonStacks != null && _poisonStacks.Count >= MaxPoisonStacks;
 
     /// <summary>
-    ///     Overridable. Attempts to apply poison to the Mobile. Checks are made such that no
-    ///     <see cref="CheckHigherPoison">higher poison is active</see> and that the Mobile is not
-    ///     <see cref="CheckPoisonImmunity">immune to the poison</see>. Provided those assertions are true, the
-    ///     <paramref name="poison" /> is applied and <see cref="OnPoisoned" /> is invoked.
+    ///     Overridable. Attempts to apply poison to the Mobile. Stackable-poison model: each successful
+    ///     application appends a stack (cap <see cref="MaxPoisonStacks" />, checked via
+    ///     <see cref="CheckHigherPoison" />) unless the Mobile is
+    ///     <see cref="CheckPoisonImmunity">immune to the poison</see>. Area sources pass
+    ///     <paramref name="refreshOnly" /> to re-arm their existing stack instead of appending.
+    ///     Provided those assertions are true, the <paramref name="poison" /> is applied and
+    ///     <see cref="OnPoisoned" /> is invoked.
     ///     <seealso cref="Poison" />
     ///     <seealso cref="CurePoison" />
     /// </summary>
@@ -8615,7 +8680,7 @@ public partial class Mobile : IHued, IComparable<Mobile>, ISpawnable, IObjectPro
     ///             <term>
     ///                 <see cref="ApplyPoisonResult.HigherPoisonActive">HigherPoisonActive</see>
     ///             </term>
-    ///             <description>The call to <see cref="CheckHigherPoison" /> returned false.</description>
+    ///             <description>The stack cap was reached: <see cref="CheckHigherPoison" /> returned true.</description>
     ///         </item>
     ///         <item>
     ///             <term>
@@ -8631,12 +8696,27 @@ public partial class Mobile : IHued, IComparable<Mobile>, ISpawnable, IObjectPro
     ///         </item>
     ///     </list>
     /// </returns>
-    public virtual ApplyPoisonResult ApplyPoison(Mobile from, Poison poison)
+    public virtual ApplyPoisonResult ApplyPoison(Mobile from, Poison poison, bool refreshOnly = false)
     {
         if (poison == null)
         {
             CurePoison(from);
             return ApplyPoisonResult.Cured;
+        }
+
+        // Area sources (poison fields, gas clouds, traps) pass refreshOnly: they re-arm their
+        // existing stack's duration instead of stacking a new instance on every pulse. Runs
+        // before the cap check so a capped victim standing in a field keeps being refreshed.
+        if (refreshOnly && _poisonStacks != null)
+        {
+            for (var i = 0; i < _poisonStacks.Count; i++)
+            {
+                if (_poisonStacks[i].Poison == poison)
+                {
+                    _poisonStacks[i].Refresh(from);
+                    return ApplyPoisonResult.Poisoned;
+                }
+            }
         }
 
         if (CheckHigherPoison(from, poison))
@@ -8652,7 +8732,7 @@ public partial class Mobile : IHued, IComparable<Mobile>, ISpawnable, IObjectPro
         }
 
         var oldPoison = m_Poison;
-        Poison = poison;
+        AppendPoisonStack(from, poison);
 
         OnPoisoned(from, poison, oldPoison);
 

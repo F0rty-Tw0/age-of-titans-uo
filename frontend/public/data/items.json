@@ -1,0 +1,26 @@
+[
+  {
+    "id": "sample-leather-tunic",
+    "name": "Leather Tunic (sample)",
+    "itemId": 5068,
+    "hue": 0,
+    "slot": "Chest",
+    "material": "Leather",
+    "rarityTier": null,
+    "weight": 6,
+    "props": {},
+    "sprite": "img/items/5068-0.png"
+  },
+  {
+    "id": "sample-plate-helm",
+    "name": "Plate Helm (sample)",
+    "itemId": 5138,
+    "hue": 1157,
+    "slot": "Helmet",
+    "material": "Plate",
+    "rarityTier": null,
+    "weight": 5,
+    "props": {},
+    "sprite": "img/items/5138-1157.png"
+  }
+]

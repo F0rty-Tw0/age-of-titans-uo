@@ -18,17 +18,25 @@ public static partial class RarityEffects
     // driven, so it applies regardless of whether the weapon itself carries a rarity variant.
     public static double AdjustSwingDelay(BaseWeapon weapon, Mobile wielder, double delaySeconds)
     {
-        var frenzySwingPct = CombatFxState.GetFrenzySwingPct(wielder);
+        // A web-snare (Penelope) subtracts from the swing-speed %, lengthening the delay. Applies to
+        // ANY wielder, weapon or fists — so it must be folded in on both the variant and plain paths.
+        var swingPct = CombatFxState.GetFrenzySwingPct(wielder) - CombatFxState.GetSnarePct(wielder);
 
-        if (weapon is not IVariantItem variant || variant.VariantRoot == VariantRoot.None && variant.LegendaryId == 0)
+        if (weapon is IVariantItem variant && (variant.VariantRoot != VariantRoot.None || variant.LegendaryId != 0))
         {
-            return frenzySwingPct == 0 ? delaySeconds : delaySeconds * 100.0 / (100 + frenzySwingPct);
+            var (root, rarity) = ResolveRootRarity(variant, weapon.Rarity);
+            swingPct += WeaponEffectTable.Get(root, rarity).SwingSpeedPct;
         }
 
-        var (root, rarity) = ResolveRootRarity(variant, weapon.Rarity);
-        var pct = WeaponEffectTable.Get(root, rarity).SwingSpeedPct + frenzySwingPct;
+        if (swingPct == 0)
+        {
+            return delaySeconds;
+        }
 
-        return pct == 0 ? delaySeconds : delaySeconds * 100.0 / (100 + pct);
+        // Clamp so a heavy snare can't zero/negate the divisor (delay would flip negative or explode).
+        var divisor = Math.Max(10, 100 + swingPct);
+
+        return delaySeconds * 100.0 / divisor;
     }
 
     // P3 — hit chance. Adds the weapon's HitChancePct to the to-hit roll (chance is 0..1), then
@@ -150,12 +158,14 @@ public static partial class RarityEffects
                         WornEffectState.ArmClauseBurst(defender, entry.Clause, TimeSpan.FromSeconds(entry.P1 > 0 ? entry.P1 : 3));
                         break;
                     }
-                case ClauseType.DodgeReflectDamage: // Penelope — the swing missed entirely, so
-                    // there is no live "damage that would have landed" value at this hook; a small
-                    // flat reflect stands in (matches the existing "small flat thorns" precedent).
+                case ClauseType.DodgeSnare: // Penelope — the blow whiffs into the web: no damage (you
+                    // weren't hit, so there is nothing to reflect), instead the attacker is snared,
+                    // swinging P1% slower for P2s. A pure debuff label, so it floats on its own line.
                     {
-                        AOS.Damage(attacker, defender, 5, 100, 0, 0, 0, 0);
-                        FloatingCombatText.ShowOffensiveStatus(attacker, defender, "Reflect");
+                        CombatFxState.SetSnare(
+                            attacker, entry.P1 > 0 ? entry.P1 : 30, TimeSpan.FromSeconds(entry.P2 > 0 ? entry.P2 : 3)
+                        );
+                        FloatingCombatText.ShowOffensiveStatus(attacker, defender, "Webbed");
                         break;
                     }
                 case ClauseType.DodgeGrantsCounterWindow: // Ophis signature: the dodger's next swing
@@ -326,7 +336,9 @@ public static partial class RarityEffects
             case ClauseType.ExtraSwingHealBlock:
             case ClauseType.ExtraSwingChain: // chained swing may proc one more (depth-2 guard)
                 {
-                    extraSwing |= p1 > 0 && hitCount % p1 == 0;
+                    // No cadence set (N=0) → trigger on a natural crit instead, mirroring the crit-
+                    // rider convention (Kalchas). Otherwise fire on every Nth hit.
+                    extraSwing |= p1 > 0 ? hitCount % p1 == 0 : isCrit;
                     break;
                 }
             case ClauseType.ExtraSwingElemental:
@@ -377,6 +389,14 @@ public static partial class RarityEffects
         if (!ctx.Active)
         {
             return;
+        }
+
+        // A swing that connected for no damage (fully parried/blocked/absorbed) must not bank as a
+        // hit: roll back its counter so first-hit and the Nth-hit cadence only ever advance on a hit
+        // that dealt damage. (Misses/dodges never reach here — they resolve on the OnMiss path.)
+        if (damageGiven <= 0)
+        {
+            CombatFxState.RollbackHit(attacker, ctx.HitCount);
         }
 
         var row = ctx.Row;
@@ -579,6 +599,14 @@ public static partial class RarityEffects
                     WornEffectState.ArmClauseBurst(defender, entry.Clause, TimeSpan.FromSeconds(entry.P1 > 0 ? entry.P1 : 3));
                 }
             }
+
+            // Ward-Surge (chainmail set capstone): taking a crit opens a DR-to-cap window.
+            if (WornEffectState.GetAggregate(defender) is
+                { HasCapstone: true, CapstoneMaterial: ArmorMaterialType.Chainmail })
+            {
+                CombatFxState.ArmWardSurge(defender, TimeSpan.FromSeconds(5));
+                FloatingCombatText.ShowSelfStatus(defender, "Ward-Surge");
+            }
         }
 
         var attackerLegendaries = WornEffectState.GetLegendaries(attacker);
@@ -602,6 +630,49 @@ public static partial class RarityEffects
                         FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Stunned");
                     }
                 }
+            }
+        }
+
+        // P4 set capstones, debuff trio: a completed Studded/Bone/Plate set rides the wearer's
+        // landed hits. Each has a natural rate limiter: poison no-ops while the target is already
+        // poisoned, heal-block re-applies only after expiry, and TryStun's 10s immunity gates
+        // the stagger.
+        var attackerAgg = WornEffectState.GetAggregate(attacker);
+
+        if (attackerAgg.HasCapstone && defender.Alive)
+        {
+            switch (attackerAgg.CapstoneMaterial)
+            {
+                case ArmorMaterialType.Studded: // Venom — each landed hit adds a Lesser poison
+                    // stack (global stackable-poison model, cap 5; at cap the apply is ignored
+                    // and the float stays quiet).
+                    {
+                        if (defender.ApplyPoison(attacker, Poison.Lesser) == ApplyPoisonResult.Poisoned)
+                        {
+                            FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Poisoned", FloatingCombatText.PoisonHue);
+                        }
+
+                        break;
+                    }
+                case ArmorMaterialType.Bone: // Grave-Chill
+                    {
+                        if (!CombatFxState.IsHealBlocked(defender))
+                        {
+                            CombatFxState.SetHealBlock(defender, TimeSpan.FromSeconds(2));
+                            FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Heal Block");
+                        }
+
+                        break;
+                    }
+                case ArmorMaterialType.Plate: // Siege-Shock
+                    {
+                        if (CombatFxState.TryStun(defender, TimeSpan.FromSeconds(1)))
+                        {
+                            FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Stunned");
+                        }
+
+                        break;
+                    }
             }
         }
 

@@ -1,5 +1,6 @@
 using System;
 using ModernUO.Serialization;
+using Server.Engines.Rarity;
 
 namespace Server.Items;
 
@@ -45,6 +46,11 @@ public partial class LootBag : BaseContainer
             var item = items[i];
             // Rarity variants/legendaries set a custom Name; fall back to the base cliloc for anything plain.
             var name = item.Name ?? Localization.GetText(item.LabelNumber);
+
+            if (item is IRarity rarityItem)
+            {
+                name = RarityConfig.WithSuffix(name, rarityItem.Rarity);
+            }
 
             from.AddToBackpack(item);
             from.SendMessage($"You received: {name}");

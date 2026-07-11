@@ -23,7 +23,7 @@
     "autosave.enabled": "True",
     "autosave.saveDelay": "00:05:00",
     "autosave.warningDelay": "00:00:00",
-    "buffIcons.enable": "False",
+    "buffIcons.enable": "True",
     "bulletinboards.creationTimeDelay": "00:02:00",
     "bulletinboards.expireDuration": "06:00:00",
     "bulletinboards.replyDelay": "00:00:30",

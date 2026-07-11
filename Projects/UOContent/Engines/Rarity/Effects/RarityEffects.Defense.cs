@@ -36,11 +36,18 @@ public static partial class RarityEffects
         var signature = row.Signature;
 
         // Phalanx/Eryma signature: a block armed earlier opened a brief DR window; while active,
-        // reduce this incoming hit by the signature's S1%.
+        // reduce this incoming hit by the signature's S1%. P6: the window shares the §9.8 DR
+        // budget with worn armor DR (applied later in AbsorbForDefenderArmor), so it is clamped
+        // to the remaining headroom under the 12% cap — a suit already at the cap gains nothing.
         if (signature == ClauseType.BlockGrantsDrBurst && row.S1 > 0 &&
             WornEffectState.IsClauseBurstActive(defender, ClauseType.BlockGrantsDrBurst))
         {
-            damage -= damage * row.S1 / 100;
+            var drBurst = Math.Min((int)row.S1, WornEffectState.DrCap - WornEffectState.GetAggregate(defender).DrPct);
+
+            if (drBurst > 0)
+            {
+                damage -= damage * drBurst / 100;
+            }
         }
 
         // Reflect clauses (Gorgoneion / Helenos): reflect a % of the first hit taken and stagger,
@@ -175,7 +182,8 @@ public static partial class RarityEffects
         var agg = WornEffectState.GetAggregate(defender);
         var legendaries = WornEffectState.GetLegendaries(defender);
 
-        if (agg is { ShrugPct: 0, DrPct: 0, ReflectPct: 0, FlameProcPct: 0, FrenzyChancePct: 0 } && legendaries.Count == 0)
+        if (agg is { ShrugPct: 0, DrPct: 0, ReflectPct: 0, FlameProcPct: 0, FrenzyChancePct: 0, HasCapstone: false } &&
+            legendaries.Count == 0)
         {
             return damage;
         }
@@ -187,9 +195,13 @@ public static partial class RarityEffects
 
         for (var i = 0; i < legendaries.Count; i++)
         {
-            if (legendaries[i].Clause == ClauseType.ShrugFirstHitGuaranteed && firstHit)
+            // Kadmos / Nemea, plus the Option A chest signatures — all guarantee the first shrug;
+            // the chest signatures' riders dispatch below once the shrug lands.
+            if (firstHit && legendaries[i].Clause is ClauseType.ShrugFirstHitGuaranteed
+                or ClauseType.ShrugFirstHitPoisonAttacker or ClauseType.ShrugFirstHitDrainStam
+                or ClauseType.ShrugFirstHitDrBurst)
             {
-                shrugged = true; // Kadmos / Nemea
+                shrugged = true;
             }
         }
 
@@ -229,6 +241,41 @@ public static partial class RarityEffects
 
                             break;
                         }
+                    case ClauseType.ShrugReflectStun: // Plate Arms signature
+                        {
+                            var reflected = damage * entry.P1 / 100;
+
+                            if (reflected > 0)
+                            {
+                                AOS.Damage(attacker, defender, reflected, 100, 0, 0, 0, 0);
+                                FloatingCombatText.ShowOffensiveStatus(attacker, defender, "Reflect");
+                            }
+
+                            if (CombatFxState.TryStun(attacker, TimeSpan.FromSeconds(1)))
+                            {
+                                FloatingCombatText.ShowOffensiveStatus(attacker, defender, "Stunned");
+                            }
+
+                            break;
+                        }
+                    case ClauseType.ShrugFirstHitPoisonAttacker when firstHit: // Studded Chest signature
+                        {
+                            attacker.ApplyPoison(defender, Poison.Lesser);
+                            FloatingCombatText.ShowOffensiveStatus(attacker, defender, "Poisoned", FloatingCombatText.PoisonHue);
+                            break;
+                        }
+                    case ClauseType.ShrugFirstHitDrainStam when firstHit: // Bone Chest signature
+                        {
+                            attacker.Stam -= entry.P1 > 0 ? entry.P1 : 5;
+                            FloatingCombatText.ShowOffensiveStatus(attacker, defender, "-Stam");
+                            break;
+                        }
+                    case ClauseType.ShrugFirstHitDrBurst when firstHit: // Ringmail Chest signature
+                        {
+                            WornEffectState.ArmClauseBurst(defender, entry.Clause, TimeSpan.FromSeconds(entry.P2 > 0 ? entry.P2 : 3));
+                            FloatingCombatText.ShowSelfStatus(defender, "Fortified");
+                            break;
+                        }
                     case ClauseType.HitHalvedRegenPulse: // Ananke
                         {
                             WornEffectState.ArmClauseBurst(defender, entry.Clause, TimeSpan.FromSeconds(entry.P1 > 0 ? entry.P1 : 3));
@@ -259,13 +306,49 @@ public static partial class RarityEffects
         }
 
         // ---- damage reduction ----
-        if (agg.DrPct > 0)
+        var drPct = agg.DrPct;
+
+        // Ward-Surge (chainmail set capstone): while the crit-taken window is open, DR rises to
+        // the suit-wide cap (the +12% burst, pre-clamped per plan cap-fix #2).
+        if (agg is { HasCapstone: true, CapstoneMaterial: ArmorMaterialType.Chainmail } &&
+            CombatFxState.IsWardSurgeActive(defender))
         {
-            damage -= damage * agg.DrPct / 100;
+            drPct = WornEffectState.DrCap;
+        }
+
+        // Ringmail Chest signature (ShrugFirstHitDrBurst): while the first-hit window is open,
+        // later hits gain +P1% DR, clamped to the suit-wide cap (P6). The arming hit itself
+        // (firstHit) is excluded — it was already halved by the shrug.
+        if (!firstHit)
+        {
+            for (var i = 0; i < legendaries.Count; i++)
+            {
+                var entry = legendaries[i];
+
+                if (entry.Clause == ClauseType.ShrugFirstHitDrBurst && entry.P1 > 0 &&
+                    WornEffectState.IsClauseBurstActive(defender, ClauseType.ShrugFirstHitDrBurst))
+                {
+                    drPct = Math.Min(drPct + entry.P1, WornEffectState.DrCap);
+                }
+            }
+        }
+
+        if (drPct > 0)
+        {
+            damage -= damage * drPct / 100;
         }
 
         // ---- reflect (Cyclopean thorns) ----
         var reflectPct = agg.ReflectPct;
+
+        // Phalanx-Thorns (ringmail set capstone): +8% reflect on every hit taken, clamped to the
+        // suit-wide reflect cap. The plan frames it as a burst armed by the hit; since the burst
+        // would be re-armed by every hit and reflect only matters while being hit, the inline
+        // bonus is behaviorally identical with no burst state.
+        if (agg is { HasCapstone: true, CapstoneMaterial: ArmorMaterialType.Ringmail })
+        {
+            reflectPct = Math.Min(reflectPct + 8, WornEffectState.ReflectCap);
+        }
 
         for (var i = 0; i < legendaries.Count; i++)
         {
@@ -542,7 +625,7 @@ public static partial class RarityEffects
 
     // A worn-list entry came from a shield if it is a real shield-family legendary or a
     // synthetic lane-signature entry whose root is one of the five shield roots.
-    private static bool IsShieldSourced(in LegendaryEntry entry) =>
+    internal static bool IsShieldSourced(in LegendaryEntry entry) =>
         entry.Family == LegendaryRegistry.FamilyShields ||
         entry.Root is VariantRoot.Aegis or VariantRoot.Amyntor or VariantRoot.Probolos
             or VariantRoot.Herkos or VariantRoot.Pnoe;

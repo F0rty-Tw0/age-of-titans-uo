@@ -43,13 +43,7 @@ internal static class TestServerInitializer
             Core.LoopContext = new EventLoopContext();
             Core.Expansion = Expansion.EJ;
 
-            ServerConfiguration.Load(true);
-            ServerConfiguration.AssemblyDirectories.Add(Core.BaseDirectory);
-
-            // Required for the pathfinding tests (real .mul tile data). Harmless for the rest.
-            var clientFiles = Environment.GetEnvironmentVariable("MODERNUO_TEST_DATA_DIR")
-                              ?? @"C:\Ultima Online Classic";
-            ServerConfiguration.DataDirectories.Add(clientFiles);
+            ReloadConfiguration();
 
             AssemblyHandler.LoadAssemblies(["Server.dll", "UOContent.dll"]);
 
@@ -90,6 +84,24 @@ internal static class TestServerInitializer
 
             _initialized = true;
         }
+    }
+
+    /// <summary>
+    /// (Re-)runs <see cref="ServerConfiguration.Load"/> in mocked mode, preserving the assembly
+    /// and data directories the boot depends on. Tests that must re-mock settings MUST use this
+    /// instead of a bare <c>ServerConfiguration.Load(true)</c>: Load rebuilds the settings
+    /// object, silently dropping the added data directory — after which any lazily-loaded map
+    /// sector reads as empty tiles and the pathfinding suite fails with mask/z = 0.
+    /// </summary>
+    public static void ReloadConfiguration()
+    {
+        ServerConfiguration.Load(true);
+        ServerConfiguration.AssemblyDirectories.Add(Core.BaseDirectory);
+
+        // Required for the pathfinding tests (real .mul tile data). Harmless for the rest.
+        var clientFiles = Environment.GetEnvironmentVariable("MODERNUO_TEST_DATA_DIR")
+                          ?? @"C:\Ultima Online Classic";
+        ServerConfiguration.DataDirectories.Add(clientFiles);
     }
 
     private static void ForceLoadTileData()

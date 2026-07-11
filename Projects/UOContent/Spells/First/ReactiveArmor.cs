@@ -35,6 +35,7 @@ namespace Server.Spells.First
             if (_t2aTable?.Remove(m, out var token) == true)
             {
                 token.Cancel();
+                (m as PlayerMobile)?.RemoveBuff(BuffIcon.ReactiveArmor);
             }
         }
 
@@ -149,6 +150,8 @@ namespace Server.Spells.First
                 Timer.StartTimer(duration, () => ExpireT2AEffect(m), out var token);
                 _t2aTable ??= [];
                 _t2aTable[m] = token;
+
+                (m as PlayerMobile)?.AddBuff(new BuffInfo(BuffIcon.ReactiveArmor, 1075812, 1075813, duration));
             }
         }
 

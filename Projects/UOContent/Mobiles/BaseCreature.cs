@@ -1539,7 +1539,7 @@ namespace Server.Mobiles
             base.OnBeforeSpawn(location, m);
         }
 
-        public override ApplyPoisonResult ApplyPoison(Mobile from, Poison poison)
+        public override ApplyPoisonResult ApplyPoison(Mobile from, Poison poison, bool refreshOnly = false)
         {
             if (!Alive || IsDeadPet)
             {
@@ -1551,7 +1551,7 @@ namespace Server.Mobiles
                 poison = PoisonImpl.IncreaseLevel(poison);
             }
 
-            var result = base.ApplyPoison(from, poison);
+            var result = base.ApplyPoison(from, poison, refreshOnly);
 
             if (from != null && result == ApplyPoisonResult.Poisoned && PoisonTimer is PoisonImpl.PoisonTimer timer)
             {
@@ -2891,6 +2891,8 @@ namespace Server.Mobiles
         public override void AddNameProperties(IPropertyList list)
         {
             base.AddNameProperties(list);
+
+            Engines.Rarity.CombatFxState.AddIndicatorProperties(this, list);
 
             if (MLQuestSystem.Enabled && CanGiveMLQuest)
             {

@@ -1,0 +1,15 @@
+<header class="shell-header">
+  <a class="shell-header__brand" routerLink="/">Age of Titans</a>
+  <nav class="shell-header__nav" aria-label="Main">
+    <a routerLink="/items" routerLinkActive="shell-header__link--active" class="shell-header__link">Items</a>
+    <a routerLink="/monsters" routerLinkActive="shell-header__link--active" class="shell-header__link">Monsters</a>
+    <a routerLink="/skills" routerLinkActive="shell-header__link--active" class="shell-header__link">Skills</a>
+    <a routerLink="/mechanics" routerLinkActive="shell-header__link--active" class="shell-header__link">Mechanics</a>
+    <a routerLink="/gathering" routerLinkActive="shell-header__link--active" class="shell-header__link">Gathering</a>
+    <a routerLink="/professions" routerLinkActive="shell-header__link--active" class="shell-header__link">Professions</a>
+  </nav>
+</header>
+
+<main class="shell-main">
+  <router-outlet />
+</main>

@@ -60,6 +60,73 @@ public class RampTrackerTests
     }
 
     [Fact]
+    public void ResetFight_ReArmsAttackerFirstHit()
+    {
+        var attacker = CreateMobile();
+
+        try
+        {
+            // A fresh mobile's first registered hit is the first-of-fight; the next is not.
+            CombatFxState.RegisterHit(attacker, out var first1);
+            Assert.True(first1);
+            CombatFxState.RegisterHit(attacker, out var first2);
+            Assert.False(first2);
+
+            // A kill ends the fight — the next foe engaged counts as a first-hit again. (This is the
+            // bug fix: without ResetFight, killing one enemy and swinging at another within the 30s
+            // window carried the dead fight's counter over, so first-hit never re-armed.)
+            CombatFxState.ResetFight(attacker);
+
+            CombatFxState.RegisterHit(attacker, out var first3);
+            Assert.True(first3);
+        }
+        finally
+        {
+            CombatFxState.Evict(attacker);
+            attacker.Delete();
+        }
+    }
+
+    [Fact]
+    public void RollbackHit_UndoesANoDamageSwing_ForFirstHitAndCadence()
+    {
+        var attacker = CreateMobile();
+
+        try
+        {
+            // A parried first hit rolls back → the next connecting hit is first-of-fight again.
+            var h1 = CombatFxState.RegisterHit(attacker, out var first1);
+            Assert.Equal(1, h1);
+            Assert.True(first1);
+
+            CombatFxState.RollbackHit(attacker, h1);
+
+            var h2 = CombatFxState.RegisterHit(attacker, out var first2);
+            Assert.Equal(1, h2);
+            Assert.True(first2);
+
+            // A parried later hit rolls back the cadence counter → the Nth-hit position is not spent.
+            var h3 = CombatFxState.RegisterHit(attacker, out _); // hitCount 2
+            Assert.Equal(2, h3);
+            CombatFxState.RollbackHit(attacker, h3);
+            var h4 = CombatFxState.RegisterHit(attacker, out _);
+            Assert.Equal(2, h4); // re-uses slot 2 rather than skipping to 3
+
+            // Safety: rollback no-ops if the counter already advanced past the given swing (a nested
+            // extra swing landed), so a hit that DID connect is never rewound.
+            CombatFxState.RegisterHit(attacker, out _); // hitCount 3
+            CombatFxState.RollbackHit(attacker, 2);     // stale — must not touch the counter
+            var h5 = CombatFxState.RegisterHit(attacker, out _);
+            Assert.Equal(4, h5);
+        }
+        finally
+        {
+            CombatFxState.Evict(attacker);
+            attacker.Delete();
+        }
+    }
+
+    [Fact]
     public void Ramp_NullOrZeroMax_IsSafe()
     {
         var attacker = CreateMobile();

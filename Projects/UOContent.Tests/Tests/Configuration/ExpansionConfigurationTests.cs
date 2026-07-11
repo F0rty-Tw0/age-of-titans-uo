@@ -20,7 +20,9 @@ public class ExpansionConfigurationTests
             ObjectPropertyList.Enabled = false;
             IncomingEntityPackets.SingleClickProps = false;
 
-            ServerConfiguration.Load(true);
+            // NOT a bare Load(true): that drops the boot-added data directory and breaks any
+            // pathfinding test that lazily loads a map sector afterwards.
+            Server.Tests.TestServerInitializer.ReloadConfiguration();
             ServerConfiguration.SetSetting("opl.enable", true);
 
             ExpansionConfiguration.Configure();
@@ -33,7 +35,9 @@ public class ExpansionConfigurationTests
             Core.Expansion = expansion;
             // Reset the mocked settings and re-derive the globals Configure() touched
             // (Mobile.*, T2ACraftSystem) before restoring the captured values.
-            ServerConfiguration.Load(true);
+            // NOT a bare Load(true): that drops the boot-added data directory and breaks any
+            // pathfinding test that lazily loads a map sector afterwards.
+            Server.Tests.TestServerInitializer.ReloadConfiguration();
             ExpansionConfiguration.Configure();
             ObjectPropertyList.Enabled = oplEnabled;
             IncomingEntityPackets.SingleClickProps = singleClickProps;

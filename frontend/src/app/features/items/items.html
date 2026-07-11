@@ -1,0 +1,23 @@
+<h1>Items</h1>
+
+@if (data.items.isLoading()) {
+  <p>Loading…</p>
+}
+
+<ul class="item-list">
+  @for (item of data.items.value(); track item.id) {
+    <li class="item-list__entry">
+      <span class="item-list__name">{{ item.name }}</span>
+      @if (item.material) {
+        <span class="item-list__meta">{{ item.material }}</span>
+      }
+      @if (item.slot) {
+        <span class="item-list__meta">{{ item.slot }}</span>
+      }
+    </li>
+  } @empty {
+    @if (!data.items.isLoading()) {
+      <li>No items exported yet — run Projects/WikiExport.</li>
+    }
+  }
+</ul>
