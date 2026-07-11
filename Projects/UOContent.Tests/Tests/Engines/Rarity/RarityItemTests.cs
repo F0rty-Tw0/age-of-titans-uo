@@ -6,23 +6,15 @@ using Xunit;
 
 namespace UOContent.Tests;
 
+// Sequential collection: creates world items, and its old hand-rolled cctor boot re-ran
+// ServerConfiguration.Load(true) mid-suite, dropping the boot-added data directory and flaking
+// the pathfinding tests (empty lazily-loaded map sectors).
+[Collection("Sequential UOContent Tests")]
 public class RarityItemTests
 {
     static RarityItemTests()
     {
-        Core.ApplicationAssembly = typeof(RarityItemTests).Assembly;
-        ServerConfiguration.Load(true);
-        Core.LoopContext = new EventLoopContext();
-
-        if (Map.Internal == null)
-        {
-            TestMapDefinitions.ConfigureTestMapDefinitions();
-        }
-
-        World.Configure();
-        World.Load();
-        DecayScheduler.Configure();
-        Timer.Init(0);
+        Server.Tests.TestServerInitializer.Initialize();
     }
 
     [Fact]

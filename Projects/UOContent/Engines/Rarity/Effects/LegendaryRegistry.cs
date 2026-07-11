@@ -79,6 +79,12 @@ public enum ClauseType : byte
     ShrugReflect,            // a fully shrugged blow reflects P1% of its damage back (Erechtheus/Erymanthos)
     ShrugFirstHitGuaranteed, // the first hit taken each fight is always shrugged (Kadmos/Nemea)
 
+    // Option A slot-set signatures (armor-slotsets plan, Phase 3) — chest/arms shrug riders
+    ShrugFirstHitPoisonAttacker, // first hit always shrugged + poisons the attacker (Studded Chest)
+    ShrugFirstHitDrainStam,      // first hit always shrugged + drains P1 stamina from the attacker (Bone Chest)
+    ShrugFirstHitDrBurst,        // first hit always shrugged + grants +P1% DR for P2s (Ringmail Chest)
+    ShrugReflectStun,            // a fully shrugged blow reflects P1% back and briefly stuns (Plate Arms)
+
     // Cyclopean flame-proc riders
     FlameProcDoubleFirstHit,     // proc chance doubles vs the first hit of any fight (Perdix/Teumessos)
     FlameProcHealBlock,          // proc also heal-blocks the attacker; P1 = seconds (Erichthonios)
@@ -176,7 +182,7 @@ public enum ClauseType : byte
     AnimalTamingSkillBonus,          // +P1 Animal Taming while worn (Lachesis)
     FrenzyStaggerChance,             // while frenzied, hits carry a P1% chance to stagger the target 1s (Atropos)
     DurabilityLossImmunity,          // immune to durability loss while worn (Ariadne)
-    DodgeReflectDamage,              // a successful dodge reflects P1% of the avoided damage (Penelope)
+    DodgeSnare,                      // a successful dodge webs the attacker: -P1% swing speed for P2s (Penelope)
 
     // ---- P2 (re-theme 2026-07-07): per-family Epic signature clauses ---------------------
     // Populated only in the effect row's Signature slot (never a legendary's unique clause) by
@@ -680,7 +686,7 @@ public static class LegendaryRegistry
         new(267, "Lachesis", VariantRoot.Charis, FamilyClothing, ClothingPieceFancyShirt, ClauseType.AnimalTamingSkillBonus, 15, 0, 0, 0),
         new(268, "Atropos", VariantRoot.Maenad, FamilyClothing, ClothingPieceKilt, ClauseType.FrenzyStaggerChance, 4, 0, 0, 0),
         new(269, "Ariadne", VariantRoot.Hestian, FamilyClothing, ClothingPieceRobe, ClauseType.DurabilityLossImmunity, 0, 0, 0, 0),
-        new(270, "Penelope", VariantRoot.Arachne, FamilyClothing, ClothingPieceCloak, ClauseType.DodgeReflectDamage, 10, 0, 0, 0)
+        new(270, "Penelope", VariantRoot.Arachne, FamilyClothing, ClothingPieceCloak, ClauseType.DodgeSnare, 30, 3, 0, 0)
     };
 
     private static readonly Dictionary<ushort, LegendaryEntry> _byId = BuildIndex();

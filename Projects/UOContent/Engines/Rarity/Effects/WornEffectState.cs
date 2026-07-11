@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Server.Collections;
+using Server.Engines.BuffIcons;
 using Server.Items;
 
 namespace Server.Engines.Rarity;
@@ -59,6 +60,11 @@ public readonly struct WornAggregate
     public int FrenzySwingPct { get; init; }
     public int StationaryRegenPct { get; init; }
     public bool StationaryAppliesMana { get; init; }
+
+    // ---- P4: armor slot-set capstone. At most one set can be complete at a time (the six
+    // body slots can't satisfy two materials' thresholds), so a single material field suffices.
+    public bool HasCapstone { get; init; }
+    public ArmorMaterialType CapstoneMaterial { get; init; }
 }
 
 // Per-Mobile aggregate of every worn variant armor/shield/jewelry/clothing item, rebuilt on
@@ -71,11 +77,13 @@ public static class WornEffectState
     // pieces (e.g. a Talarian suit + an Ophis weapon) pool instead of each counting in full.
     private const int GroupCount = VariantRootInfo.StackGroupCount;
 
-    // Suit-wide hard ceilings (framework §9.8).
-    private const int DrCap = 12;
+    // Suit-wide hard ceilings (framework §9.8). DrCap/ReflectCap/HpRegenCap are public: the
+    // burst consume sites in RarityEffects.Defense/.Worn clamp their effective totals against
+    // them (bursts arm after Rebuild's clamp, so the cap must be re-asserted at consume time).
+    public const int DrCap = 12;
     private const int ShrugCap = 20;
-    private const int ReflectCap = 25;
-    private const int HpRegenCap = 60;
+    public const int ReflectCap = 25;
+    public const int HpRegenCap = 60;
     private const int SpellDrCap = 18;
     private const int DodgeCap = 12;
 
@@ -124,7 +132,13 @@ public static class WornEffectState
         Span<int> strongestRarity = stackalloc int[GroupCount];
         strongestRarity.Clear();
 
-        using var armorItems = PooledRefList<(VariantRoot Root, ItemRarity Rarity, ArmorEffectRow Row)>.Create();
+        // P4 set capstone: Epic+ non-shield pieces per material (mirrors the slot-signature gate).
+        Span<int> epicPieces = stackalloc int[ArmorSlotSignatureTable.MaterialCount];
+        epicPieces.Clear();
+
+        using var armorItems =
+            PooledRefList<(VariantRoot Root, ItemRarity Rarity, ArmorEffectRow Row, bool IsShield, ArmorMaterialType Material, ArmorBodyType Slot)>
+                .Create();
         using var weaponItems = PooledRefList<(VariantRoot Root, ItemRarity Rarity, WeaponEffectRow Row)>.Create();
         using var accessoryItems =
             PooledRefList<(VariantRoot Root, ItemRarity Rarity, AccessoryEffectRow Row, Item Source)>.Create();
@@ -139,10 +153,16 @@ public static class WornEffectState
             if (worn is BaseArmor armor && armor is IVariantItem armorVariant &&
                 (armorVariant.VariantRoot != VariantRoot.None || armorVariant.LegendaryId != 0))
             {
+                var isShield = armor is BaseShield;
                 var (root, rarity) = RarityEffects.ResolveRootRarity(armorVariant, armor.Rarity);
-                var row = ArmorEffectTable.Get(root, rarity, armor is BaseShield);
+                var row = ArmorEffectTable.Get(root, rarity, isShield);
 
-                armorItems.Add((root, rarity, row));
+                armorItems.Add((root, rarity, row, isShield, armor.MaterialType, armor.BodyPosition));
+
+                if (!isShield && rarity >= ItemRarity.Epic && (int)armor.MaterialType < epicPieces.Length)
+                {
+                    epicPieces[(int)armor.MaterialType]++;
+                }
 
                 var group = VariantRootInfo.GetStackGroup(root);
 
@@ -270,14 +290,22 @@ public static class WornEffectState
 
         for (var i = 0; i < armorItems.Count; i++)
         {
-            var (root, rarity, row) = armorItems[i];
+            var (root, rarity, row, isShield, material, slot) = armorItems[i];
             var group = VariantRootInfo.GetStackGroup(root);
             var isStrongest = !fullWeightConsumed[group] && (int)rarity == strongestRarity[group];
 
             if (isStrongest)
             {
                 fullWeightConsumed[group] = true;
-                AppendSignature(ref legendaries, root, row.Signature, row.S1, row.S2, row.S3);
+
+                // Option A milestone: armor (not shields) at Epic+ reads its Signature from the
+                // (material x slot) table instead of the per-root ArmorEffectTable row. Shields
+                // and sub-Epic pieces keep the original root-keyed lookup unchanged.
+                var (signature, s1, s2, s3) = !isShield && rarity >= ItemRarity.Epic
+                    ? ArmorSlotSignatureTable.Get(material, slot)
+                    : (row.Signature, row.S1, row.S2, row.S3);
+
+                AppendSignature(ref legendaries, root, signature, s1, s2, s3);
             }
 
             var weight = isStrongest ? 100 : 50;
@@ -387,6 +415,34 @@ public static class WornEffectState
             autoCure |= row.AutoCure;
         }
 
+        DedupeClauses(legendaries);
+
+        // P4 — armor slot-set capstone: min(4, available slots) Epic+ pieces of one material
+        // completes the set. First match wins; the slot math makes a second match impossible.
+        var hasCapstone = false;
+        var capstoneMaterial = default(ArmorMaterialType);
+
+        for (var m = 0; m < epicPieces.Length; m++)
+        {
+            var threshold = CapstoneThreshold((ArmorMaterialType)m);
+
+            if (threshold > 0 && epicPieces[m] >= threshold)
+            {
+                hasCapstone = true;
+                capstoneMaterial = (ArmorMaterialType)m;
+                break;
+            }
+        }
+
+        // Evasion (leather capstone): +6% dodge, folded in BEFORE the cap clamp so the suit-wide
+        // dodge ceiling stays law.
+        if (hasCapstone && capstoneMaterial == ArmorMaterialType.Leather)
+        {
+            dodge += 6;
+        }
+
+        _aggregates.TryGetValue(wearer, out var previous);
+
         _aggregates[wearer] = new WornAggregate
         {
             DrPct = Math.Min(dr, DrCap),
@@ -425,8 +481,13 @@ public static class WornEffectState
             FrenzyDamagePct = frenzyDamage,
             FrenzySwingPct = frenzySwing,
             StationaryRegenPct = stationaryRegen,
-            StationaryAppliesMana = stationaryAppliesMana
+            StationaryAppliesMana = stationaryAppliesMana,
+
+            HasCapstone = hasCapstone,
+            CapstoneMaterial = capstoneMaterial
         };
+
+        SyncCapstoneBuff(wearer, previous, hasCapstone, capstoneMaterial);
 
         if (legendaries != null)
         {
@@ -462,6 +523,115 @@ public static class WornEffectState
         (legendaries ??= new List<LegendaryEntry>()).Add(
             new LegendaryEntry(0, null, root, 0xFF, 0, signature, s1, s2, s3, 0)
         );
+    }
+
+    // P4 capstone metadata. Threshold = min(4, available slots): chainmail only has 3 piece
+    // shapes (helm/chest/legs); every other set material requires 4. Non-set materials return 0.
+    private static int CapstoneThreshold(ArmorMaterialType material) => material switch
+    {
+        ArmorMaterialType.Chainmail => 3,
+        ArmorMaterialType.Leather or ArmorMaterialType.Studded or ArmorMaterialType.Bone
+            or ArmorMaterialType.Ringmail or ArmorMaterialType.Plate => 4,
+        _ => 0
+    };
+
+    internal static string CapstoneName(ArmorMaterialType material) => material switch
+    {
+        ArmorMaterialType.Leather => "Evasion",
+        ArmorMaterialType.Studded => "Venom",
+        ArmorMaterialType.Bone => "Grave-Chill",
+        ArmorMaterialType.Ringmail => "Phalanx-Thorns",
+        ArmorMaterialType.Chainmail => "Ward-Surge",
+        _ => "Siege-Shock" // Plate
+    };
+
+    // Icons chosen to not collide with ones the rarity engine already adds/removes
+    // (EnemyOfOneDebuff, MortalStrike, Rage) or the timed Ward-Surge burst (Protection).
+    internal static BuffIcon CapstoneIcon(ArmorMaterialType material) => material switch
+    {
+        ArmorMaterialType.Leather => BuffIcon.Evasion,
+        ArmorMaterialType.Studded => BuffIcon.InjectedStrike,
+        ArmorMaterialType.Bone => BuffIcon.DeathStrike,
+        ArmorMaterialType.Ringmail => BuffIcon.Block,
+        ArmorMaterialType.Chainmail => BuffIcon.Toughness,
+        _ => BuffIcon.Knockout // Plate
+    };
+
+    // Keeps the indefinite set-bonus buff icon in step with the rebuilt aggregate; duration
+    // default = indefinite, so completing a set shows the icon until the set is broken.
+    private static void SyncCapstoneBuff(Mobile wearer, in WornAggregate previous, bool hasCapstone, ArmorMaterialType material)
+    {
+        if (previous.HasCapstone && (!hasCapstone || previous.CapstoneMaterial != material))
+        {
+            BuffHelper.RemoveBuff(wearer, CapstoneIcon(previous.CapstoneMaterial));
+        }
+
+        if (hasCapstone && (!previous.HasCapstone || previous.CapstoneMaterial != material))
+        {
+            BuffHelper.AddCustomBuff(wearer, CapstoneIcon(material), CapstoneName(material));
+        }
+    }
+
+    // P5 — suit-wide dedupe safety net: a ClauseType dispatches at most once per wearer, even
+    // when a real legendary and a slot/lane signature (or two worn legendaries) carry the same
+    // clause. Every worn-side dispatch site iterates this list linearly, so collapsing
+    // duplicates here covers them all at once. O(n²) over a handful of entries, rebuild-only.
+    // Per-item dual-clause seams (a weapon's own signature + its own legendary) stay guarded by
+    // the registry's "unique != signature within a lane" invariant instead.
+    internal static void DedupeClauses(List<LegendaryEntry> legendaries)
+    {
+        if (legendaries == null || legendaries.Count < 2)
+        {
+            return;
+        }
+
+        for (var i = 0; i < legendaries.Count - 1; i++)
+        {
+            for (var j = legendaries.Count - 1; j > i; j--)
+            {
+                if (legendaries[j].Clause != legendaries[i].Clause)
+                {
+                    continue;
+                }
+
+                if (Beats(legendaries[j], legendaries[i]))
+                {
+                    legendaries[i] = legendaries[j];
+                }
+
+                legendaries.RemoveAt(j);
+            }
+        }
+    }
+
+    // "Strongest wins". P-values compare raw — an entry relying on its dispatch-site default
+    // (P=0) loses to any explicit value; acceptable for a safety net, since registry entries
+    // carry explicit params. Ties prefer the shield-sourced entry (the parry-path gates key off
+    // the source), then a real legendary (Id != 0) over a synthetic signature.
+    private static bool Beats(in LegendaryEntry a, in LegendaryEntry b)
+    {
+        // "Every Nth" clauses: a smaller nonzero interval fires more often, so it is stronger.
+        if (a.Clause is ClauseType.FlameProcEveryN or ClauseType.ParryRepairsEveryN && a.P1 != b.P1)
+        {
+            return a.P1 > 0 && (b.P1 <= 0 || a.P1 < b.P1);
+        }
+
+        if (a.P1 != b.P1)
+        {
+            return a.P1 > b.P1;
+        }
+
+        if (a.P2 != b.P2)
+        {
+            return a.P2 > b.P2;
+        }
+
+        if (RarityEffects.IsShieldSourced(a) != RarityEffects.IsShieldSourced(b))
+        {
+            return RarityEffects.IsShieldSourced(a);
+        }
+
+        return a.Id != 0 && b.Id == 0;
     }
 
     private static int StatIndex(StatType type) => type switch
@@ -657,6 +827,11 @@ public static class WornEffectState
         if (wearer == null)
         {
             return;
+        }
+
+        if (_aggregates.TryGetValue(wearer, out var agg) && agg.HasCapstone)
+        {
+            BuffHelper.RemoveBuff(wearer, CapstoneIcon(agg.CapstoneMaterial));
         }
 
         _aggregates.Remove(wearer);

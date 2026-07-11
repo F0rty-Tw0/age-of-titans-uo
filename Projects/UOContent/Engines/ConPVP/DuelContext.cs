@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using ModernUO.CodeGeneratedEvents;
 using ModernUO.Serialization;
+using Server.Engines.BuffIcons;
 using Server.Engines.PartySystem;
 using Server.Factions;
 using Server.Gumps;
@@ -1855,6 +1856,7 @@ public partial class DuelContext
 
             mob.MagicDamageAbsorb = 0;
             mob.MeleeDamageAbsorb = 0;
+            (mob as PlayerMobile)?.RemoveBuff(BuffIcon.MagicReflection);
             ProtectionSpell.Registry.Remove(mob);
 
             ArchProtectionSpell.RemoveEntry(mob);

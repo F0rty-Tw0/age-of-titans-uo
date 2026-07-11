@@ -27,7 +27,7 @@ public partial class FactionGasTrap : BaseFactionTrap
 
     public override void DoAttackEffect(Mobile m)
     {
-        m.ApplyPoison(m, Poison.Lethal);
+        m.ApplyPoison(m, Poison.Lethal, refreshOnly: true); // area source: refresh, don't stack
     }
 }
 

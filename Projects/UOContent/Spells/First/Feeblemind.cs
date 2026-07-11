@@ -1,4 +1,5 @@
 using Server.Engines.BuffIcons;
+using Server.Misc;
 using Server.Mobiles;
 using Server.Targeting;
 
@@ -44,6 +45,7 @@ namespace Server.Spells.First
                 var percentage = (int)(SpellHelper.GetOffsetScalar(Caster, m, true) * 100);
 
                 (m as PlayerMobile)?.AddBuff(new BuffInfo(BuffIcon.FeebleMind, 1075833, length, percentage.ToString()));
+                FloatingCombatText.ShowOffensiveStatus(m, Caster, "Feebleminded");
 
                 HarmfulSpell(m);
             }

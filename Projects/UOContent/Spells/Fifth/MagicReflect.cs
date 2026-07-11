@@ -122,6 +122,10 @@ namespace Server.Spells.Fifth
 
                     Caster.FixedParticles(0x375A, 10, 15, 5037, EffectLayer.Waist);
                     Caster.PlaySound(0x1E9);
+
+                    (Caster as PlayerMobile)?.AddBuff(
+                        new BuffInfo(BuffIcon.MagicReflection, 1075817, retainThroughDeath: true)
+                    );
                 }
             }
             else

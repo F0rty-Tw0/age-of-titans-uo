@@ -39,6 +39,7 @@ namespace Server.Spells.Second
             if (_t2aTable?.Remove(m, out var bonus) == true)
             {
                 m.VirtualArmorMod -= Math.Min(bonus, m.VirtualArmorMod);
+                (m as PlayerMobile)?.RemoveBuff(BuffIcon.Protection);
             }
         }
 
@@ -60,6 +61,8 @@ namespace Server.Spells.Second
             target.FixedParticles(0x375A, 9, 20, 5016, EffectLayer.Waist);
 
             new InternalTimer(target, duration).Start();
+
+            (target as PlayerMobile)?.AddBuff(new BuffInfo(BuffIcon.Protection, 1075814, 1075815, duration));
         }
 
         public override bool CheckCast()

@@ -1,4 +1,5 @@
 using System;
+using Server.Engines.BuffIcons;
 using Server.Engines.Rarity;
 using Server.Mobiles;
 using Server.Spells.Chivalry;
@@ -82,6 +83,9 @@ namespace Server.Spells.Fifth
 
                 m.Paralyze(TimeSpan.FromSeconds(duration));
 
+                // ponytail: icon auto-expires on its timer; a paralysis broken early by damage
+                // can't clear it early (that path is in core Server/Mobile) so it may linger briefly.
+                BuffHelper.AddCustomBuff(m, BuffIcon.Paralyze, "Paralyzed", TimeSpan.FromSeconds(duration));
                 Misc.FloatingCombatText.ShowOffensiveStatus(m, Caster, "Stunned");
 
                 m.PlaySound(0x204);

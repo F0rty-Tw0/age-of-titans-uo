@@ -79,6 +79,11 @@ public static partial class RarityEffects
             pct *= 2; // Rhea
         }
 
+        // P6 cap fix: the burst multipliers above stack AFTER Rebuild's suit-wide clamp, so a
+        // 25% suit under Phylakos ×3 (or hidden ×2 + potion ×2) would sail past the framework's
+        // 60% ceiling. The cap is law — clamp the final effective bonus.
+        pct = Math.Min(pct, WornEffectState.HpRegenCap);
+
         return TimeSpan.FromSeconds(baseRate.TotalSeconds * 100.0 / (100 + pct));
     }
 

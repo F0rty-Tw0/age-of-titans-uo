@@ -42,15 +42,22 @@ public static partial class RarityEffects
         }
         else if (item is BaseArmor armor)
         {
+            var isShield = armor is BaseShield;
             var (root, rarity) = ResolveRootRarity(variant, ((IRarity)item).Rarity);
-            var row = ArmorEffectTable.Get(root, rarity, armor is BaseShield);
+            var row = ArmorEffectTable.Get(root, rarity, isShield);
 
             if (!row.IsEmpty)
             {
                 list.Add(BuildArmorSummary(row));
             }
 
-            AddClauseLine(list, row.Signature, row.S1, row.S2, row.S3);
+            // Option A milestone: armor (not shields) at Epic+ shows the (material x slot)
+            // signature instead of the per-root one. Shields/sub-Epic keep the row's signature.
+            var (signature, s1, s2, s3) = !isShield && rarity >= ItemRarity.Epic
+                ? ArmorSlotSignatureTable.Get(armor.MaterialType, armor.BodyPosition)
+                : (row.Signature, row.S1, row.S2, row.S3);
+
+            AddClauseLine(list, signature, s1, s2, s3);
             AddLegendaryClauseLine(list, variant);
         }
         else if (item is BaseJewel or BaseClothing)
@@ -99,11 +106,18 @@ public static partial class RarityEffects
         }
         else if (item is BaseArmor armor)
         {
+            var isShield = armor is BaseShield;
             var (root, rarity) = ResolveRootRarity(variant, ((IRarity)item).Rarity);
-            var row = ArmorEffectTable.Get(root, rarity, armor is BaseShield);
+            var row = ArmorEffectTable.Get(root, rarity, isShield);
 
             LabelShapeSummaryLine(from, item, shape, row.IsEmpty ? null : BuildArmorSummary(row));
-            LabelCombinedClauseLine(from, item, variant, row.Signature, row.S1, row.S2, row.S3);
+
+            // Option A milestone: same slot-table redirect as AddVariantProperties above.
+            var (signature, s1, s2, s3) = !isShield && rarity >= ItemRarity.Epic
+                ? ArmorSlotSignatureTable.Get(armor.MaterialType, armor.BodyPosition)
+                : (row.Signature, row.S1, row.S2, row.S3);
+
+            LabelCombinedClauseLine(from, item, variant, signature, s1, s2, s3);
         }
         else if (item is BaseJewel or BaseClothing)
         {

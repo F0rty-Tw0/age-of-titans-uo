@@ -134,7 +134,8 @@ public partial class PoisonField : Item
             level = 1;
         }
 
-        if (m.ApplyPoison(_caster, Poison.GetPoison(level)) is ApplyPoisonResult.Poisoned or ApplyPoisonResult.HigherPoisonActive)
+        // Area source: field pulses refresh the existing stack instead of stacking (plan PP3).
+        if (m.ApplyPoison(_caster, Poison.GetPoison(level), refreshOnly: true) is ApplyPoisonResult.Poisoned or ApplyPoisonResult.HigherPoisonActive)
         {
             if (SpellHelper.CanRevealCaster(m))
             {
