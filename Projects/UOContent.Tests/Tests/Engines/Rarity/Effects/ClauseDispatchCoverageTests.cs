@@ -124,22 +124,15 @@ public class ClauseDispatchCoverageTests
     }
 
     // Snapshot of the currently-undispatched clauses. Not a correctness rule — a tripwire: if this
-    // list changes, someone either implemented one of these (good — remove it here and wire
-    // ClauseTraits) or parked a new clause as Deferred (needs a conscious sign-off), so the change
-    // shows up in review instead of hiding.
+    // list changes, someone parked a new clause as Deferred, which needs a conscious sign-off, so
+    // the change shows up in review instead of hiding. As of 2026-07-11 the set is EMPTY:
+    // ExtraSwingOnParry / StealthBreakRefundStam / the DoubleStrikeEveryN crit rider were wired,
+    // and the orphaned BlockCritStun (no carrier anywhere) was deleted from the enum.
     [Fact]
-    public void DeferredClauses_AreTheKnownThree()
+    public void DeferredClauses_None()
     {
         var deferred = AllClausesExceptNone().Where(ClauseTraits.IsDeferred).OrderBy(c => c.ToString()).ToArray();
 
-        Assert.Equal(
-            new[]
-            {
-                ClauseType.BlockCritStun,
-                ClauseType.ExtraSwingOnParry,
-                ClauseType.StealthBreakRefundStam
-            },
-            deferred
-        );
+        Assert.Empty(deferred);
     }
 }
