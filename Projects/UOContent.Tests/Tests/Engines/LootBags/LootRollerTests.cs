@@ -165,9 +165,11 @@ public class LootRollerDecisionTests
     [Fact]
     public void RollClothingDecision_NonRelicPieces_NeverRollLegendary()
     {
-        // Only the 5 relic-bound pieces (BodySash/FancyShirt/Kilt/Robe/Cloak, indices 0-4) may
-        // carry Legendary rarity — the other 7 curated pieces cap at Epic (21-clothing.md §1).
-        var relicPieces = new HashSet<int> { 0, 1, 2, 3, 4 };
+        // Only the relic-bound pieces may carry Legendary rarity: the 5 body pieces (BodySash/
+        // FancyShirt/Kilt/Robe/Cloak, indices 0-4) plus the 4 hat shapes (StrawHat/WideBrimHat/
+        // FeatheredHat/Cap, indices 8-11 — one hat shape hosts two relics). Every other curated
+        // piece caps at Epic (21-clothing.md §1, §3).
+        var relicPieces = new HashSet<int> { 0, 1, 2, 3, 4, 8, 9, 10, 11 };
 
         for (var i = 0; i < 20000; i++)
         {
@@ -180,6 +182,73 @@ public class LootRollerDecisionTests
 
             Assert.NotEqual(ItemRarity.Legendary, decision.Rarity);
         }
+    }
+
+    [Fact]
+    public void RollClothingDecision_Legendary_ResolvesToBothBoundPiecesPerTheme()
+    {
+        // Each clothing theme now binds TWO relics — a body piece and a hat (21-clothing.md §3) —
+        // and a Legendary clothing roll must be able to land on either. Sample bag level 10 and
+        // record, per theme, which bound piece indices actually appear.
+        var seen = new Dictionary<VariantRoot, HashSet<int>>();
+
+        for (var i = 0; i < 60000; i++)
+        {
+            var decision = LootRoller.RollDecision(10);
+
+            if (decision.Category != LootRoller.LootCategory.Clothing || decision.Rarity != ItemRarity.Legendary)
+            {
+                continue;
+            }
+
+            if (!seen.TryGetValue(decision.Theme, out var pieces))
+            {
+                seen[decision.Theme] = pieces = new HashSet<int>();
+            }
+
+            pieces.Add(decision.BaseIndex);
+        }
+
+        var expected = new Dictionary<VariantRoot, int[]>
+        {
+            [VariantRoot.Laurel] = new[] { 0, 8 },   // Klotho body sash + Kotinos straw hat
+            [VariantRoot.Charis] = new[] { 1, 10 },  // Lachesis fancy shirt + Diadema feathered hat
+            [VariantRoot.Maenad] = new[] { 2, 9 },   // Atropos kilt + Kisseus wide-brim hat
+            [VariantRoot.Hestian] = new[] { 3, 11 }, // Ariadne robe + Kalyptra cap
+            [VariantRoot.Arachne] = new[] { 4, 8 }   // Penelope cloak + Kalathos straw hat
+        };
+
+        foreach (var (theme, pieces) in expected)
+        {
+            Assert.True(seen.TryGetValue(theme, out var got), $"theme {theme} never rolled Legendary");
+
+            foreach (var piece in pieces)
+            {
+                Assert.Contains(piece, got);
+            }
+        }
+    }
+
+    [Fact]
+    public void RollClothingDecision_FeetPieces_AreRollable()
+    {
+        // The five feet shapes (Boots/ThighBoots/FurBoots/Shoes/Sandals, indices 12-16) joined
+        // the curated pool (21-clothing.md §1) — a sub-Legendary clothing roll must be able to
+        // land on each. Bag 5 rolls Rare/Epic only, so the piece pick is always the uniform one
+        // (~94 expected hits per piece in 40k decisions).
+        var unseen = new HashSet<int> { 12, 13, 14, 15, 16 };
+
+        for (var i = 0; i < 40000 && unseen.Count > 0; i++)
+        {
+            var decision = LootRoller.RollDecision(5);
+
+            if (decision.Category == LootRoller.LootCategory.Clothing)
+            {
+                unseen.Remove(decision.BaseIndex);
+            }
+        }
+
+        Assert.Empty(unseen);
     }
 
     private static void AssertWithinTolerance(int actualCount, int samples, int expectedWeightOutOf100)
@@ -348,11 +417,19 @@ public class LootRollerLegendaryReachabilityTests
     [Fact]
     public void Clothing_EveryRelicThemeAndBoundPiece_ResolvesToALegendary()
     {
+        // Body-piece relics (over-armor cloth).
         Assert.True(LegendaryRegistry.TryGetByRootAndBase(LegendaryRegistry.FamilyClothing, VariantRoot.Laurel, LegendaryRegistry.ClothingPieceBodySash, out _));
         Assert.True(LegendaryRegistry.TryGetByRootAndBase(LegendaryRegistry.FamilyClothing, VariantRoot.Charis, LegendaryRegistry.ClothingPieceFancyShirt, out _));
         Assert.True(LegendaryRegistry.TryGetByRootAndBase(LegendaryRegistry.FamilyClothing, VariantRoot.Maenad, LegendaryRegistry.ClothingPieceKilt, out _));
         Assert.True(LegendaryRegistry.TryGetByRootAndBase(LegendaryRegistry.FamilyClothing, VariantRoot.Hestian, LegendaryRegistry.ClothingPieceRobe, out _));
         Assert.True(LegendaryRegistry.TryGetByRootAndBase(LegendaryRegistry.FamilyClothing, VariantRoot.Arachne, LegendaryRegistry.ClothingPieceCloak, out _));
+
+        // Hat relics (armor-displacing cloth) — Kotinos + Kalathos share the straw-hat shape.
+        Assert.True(LegendaryRegistry.TryGetByRootAndBase(LegendaryRegistry.FamilyClothing, VariantRoot.Laurel, LegendaryRegistry.ClothingPieceStrawHat, out _));
+        Assert.True(LegendaryRegistry.TryGetByRootAndBase(LegendaryRegistry.FamilyClothing, VariantRoot.Maenad, LegendaryRegistry.ClothingPieceWideBrimHat, out _));
+        Assert.True(LegendaryRegistry.TryGetByRootAndBase(LegendaryRegistry.FamilyClothing, VariantRoot.Charis, LegendaryRegistry.ClothingPieceFeatheredHat, out _));
+        Assert.True(LegendaryRegistry.TryGetByRootAndBase(LegendaryRegistry.FamilyClothing, VariantRoot.Hestian, LegendaryRegistry.ClothingPieceCap, out _));
+        Assert.True(LegendaryRegistry.TryGetByRootAndBase(LegendaryRegistry.FamilyClothing, VariantRoot.Arachne, LegendaryRegistry.ClothingPieceStrawHat, out _));
     }
 }
 

@@ -57,6 +57,37 @@ public class RarityEffectsTests
     }
 
     [Fact]
+    public void ApplyLegendary_EveryClothingRelic_AppliesToItsBoundFactoryPiece()
+    {
+        // Regression: hat relics (271-275) threw in ValidateFamilyForItem because the clothing
+        // piece switch only knew indices 0-4. Generic guard: every clothing legendary must apply
+        // cleanly to the exact piece the loot roller constructs for its BaseIndex.
+        var factories = FamilyRegistry.ClothingFamilyDef.Factories;
+
+        foreach (var entry in LegendaryRegistry.Entries)
+        {
+            if (entry.Family != LegendaryRegistry.FamilyClothing)
+            {
+                continue;
+            }
+
+            var item = factories[entry.BaseIndex]();
+
+            try
+            {
+                RarityEffects.ApplyLegendary(item, entry.Id);
+
+                Assert.Equal(entry.Id, ((IVariantItem)item).LegendaryId);
+                Assert.Equal(entry.Name, item.Name);
+            }
+            finally
+            {
+                item.Delete();
+            }
+        }
+    }
+
+    [Fact]
     public void ApplyLegendary_SetsLegendaryIdRootAndProperNoun()
     {
         var item = new DoubleAxe();
@@ -159,10 +190,11 @@ public class RarityEffectsTests
     }
 
     // Pre-UOTD (T2A) clients only see single-click LabelTo lines, never the OPL tooltip, and the
-    // classic client caps single-click overhead text at ~5 lines per item (oldest dropped first).
-    // This verifies RarityEffects.LabelVariantDetails compresses its mirror of the OPL content
-    // (base shape + numeric summary on one line, clause text on another) to at most 2 lines, via
-    // the wire, not just by reading the built strings back.
+    // classic client caps single-click overhead text at 5 lines per item (oldest dropped first).
+    // The approved layout (2026-07-11) spends those lines on name (labelled by OnSingleClick) +
+    // stats + myth-tagged effects (with the base shape merged in) + signature clause + legendary
+    // clause, so LabelVariantDetails itself emits at most 4. This checks the wire output, not just
+    // the built strings.
     [Fact]
     public void LabelVariantDetails_LegendaryWeapon_EmitsBaseShapeSummaryAndClauseLines()
     {
@@ -192,15 +224,20 @@ public class RarityEffectsTests
             var messages = DecodeUnicodeMessages(ns.SendBuffer.GetReadSpan());
 
             Assert.True(
-                messages.Count <= 2,
-                $"Expected at most 2 label lines, got {messages.Count}: {string.Join(" | ", messages)}"
+                messages.Count <= 4,
+                $"Expected at most 4 label lines (+ name == 5-line cap), got {messages.Count}: {string.Join(" | ", messages)}"
             );
 
+            // Effects line: myth-tagged effect summary WITHOUT the base shape (user directive
+            // 2026-07-11 — shape is not shown on single-click; the OPL subtitle keeps it).
             Assert.Contains(
                 messages,
-                m => m.StartsWith(shape, StringComparison.OrdinalIgnoreCase) &&
+                m => m.Contains(" — ", StringComparison.Ordinal) &&
                      m.Contains("lifesteal", StringComparison.OrdinalIgnoreCase)
             );
+            Assert.DoesNotContain(messages, m => m.StartsWith(shape, StringComparison.OrdinalIgnoreCase));
+            // Stats line is present and first.
+            Assert.StartsWith("Damage ", messages[0]);
             Assert.Contains(messages, m => m.Contains("on-kill: restores stamina and mana", StringComparison.OrdinalIgnoreCase));
         }
         finally
