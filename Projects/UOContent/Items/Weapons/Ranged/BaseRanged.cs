@@ -66,7 +66,9 @@ namespace Server.Items
                 if (canSwing && attacker.HarmfulCheck(defender))
                 {
                     attacker.DisruptiveAction();
-                    attacker.NetState.SendSwing(attacker.Serial, defender.Serial);
+                    // Null-conditional matches BaseWeapon.OnSwing — a clientless archer (test
+                    // harness, headless NPC edge) must not NRE the whole swing.
+                    attacker.NetState?.SendSwing(attacker.Serial, defender.Serial);
 
                     if (attacker is BaseCreature bc && bc.TriggerAbility(MonsterAbilityTrigger.CombatAction, defender))
                     {
