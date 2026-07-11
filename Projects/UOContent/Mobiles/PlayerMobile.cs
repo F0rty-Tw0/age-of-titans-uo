@@ -3515,11 +3515,9 @@ namespace Server.Mobiles
 
         protected override bool OnMove(Direction d)
         {
-            if (!Core.SE)
-            {
-                return base.OnMove(d);
-            }
-
+            // Shard rule (2026-07-11): the SE auto-stealth walk is enabled on T2A — running out
+            // of stealth steps re-rolls Stealth.OnUse instead of revealing, so a hider with the
+            // skill keeps moving quietly without manually re-using the skill.
             if (AccessLevel != AccessLevel.Player)
             {
                 return true;
@@ -4547,7 +4545,13 @@ namespace Server.Mobiles
                 return;
             }
 
-            RemoveBuff(b.ID); // Check, stop old timer, & subsequently remove the old one.
+            // Replace in place WITHOUT a remove packet: the client overwrites a re-sent icon
+            // (keyed by type), while remove+add makes the icon/tooltip blink on every refresh.
+            if (m_BuffTable?.Remove(b.ID, out var oldInfo) == true)
+            {
+                oldInfo.StopTimer();
+            }
+
             b.StartTimer(this);
 
             m_BuffTable ??= new Dictionary<BuffIcon, BuffInfo>();

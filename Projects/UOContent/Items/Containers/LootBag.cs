@@ -54,6 +54,10 @@ public partial class LootBag : BaseContainer
 
             from.AddToBackpack(item);
             from.SendMessage($"You received: {name}");
+
+            // World broadcast for top-tier finds happens here — at claim time, when the finder
+            // actually sees the item — never at mob-death roll time. Gates on the min tier itself.
+            RaritySystem.Announce(from, item);
         }
 
         Delete();

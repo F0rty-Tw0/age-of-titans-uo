@@ -549,6 +549,17 @@ public class BandageContext : Timer
                 patient.SendLocalizedMessage(1008078, false, healer.Name); // : Attempting to heal you.
             }
 
+            // Public tell so onlookers can react (stun/interrupt) — bandaging is otherwise
+            // invisible to everyone but healer and patient.
+            if (onSelf)
+            {
+                healer.Emote("*applying bandages to self*");
+            }
+            else
+            {
+                healer.Emote($"*applying bandages to {patient.Name}*");
+            }
+
             healer.SendLocalizedMessage(500956); // You begin applying the bandages.
             return context;
         }
