@@ -1,14 +1,18 @@
 using ModernUO.Serialization;
+using Server.Gumps;
 using Server.Items;
 using Server.Targeting;
 
 namespace Server.Engines.Rarity;
 
-// Loot sink supporting the Patron God chase: offer TWO legendaries of one pantheon domain and
-// the god answers with ONE new legendary of that same domain (random entry, never one of the two
-// offered while other choices exist). Both offerings are consumed — a two-for-one gamble that
-// lets players trade duplicate-god relics toward the 3-piece Patron / 5-piece Exarch thresholds
-// without touching drop rates. GM-placed shrine decoration ([Add PantheonAltar), no state.
+// Altar hub for the rarity economy, three flows behind one gump (PantheonAltarGump):
+// 1. Legendary Offering — the Patron God chase: offer TWO legendaries of one pantheon domain
+//    and the god answers with ONE new legendary of that same domain (random entry, never one of
+//    the two offered while other choices exist). Both offerings are consumed — a two-for-one
+//    gamble toward the 3-piece Patron / 5-piece Exarch thresholds without touching drop rates.
+// 2. Salvage — destroy an Uncommon..Epic variant item for ichor (SalvageSystem).
+// 3. Upgrade — spend ichor to raise a themed item one tier, Epic cap (SalvageSystem).
+// GM-placed shrine decoration ([Add PantheonAltar), no state.
 [SerializationGenerator(0)]
 public partial class PantheonAltar : Item
 {
@@ -27,8 +31,81 @@ public partial class PantheonAltar : Item
             return;
         }
 
+        PantheonAltarGump.DisplayTo(from, this);
+    }
+
+    public void BeginLegendaryOffering(Mobile from)
+    {
         from.SendMessage("Offer the first legendary from your backpack.");
         from.BeginTarget(-1, false, TargetFlags.None, (m, targeted) => OnFirstOffering(m, targeted));
+    }
+
+    public void BeginSalvage(Mobile from)
+    {
+        from.SendMessage("Choose the item from your backpack to salvage.");
+        from.BeginTarget(-1, false, TargetFlags.None, static (m, targeted) => OnSalvageTarget(m, targeted));
+    }
+
+    public void BeginUpgrade(Mobile from)
+    {
+        from.SendMessage("Choose the item from your backpack to upgrade.");
+        from.BeginTarget(-1, false, TargetFlags.None, static (m, targeted) => OnUpgradeTarget(m, targeted));
+    }
+
+    private static void OnSalvageTarget(Mobile from, object targeted)
+    {
+        if (targeted is not Item item)
+        {
+            from.SendMessage("That cannot be salvaged.");
+            return;
+        }
+
+        if (!SalvageSystem.CanSalvage(from, item, out var yield, out var reason))
+        {
+            from.SendMessage(reason);
+            return;
+        }
+
+        from.SendGump(new PantheonAltarConfirmGump(
+            $"{item.Name}<br>will be DESTROYED, yielding {yield} ichor.<br><br>Proceed?",
+            ok =>
+            {
+                if (ok)
+                {
+                    SalvageSystem.TrySalvage(from, item); // re-validates; stale confirm = no-op
+                }
+            }
+        ));
+    }
+
+    private static void OnUpgradeTarget(Mobile from, object targeted)
+    {
+        if (targeted is not Item item)
+        {
+            from.SendMessage("That cannot be upgraded.");
+            return;
+        }
+
+        if (!SalvageSystem.CanUpgrade(from, item, out var next, out var cost, out var reason))
+        {
+            from.SendMessage(reason);
+            return;
+        }
+
+        var current = ((IRarity)item).Rarity;
+        var carried = from.Backpack?.GetAmount(typeof(PantheonIchor)) ?? 0;
+
+        from.SendGump(new PantheonAltarConfirmGump(
+            $"{item.Name}<br>{RarityConfig.GetName(current)} to {RarityConfig.GetName(next)}<br>" +
+            $"Cost: {cost} ichor (carrying {carried}).<br><br>Proceed?",
+            ok =>
+            {
+                if (ok)
+                {
+                    SalvageSystem.TryUpgrade(from, item); // re-validates; stale confirm = no-op
+                }
+            }
+        ));
     }
 
     private void OnFirstOffering(Mobile from, object targeted)

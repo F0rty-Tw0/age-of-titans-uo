@@ -37,8 +37,8 @@ public static partial class RarityEffects
 
             list.Add(WeaponStatsLine(weapon, row));
             AddEffectsLine(list, root, row.IsEmpty ? null : BuildWeaponSummary(row));
-            AddClauseLine(list, row.Signature, row.S1, row.S2, row.S3);
-            AddLegendaryClauseLine(list, variant);
+            AddClauseLine(list, row.Signature, row.S1, row.S2, row.S3, weapon is BaseRanged);
+            AddLegendaryClauseLine(list, variant, weapon is BaseRanged);
         }
         else if (item is BaseArmor armor)
         {
@@ -119,8 +119,8 @@ public static partial class RarityEffects
 
             AddLine(lines, WeaponStatsLine(weapon, row));
             AddLine(lines, EffectsLine(root, row.IsEmpty ? null : BuildWeaponSummary(row)));
-            AddLine(lines, CapFirst(ClauseText.Describe(row.Signature, row.S1, row.S2, row.S3)));
-            AddLine(lines, LegendaryClauseText(variant));
+            AddLine(lines, CapFirst(ClauseText.Describe(row.Signature, row.S1, row.S2, row.S3, weapon is BaseRanged)));
+            AddLine(lines, LegendaryClauseText(variant, weapon is BaseRanged));
         }
         else if (item is BaseArmor armor)
         {
@@ -156,9 +156,9 @@ public static partial class RarityEffects
     // the OPL subtitle line keeps it for modern clients per framework §6.
     private static string EffectsLine(VariantRoot root, string effects) => PrefixMythTag(root, effects);
 
-    private static string LegendaryClauseText(IVariantItem variant) =>
+    private static string LegendaryClauseText(IVariantItem variant, bool ranged = false) =>
         variant.LegendaryId != 0 && LegendaryRegistry.TryGet(variant.LegendaryId, out var entry)
-            ? CapFirst(ClauseText.Describe(entry.Clause, entry.P1, entry.P2, entry.P3))
+            ? CapFirst(ClauseText.Describe(entry.Clause, entry.P1, entry.P2, entry.P3, ranged))
             : null;
 
     private static void AddLine(List<string> lines, string text)
@@ -172,9 +172,9 @@ public static partial class RarityEffects
     // Framework §6 OPL order: name -> rarity line -> theme effects (above) -> unique clause
     // (here), always last. A lane signature (weapons/armor only) precedes the legendary's own
     // unique clause when both exist on the same item.
-    private static void AddClauseLine(IPropertyList list, ClauseType clause, short s1, short s2, short s3)
+    private static void AddClauseLine(IPropertyList list, ClauseType clause, short s1, short s2, short s3, bool ranged = false)
     {
-        var text = ClauseText.Describe(clause, s1, s2, s3);
+        var text = ClauseText.Describe(clause, s1, s2, s3, ranged);
 
         if (!string.IsNullOrEmpty(text))
         {
@@ -182,11 +182,11 @@ public static partial class RarityEffects
         }
     }
 
-    private static void AddLegendaryClauseLine(IPropertyList list, IVariantItem variant)
+    private static void AddLegendaryClauseLine(IPropertyList list, IVariantItem variant, bool ranged = false)
     {
         if (variant.LegendaryId != 0 && LegendaryRegistry.TryGet(variant.LegendaryId, out var entry))
         {
-            AddClauseLine(list, entry.Clause, entry.P1, entry.P2, entry.P3);
+            AddClauseLine(list, entry.Clause, entry.P1, entry.P2, entry.P3, ranged);
         }
     }
 

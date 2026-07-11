@@ -16,7 +16,8 @@ public static class RaritySystem
         list.Add(1060658, $"{"rarity"}\t{RarityConfig.GetName(rarity)}"); // ~1_val~: ~2_val~ — literal must be a hole
     }
 
-    // Hook for the future loot roller — no call sites yet.
+    // World broadcast for a top-tier find. Called at claim time — when a loot bag is opened
+    // (LootBag.OnDoubleClick) — never at roll time, so an unlooted bag can't spoil its contents.
     public static void Announce(Mobile finder, Item item)
     {
         var minTier = ServerConfiguration.GetSetting("rarity.announceMinTier", ItemRarity.Legendary);

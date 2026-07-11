@@ -1,6 +1,5 @@
 using System;
 using Server.Engines.Rarity;
-using Server.Mobiles;
 
 namespace Server.Engines.LootBags;
 
@@ -145,18 +144,14 @@ public static class LootRoller
     }
 
     // Constructs exactly one item for the given bag level and applies its rolled rarity/variant.
-    // killer is the finder for the Announce hook — pass null (or a non-player) to skip it.
-    public static Item Roll(int bagLevel, Mobile killer = null)
+    // No announce here — the world broadcast fires when the loot bag is opened (LootBag), not
+    // when the roll happens at mob death, so an unlooted bag never spoils its contents.
+    public static Item Roll(int bagLevel)
     {
         var decision = RollDecision(bagLevel);
         var item = Construct(decision);
 
         ApplyRarity(item, decision);
-
-        if (killer is PlayerMobile)
-        {
-            RaritySystem.Announce(killer, item); // Announce itself gates on the Epic+ min tier.
-        }
 
         return item;
     }
