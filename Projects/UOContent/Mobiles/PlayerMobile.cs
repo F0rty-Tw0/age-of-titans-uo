@@ -1613,6 +1613,13 @@ namespace Server.Mobiles
         {
             base.OnHiddenChanged();
 
+            if (!Hidden)
+            {
+                // Hypnos legendary (rarity engine): remember when the player came out of hiding
+                // so "opened the fight from stealth" is checkable when the first swing lands.
+                Server.Engines.Rarity.CombatFxState.RecordReveal(this);
+            }
+
             // Always remove, default to the hiding icon EXCEPT in the invis spell where it's explicitly set
             RemoveBuff(BuffIcon.Invisibility);
 
