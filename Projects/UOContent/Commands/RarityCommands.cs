@@ -10,30 +10,44 @@ namespace Server.Commands
             CommandSystem.Register("Legendary", AccessLevel.GameMaster, Legendary_OnCommand);
         }
 
-        [Usage("Legendary <id>")]
+        [Usage("Legendary <id|name>")]
         [Description(
             "Targets an equippable item and mints it as the legendary with the given registry id " +
-            "(see LegendaryRegistry). Sets rarity, root, name, hue and effects. Does NOT enforce " +
-            "global uniqueness — an admin mint can duplicate an existing legendary."
+            "or exact name (see LegendaryRegistry). Sets rarity, root, name, hue and effects. Does " +
+            "NOT enforce global uniqueness — an admin mint can duplicate an existing legendary."
         )]
         private static void Legendary_OnCommand(CommandEventArgs e)
         {
             if (e.Length != 1)
             {
-                e.Mobile.SendMessage("Usage: [Legendary <id>");
+                e.Mobile.SendMessage("Usage: [Legendary <id|name>");
                 return;
             }
 
-            var id = e.GetInt32(0);
+            LegendaryEntry entry = default;
+            var found = ushort.TryParse(e.GetString(0), out var id) && LegendaryRegistry.TryGet(id, out entry);
 
-            if (id <= 0 || id > ushort.MaxValue || !LegendaryRegistry.TryGet((ushort)id, out var entry))
+            if (!found)
             {
-                e.Mobile.SendMessage($"No legendary with id {id}.");
+                foreach (var candidate in LegendaryRegistry.Entries)
+                {
+                    if (string.Equals(candidate.Name, e.GetString(0), System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        entry = candidate;
+                        found = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!found)
+            {
+                e.Mobile.SendMessage($"No legendary matches '{e.GetString(0)}' (registry id or exact name).");
                 return;
             }
 
-            e.Mobile.SendMessage($"Target the item to mint as {entry.Name} (#{id}).");
-            e.Mobile.Target = new LegendaryTarget((ushort)id);
+            e.Mobile.SendMessage($"Target the item to mint as {entry.Name} (#{entry.Id}).");
+            e.Mobile.Target = new LegendaryTarget(entry.Id);
         }
 
         private class LegendaryTarget : Target

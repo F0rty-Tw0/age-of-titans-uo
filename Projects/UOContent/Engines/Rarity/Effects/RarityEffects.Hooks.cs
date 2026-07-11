@@ -18,6 +18,26 @@ public static partial class RarityEffects
         return pct > 0 ? damage - damage * pct / 100 : damage;
     }
 
+    // SpellDrVsPoisonDot (Skylla/Megareus legendaries, Dryas signature, Studded Helm cell): an
+    // ENABLER clause — while worn, the wearer's spell DR also reduces poison damage-over-time.
+    // Called from PoisonImpl.PoisonTimer on the merged tick total. With no spell DR from the
+    // rest of the suit it correctly reduces nothing.
+    public static int ReducePoisonTickDamage(Mobile defender, int damage)
+    {
+        var legendaries = WornEffectState.GetLegendaries(defender);
+
+        for (var i = 0; i < legendaries.Count; i++)
+        {
+            if (legendaries[i].Clause == ClauseType.SpellDrVsPoisonDot)
+            {
+                var pct = GetSpellDrPct(defender);
+                return pct > 0 ? damage - damage * pct / 100 : damage;
+            }
+        }
+
+        return damage;
+    }
+
     // Hecatean: the caster's own spell-damage% bonus — applied at the SAME pre-AOS choke points
     // ReduceSpellDamage already uses (symmetric: boost outgoing before reducing for the target).
     public static int BoostSpellDamage(Mobile caster, int damage)

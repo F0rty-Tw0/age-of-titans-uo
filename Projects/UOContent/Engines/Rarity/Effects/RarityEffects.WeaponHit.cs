@@ -643,8 +643,9 @@ public static partial class RarityEffects
         {
             switch (attackerAgg.CapstoneMaterial)
             {
-                case ArmorMaterialType.Studded: // Venom — interim single poison; becomes "add a
-                    // stack" once the stackable-poison feature lands (plan Feature 2).
+                case ArmorMaterialType.Studded: // Venom — each landed hit adds a Lesser poison
+                    // stack (global stackable-poison model, cap 5; at cap the apply is ignored
+                    // and the float stays quiet).
                     {
                         if (defender.ApplyPoison(attacker, Poison.Lesser) == ApplyPoisonResult.Poisoned)
                         {
