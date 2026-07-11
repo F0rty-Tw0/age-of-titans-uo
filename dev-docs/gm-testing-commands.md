@@ -10,6 +10,7 @@ In-game commands for exercising the rarity, loot-bag, and slot-set systems. All 
 | `[GenVariant <root> <rarity>` | Target an item → apply a root drop-variant at a rarity. Example: `[GenVariant Tritonian Epic`. | `Commands/RarityTestCommands.cs` |
 | `[ClearVariant` | Target an item → revert to plain (no root, Common, no hue/name). Re-roll friendly. | `Commands/RarityTestCommands.cs` |
 | `[GenArmorSet <material> [rarity=Epic] [root]` | Fill your backpack with a full armor set of that material. No root → the material's 5 thematic roots dealt round-robin (like real mixed drops; exercises §9.4 stacking + P5 dedupe). Explicit root → uniform set. Epic+ completes the slot-set capstone. | `Commands/RarityTestCommands.cs` |
+| `[GrantIchor [amount=100]` | Adds a stack of ichor (altar salvage material) to your backpack. Salvage/upgrade themselves are exercised in-game: `[Add PantheonAltar` → double-click → gump (Salvage destroys Uncommon–Epic variants for 2/4/8 ichor; Upgrade spends 20/80 to raise a themed item one tier, Epic cap). | `Commands/RarityTestCommands.cs` |
 
 Wrong base shape on `[Legendary`? The validation message tells you what it needs ("is a shield legendary", "bound to a different clothing piece", material mismatch).
 

@@ -32,6 +32,17 @@ public class RarityConfigTests
     }
 
     [Theory]
+    [InlineData(ItemRarity.Common, 0)]     // no theme to carry up
+    [InlineData(ItemRarity.Uncommon, 20)]
+    [InlineData(ItemRarity.Rare, 80)]
+    [InlineData(ItemRarity.Epic, 0)]       // upgrade ceiling
+    [InlineData(ItemRarity.Legendary, 0)]
+    public void UpgradeCost_MatchesPlaceholderTable(ItemRarity rarity, int expected)
+    {
+        Assert.Equal(expected, RarityConfig.UpgradeCost(rarity));
+    }
+
+    [Theory]
     [InlineData(ItemRarity.Common, "Common")]
     [InlineData(ItemRarity.Uncommon, "Uncommon")]
     [InlineData(ItemRarity.Rare, "Rare")]
