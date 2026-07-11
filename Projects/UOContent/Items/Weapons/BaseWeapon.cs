@@ -3506,6 +3506,22 @@ public abstract partial class BaseWeapon
         }
 
         LabelTo(from, $"Damage: {MinDamage}-{MaxDamage}, Speed: {Speed:0.##}");
+
+        if (_hitPoints >= 0 && _maxHitPoints > 0)
+        {
+            LabelTo(from, $"Durability: {_hitPoints}/{_maxHitPoints}");
+        }
+
+        var skill = Skill switch
+        {
+            SkillName.Swords  => "Swordsmanship",
+            SkillName.Macing  => "Mace Fighting",
+            SkillName.Fencing => "Fencing",
+            SkillName.Archery => "Archery",
+            _                 => Skill.ToString()
+        };
+
+        LabelTo(from, $"Skill: {skill}");
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

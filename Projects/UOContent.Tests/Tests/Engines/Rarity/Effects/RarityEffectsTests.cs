@@ -167,6 +167,15 @@ public class RarityEffectsTests
     public void LabelVariantDetails_LegendaryWeapon_EmitsBaseShapeSummaryAndClauseLines()
     {
         var item = new Halberd();
+        var labelNumber = item.LabelNumber;
+        var shape = Localization.GetText(labelNumber);
+        var addedSyntheticShape = shape == null;
+
+        if (addedSyntheticShape)
+        {
+            shape = "a halberd";
+            Localization.Add("enu", labelNumber, shape);
+        }
         var player = new PlayerMobile(World.NewMobile);
         player.DefaultMobileInit();
 
@@ -187,16 +196,19 @@ public class RarityEffectsTests
                 $"Expected at most 2 label lines, got {messages.Count}: {string.Join(" | ", messages)}"
             );
 
-            var halberdName = Localization.GetText(item.LabelNumber);
             Assert.Contains(
                 messages,
-                m => m.StartsWith(halberdName, StringComparison.OrdinalIgnoreCase) &&
+                m => m.StartsWith(shape, StringComparison.OrdinalIgnoreCase) &&
                      m.Contains("lifesteal", StringComparison.OrdinalIgnoreCase)
             );
             Assert.Contains(messages, m => m.Contains("on-kill: restores stamina and mana", StringComparison.OrdinalIgnoreCase));
         }
         finally
         {
+            if (addedSyntheticShape)
+            {
+                Localization.Remove("enu", labelNumber);
+            }
             item.Delete();
             player.Delete();
         }

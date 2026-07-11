@@ -68,6 +68,11 @@ internal static class TestServerInitializer
             // skip instead of failing the whole collection from the fixture constructor.
             TileDataLoaded = TryForceLoadTileData();
 
+            if (!TileDataLoaded)
+            {
+                ConfigureSyntheticEquipmentLayers();
+            }
+
             // Production runs every static Configure() via AssemblyHandler.Invoke("Configure");
             // the fixture calls a curated subset, so configure the pathfinding singleton here so
             // BitmapAStarAlgorithm.Instance carries its configured MaxSearchNodes before any test
@@ -119,6 +124,48 @@ internal static class TestServerInitializer
         var clientFiles = Environment.GetEnvironmentVariable("MODERNUO_TEST_DATA_DIR")
                           ?? @"C:\Ultima Online Classic";
         ServerConfiguration.DataDirectories.Add(clientFiles);
+    }
+
+    private static void ConfigureSyntheticEquipmentLayers()
+    {
+        // Item.ItemData masks ItemID with MaxItemValue, which remains zero when TileData.Load is skipped.
+        typeof(TileData).GetProperty(nameof(TileData.MaxItemValue))!.SetValue(null, TileData.ItemTable.Length - 1);
+
+        SetSyntheticEquipmentLayer(0xF52, Layer.OneHanded); // Dagger
+        SetSyntheticEquipmentLayer(0xF61, Layer.OneHanded); // Longsword
+
+        SetSyntheticEquipmentLayer(0xF4B, Layer.TwoHanded);  // DoubleAxe
+        SetSyntheticEquipmentLayer(0x143E, Layer.TwoHanded); // Halberd
+        SetSyntheticEquipmentLayer(0x1B76, Layer.TwoHanded); // HeaterShield
+        SetSyntheticEquipmentLayer(0x1B7A, Layer.TwoHanded); // WoodenShield
+
+        SetSyntheticEquipmentLayer(0x13BB, Layer.Helm); // ChainCoif
+        SetSyntheticEquipmentLayer(0x1412, Layer.Helm); // PlateHelm
+
+        SetSyntheticEquipmentLayer(0x13C6, Layer.Gloves); // LeatherGloves
+        SetSyntheticEquipmentLayer(0x1414, Layer.Gloves); // PlateGloves
+
+        SetSyntheticEquipmentLayer(0x1413, Layer.Neck); // PlateGorget
+
+        SetSyntheticEquipmentLayer(0x13BF, Layer.InnerTorso); // ChainChest
+        SetSyntheticEquipmentLayer(0x13CC, Layer.InnerTorso); // LeatherChest
+        SetSyntheticEquipmentLayer(0x13DB, Layer.InnerTorso); // StuddedChest
+        SetSyntheticEquipmentLayer(0x13EC, Layer.InnerTorso); // RingmailChest
+        SetSyntheticEquipmentLayer(0x1415, Layer.InnerTorso); // PlateChest
+
+        SetSyntheticEquipmentLayer(0x13CD, Layer.Arms); // LeatherArms
+        SetSyntheticEquipmentLayer(0x1410, Layer.Arms); // PlateArms
+
+        SetSyntheticEquipmentLayer(0x13BE, Layer.OuterLegs); // ChainLegs
+        SetSyntheticEquipmentLayer(0x13CB, Layer.OuterLegs); // LeatherLegs
+        SetSyntheticEquipmentLayer(0x1411, Layer.OuterLegs); // PlateLegs
+    }
+
+    private static void SetSyntheticEquipmentLayer(int itemID, Layer layer)
+    {
+        var itemData = TileData.ItemTable[itemID];
+        itemData.Quality = (int)layer;
+        TileData.ItemTable[itemID] = itemData;
     }
 
     private static bool TryForceLoadTileData()
