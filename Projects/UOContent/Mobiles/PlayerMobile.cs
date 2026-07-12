@@ -235,7 +235,15 @@ namespace Server.Mobiles
 
         public BlockMountType MountBlockReason => _mountBlock?.MountBlockReason ?? BlockMountType.None;
 
-        public override int MaxWeight => (Core.ML && Race == Race.Human ? 100 : 40) + (int)(3.5 * Str);
+        public override int MaxWeight
+        {
+            get
+            {
+                var baseMax = (Core.ML && Race == Race.Human ? 100 : 40) + (int)(3.5 * Str);
+                // Light-armor rarity "carry capacity" lane raises the load a wearer can bear.
+                return baseMax + Server.Engines.Rarity.RarityEffects.CarryWeightBonus(this, baseMax);
+            }
+        }
 
         public override double ArmorRating
         {
