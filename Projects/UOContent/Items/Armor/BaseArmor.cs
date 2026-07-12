@@ -795,8 +795,9 @@ namespace Server.Items
 
             damageTaken = Math.Max(0, damageTaken - absorbed);
 
-            // 25% chance to lower durability
-            if (Utility.Random(4) == 0)
+            // 25% chance to lower durability — but legendary variant items are indestructible
+            // (rarity overhaul Part B1), so they never wear.
+            if (Utility.Random(4) == 0 && this is not IRarity { Rarity: ItemRarity.Legendary })
             {
                 if (Core.AOS && ArmorAttributes.SelfRepair > Utility.Random(10))
                 {
@@ -1392,7 +1393,9 @@ namespace Server.Items
                 list.Add(1061170, prop); // strength requirement ~1_val~
             }
 
-            if (_hitPoints >= 0 && _maxHitPoints > 0)
+            // Legendary variant items are indestructible (rarity overhaul Part B), so they show no
+            // durability line — mirrored by the single-click path in RarityEffects.DurabilityLine.
+            if (_hitPoints >= 0 && _maxHitPoints > 0 && _rarity < ItemRarity.Legendary)
             {
                 list.Add(1060639, $"{_hitPoints}\t{_maxHitPoints}"); // durability ~1_val~ / ~2_val~
             }
@@ -1482,7 +1485,11 @@ namespace Server.Items
 
             if (isMagicItem && !_identified)
             {
-                LabelTo(from, $"an unidentified {Name ?? Localization.GetText(LabelNumber).ToLowerInvariant()}{RarityConfig.GetSuffix(_rarity)}");
+                RaritySystem.LabelTo(
+                    this, from,
+                    $"an unidentified {Name ?? Localization.GetText(LabelNumber).ToLowerInvariant()}{RarityConfig.GetSuffix(_rarity)}",
+                    _rarity
+                );
                 return;
             }
 
@@ -1523,7 +1530,7 @@ namespace Server.Items
                     builder.Append(RarityConfig.GetSuffix(_rarity));
                 }
 
-                LabelTo(from, builder.ToString());
+                RaritySystem.LabelTo(this, from, builder.ToString(), _rarity);
                 builder.Dispose();
                 LabelSingleClickItemDetails(from);
                 RarityEffects.LabelVariantDetails(from, this);
@@ -1549,7 +1556,7 @@ namespace Server.Items
                 label = $"{label}{RarityConfig.GetSuffix(_rarity)}";
             }
 
-            LabelTo(from, label);
+            RaritySystem.LabelTo(this, from, label, _rarity);
             LabelSingleClickItemDetails(from);
             RarityEffects.LabelVariantDetails(from, this);
         }
@@ -1557,6 +1564,14 @@ namespace Server.Items
         private void LabelSingleClickItemDetails(Mobile from)
         {
             if (!ItemInfoConfiguration.SingleClickDetails)
+            {
+                return;
+            }
+
+            // Variant items render their own stats + durability lines via RarityEffects.LabelVariantDetails
+            // (colon style, capped at the classic 5-line budget). Emitting the plain lines here too would
+            // duplicate them and push the item's name off the label, so the variant path owns them alone.
+            if ((int)_variantRoot != 0 || _legendaryId != 0)
             {
                 return;
             }

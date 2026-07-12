@@ -1768,6 +1768,7 @@ public abstract partial class BaseWeapon
         // always — so it can never leak to the next hit) scales the armor-rating absorb below by
         // (100 - pen)/100. Applies to both worn armor and a creature's virtual armor.
         var armorPen = RarityEffects.ConsumePendingArmorPen();
+        var armorIgnored = 0; // total armor absorb bypassed by pen — drives the "Armor Ignored" float
 
         if (armorItem is IWearableDurability armor)
         {
@@ -1780,7 +1781,9 @@ public abstract partial class BaseWeapon
 
                 if (absorbed > 0)
                 {
-                    damage += absorbed * armorPen / 100;
+                    var reAdded = absorbed * armorPen / 100;
+                    damage += reAdded;
+                    armorIgnored += reAdded;
                 }
             }
         }
@@ -1805,10 +1808,19 @@ public abstract partial class BaseWeapon
 
             if (armorPen > 0)
             {
-                absorbed -= absorbed * armorPen / 100;
+                var penReduced = absorbed * armorPen / 100;
+                absorbed -= penReduced;
+                armorIgnored += penReduced;
             }
 
             damage -= absorbed;
+        }
+
+        // B6: a full-penetration hit (pen == 100) that actually bypassed some armor pairs an
+        // "Armor Ignored" tag onto this hit's damage float (via the shared hit frame).
+        if (armorPen == 100 && armorIgnored > 0)
+        {
+            Misc.FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Armor Ignored");
         }
 
         damage = RarityEffects.AbsorbForDefender(attacker, defender, damage);
@@ -2231,8 +2243,9 @@ public abstract partial class BaseWeapon
                 _maxHitPoints > 0 && MaxRange <= 1 && Attributes.SpellChanneling == 0 &&
                 defender is Slime or AcidElemental;
 
-            // Stratics says 50% chance, seems more like 4%..
-            if (isAcidMonster || Utility.Random(25) == 0)
+            // Stratics says 50% chance, seems more like 4%.. Legendary variant items are
+            // indestructible (rarity overhaul Part B1), so they never wear (nor get acid-scarred).
+            if ((isAcidMonster || Utility.Random(25) == 0) && Rarity != ItemRarity.Legendary)
             {
                 if (isAcidMonster)
                 {
@@ -3305,7 +3318,9 @@ public abstract partial class BaseWeapon
             }
         }
 
-        if (_hitPoints >= 0 && _maxHitPoints > 0)
+        // Legendary variant items are indestructible (rarity overhaul Part B), so they show no
+        // durability line — mirrored by the single-click path in RarityEffects.DurabilityLine.
+        if (_hitPoints >= 0 && _maxHitPoints > 0 && _rarity < ItemRarity.Legendary)
         {
             list.Add(1060639, $"{_hitPoints}\t{_maxHitPoints}"); // durability ~1_val~ / ~2_val~
         }
@@ -3427,7 +3442,11 @@ public abstract partial class BaseWeapon
 
         if (isMagicItem && !_identified)
         {
-            LabelTo(from, $"an unidentified {Name ?? Localization.GetText(LabelNumber).ToLowerInvariant()}{RarityConfig.GetSuffix(_rarity)}");
+            RaritySystem.LabelTo(
+                this, from,
+                $"an unidentified {Name ?? Localization.GetText(LabelNumber).ToLowerInvariant()}{RarityConfig.GetSuffix(_rarity)}",
+                _rarity
+            );
             return;
         }
 
@@ -3482,7 +3501,7 @@ public abstract partial class BaseWeapon
                 builder.Append(RarityConfig.GetSuffix(_rarity));
             }
 
-            LabelTo(from, builder.ToString());
+            RaritySystem.LabelTo(this, from, builder.ToString(), _rarity);
             LabelSingleClickWeaponDetails(from);
             RarityEffects.LabelVariantDetails(from, this);
             builder.Dispose();
@@ -3508,7 +3527,7 @@ public abstract partial class BaseWeapon
             label = $"{label}{RarityConfig.GetSuffix(_rarity)}";
         }
 
-        LabelTo(from, label);
+        RaritySystem.LabelTo(this, from, label, _rarity);
         LabelSingleClickWeaponDetails(from);
         RarityEffects.LabelVariantDetails(from, this);
     }
@@ -3516,6 +3535,14 @@ public abstract partial class BaseWeapon
     private void LabelSingleClickWeaponDetails(Mobile from)
     {
         if (!ItemInfoConfiguration.SingleClickDetails)
+        {
+            return;
+        }
+
+        // Variant items render their own stats + durability lines via RarityEffects.LabelVariantDetails
+        // (colon style, capped at the classic 5-line budget). Emitting the plain lines here too would
+        // duplicate them and push the item's name off the label, so the variant path owns them alone.
+        if ((int)_variantRoot != 0 || _legendaryId != 0)
         {
             return;
         }

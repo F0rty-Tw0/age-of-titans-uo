@@ -330,7 +330,7 @@ public abstract partial class BaseJewel : Item, ICraftable, IAosItem, IRarity, I
             label = $"{label}{RarityConfig.GetSuffix(_rarity)}";
         }
 
-        LabelTo(from, label);
+        RaritySystem.LabelTo(this, from, label, _rarity);
         LabelSingleClickItemDetails(from);
         RarityEffects.LabelVariantDetails(from, this);
     }
