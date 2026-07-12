@@ -376,10 +376,6 @@ namespace Server.Items
         public virtual int InitMinHits => 0;
         public virtual int InitMaxHits => 0;
 
-        // Coverage list for OnHit's DurabilityLossImmunity (Ariadne robe) check below — the only
-        // ClauseType dispatch outside Engines/Rarity. Cross-checked by ClauseDispatchCoverageTests.
-        internal static readonly ClauseType[] HandledByDurabilityLoss = { ClauseType.DurabilityLossImmunity };
-
         public virtual int OnHit(BaseWeapon weapon, int damageTaken)
         {
             var absorbed = Utility.RandomMinMax(1, 4);
@@ -387,10 +383,8 @@ namespace Server.Items
             // Don't go below zero
             damageTaken = Math.Min(absorbed, damageTaken);
 
-            // Ariadne (Hestian robe relic): immune to durability loss while worn.
-            var durabilityImmune = this is IVariantItem variant && variant.LegendaryId != 0 &&
-                LegendaryRegistry.TryGet(variant.LegendaryId, out var legendaryEntry) &&
-                legendaryEntry.Clause == ClauseType.DurabilityLossImmunity;
+            // Legendary variant items are indestructible (rarity overhaul Part B1) — no wear.
+            var durabilityImmune = this is IRarity { Rarity: ItemRarity.Legendary };
 
             if (!durabilityImmune && Utility.Random(100) < 25) // 25% chance to lower durability
             {
@@ -903,7 +897,7 @@ namespace Server.Items
                 label = $"{label}{RarityConfig.GetSuffix(_rarity)}";
             }
 
-            LabelTo(from, label);
+            RaritySystem.LabelTo(this, from, label, _rarity);
             LabelSingleClickItemDetails(from);
             RarityEffects.LabelVariantDetails(from, this);
         }
