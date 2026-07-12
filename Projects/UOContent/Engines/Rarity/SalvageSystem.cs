@@ -1,3 +1,6 @@
+using System;
+using Server.Items;
+
 namespace Server.Engines.Rarity;
 
 // Pure mechanics for the Pantheon altar's salvage/upgrade flows — no gump or targeting code
@@ -27,7 +30,28 @@ public static class SalvageSystem
         }
 
         yield = RarityConfig.SalvageMultiplier(rarity);
+
+        // Worn-down gear yields less: a weapon or armor below half durability salvages for half
+        // the ichor (rounded down, min 1). Jewelry/clothing have no durability, so never penalized.
+        if (IsBelowHalfDurability(item))
+        {
+            yield = Math.Max(1, yield / 2);
+        }
+
         return true;
+    }
+
+    // True when a durable item (weapon/armor) has under half its max hit points remaining.
+    private static bool IsBelowHalfDurability(Item item)
+    {
+        var (hitPoints, maxHitPoints) = item switch
+        {
+            BaseWeapon weapon => (weapon.HitPoints, weapon.MaxHitPoints),
+            BaseArmor armor   => (armor.HitPoints, armor.MaxHitPoints),
+            _                 => (0, 0)
+        };
+
+        return maxHitPoints > 0 && hitPoints * 2 < maxHitPoints;
     }
 
     public static bool CanUpgrade(Mobile from, Item item, out ItemRarity next, out int cost, out string reason)
