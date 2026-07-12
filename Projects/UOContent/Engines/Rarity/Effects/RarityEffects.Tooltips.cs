@@ -347,7 +347,7 @@ public static partial class RarityEffects
         AddPct(parts, "damage reduction +", row.DrPct);
 
         // Shrug halves the incoming hit (RarityEffects.Defense: damage /= 2).
-        AddPct(parts, "chance to shrug off half damage +", row.ShrugPct);
+        AddPct(parts, "chance to shrug +", row.ShrugPct);
 
         if (row.ReflectPct != 0)
         {
@@ -413,7 +413,7 @@ public static partial class RarityEffects
         AddPct(parts, "mana regen +", row.ManaRegenPct);
         AddPct(parts, "spell damage +", row.SpellDamagePct);
         AddPct(parts, "chance to leech mana on spells +", row.ManaLeechPct);
-        AddPct(parts, "chance to shrug off half damage +", row.HitHalvedPct);
+        AddPct(parts, "chance to shrug +", row.HitHalvedPct);
         AddPct(parts, "chance to reroll your misses +", row.MissRerollPct);
 
         if (row.HidingBonus != 0)
@@ -472,7 +472,7 @@ public static partial class RarityEffects
 
         AddPct(parts, "attack speed +", row.SwingSpeedPct);
         AddPct(parts, "chance to hit +", row.HitChancePct);
-        AddPct(parts, "chance to strike twice +", row.ExtraSwingPct);
+        AddPct(parts, "chance to hit twice +", row.ExtraSwingPct);
         AddPct(parts, "damage +", row.DamagePct);
         AddPct(parts, "crit chance +", row.CritChancePct);
         AddPct(parts, "crit damage +", row.CritDamagePct);
