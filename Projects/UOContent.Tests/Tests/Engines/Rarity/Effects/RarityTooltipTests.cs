@@ -29,10 +29,15 @@ public class RarityTooltipTests
 
             Assert.Equal(4, lines.Count); // + the name the caller labels first == 5, the classic cap
 
-            Assert.StartsWith("Damage ", lines[0]);                 // stats line
-            Assert.Contains(" — ", lines[1]);                        // myth-tagged effects line
-            // Base shape is NOT shown on single-click (user directive 2026-07-11).
+            // Legendary items are indestructible (Part B), so no durability line — which is exactly
+            // what keeps the worst case (stats + effects + signature + legendary) at the 4-line budget.
+            Assert.DoesNotContain(lines, l => l.StartsWith("Durability:"));
+            Assert.StartsWith("Damage:", lines[0]);                 // stats line (legendary => no durability line)
+            // Effects line: bare summary, no myth tag (pantheon name removed from click, 2026-07-12)
+            // and no base shape (2026-07-11).
+            Assert.DoesNotContain(" — ", lines[1]);
             Assert.DoesNotContain("cleaver", lines[1]);
+            Assert.False(string.IsNullOrWhiteSpace(lines[1]));       // effects summary
             Assert.False(string.IsNullOrWhiteSpace(lines[2]));       // lane signature clause
             Assert.False(string.IsNullOrWhiteSpace(lines[3]));       // legendary unique clause
         }
@@ -45,7 +50,7 @@ public class RarityTooltipTests
     [Fact]
     public void SingleClickLines_NonLegendaryVariantWeapon_HasNoShapeAndFitsCap()
     {
-        // A plain rare variant: name + stats + myth-tagged effects (no shape) + optional signature.
+        // A plain rare variant: name + stats + durability + bare effects (no myth tag, no shape).
         var item = new Katana();
 
         try
@@ -56,8 +61,12 @@ public class RarityTooltipTests
             RarityEffects.CollectSingleClickLines(item, lines);
 
             Assert.True(lines.Count <= 4, $"emitted {lines.Count} rarity lines, over the 4-line budget");
-            Assert.StartsWith("Damage ", lines[0]);
-            Assert.StartsWith("Ares — ", lines[1]); // Phobos -> Ares myth tag, lowercase effects
+            Assert.StartsWith("Damage:", lines[0]);
+            // Sub-legendary weapon shows a durability line; the pantheon name is gone from the click
+            // tooltip (2026-07-12) so no line carries the "Ares — " myth tag.
+            Assert.Contains(lines, l => l.StartsWith("Durability:"));
+            Assert.DoesNotContain(lines, l => l.Contains(" — "));
+            Assert.DoesNotContain(lines, l => l.StartsWith("Ares"));
         }
         finally
         {

@@ -23,12 +23,12 @@ public class ArmorEffectTableTests
     }
 
     [Fact]
-    public void CyclopeanEpic_ReflectsSelfRepairsAndFlameProcs()
+    public void CyclopeanEpic_ReflectsAndFlameProcs()
     {
+        // Self-repair was removed with the durability overhaul (Part B2); the reflect/flame lanes stay.
         var row = ArmorEffectTable.Get(VariantRoot.Cyclopean, ItemRarity.Epic, isShield: false);
 
         Assert.Equal(5, row.ReflectPct);
-        Assert.True(row.SelfRepair);
         Assert.Equal(4, row.FlameProcPct);
     }
 
@@ -57,7 +57,10 @@ public class ArmorEffectTableTests
     {
         var row = ArmorEffectTable.Get(VariantRoot.Talarian, ItemRarity.Legendary, isShield: false);
 
-        Assert.Equal(40, row.WeightReductionPct);
+        // WeightReductionPct is the carry-capacity lane, rescaled to a 25% Legendary ceiling
+        // (2026-07-12) and suit-capped at WornEffectState.CarryWeightCap.
+        Assert.Equal(25, row.WeightReductionPct);
+        Assert.Equal(WornEffectState.CarryWeightCap, row.WeightReductionPct);
         Assert.Equal(10, row.StamRegenPct);
         Assert.Equal(5, row.DodgePct);
     }

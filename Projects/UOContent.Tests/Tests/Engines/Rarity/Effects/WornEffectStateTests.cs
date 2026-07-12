@@ -109,6 +109,33 @@ public class WornEffectStateTests
     }
 
     [Fact]
+    public void TalarianLegendaryArmorPiece_RaisesCarryCapacity()
+    {
+        // The light-armor "weight" lane now boosts the wearer's MaxWeight (carry capacity),
+        // capped at 25%, instead of shaving the piece's own weight (2026-07-12).
+        var player = CreatePlayerMobile(new Point3D(4620, 600, 0));
+        var chest = new LeatherChest();
+
+        try
+        {
+            var baseMax = player.MaxWeight;
+
+            RarityEffects.ApplyVariant(chest, VariantRoot.Talarian, ItemRarity.Legendary);
+            Assert.True(player.EquipItem(chest));
+
+            Assert.Equal(25, WornEffectState.GetAggregate(player).CarryWeightBonusPct);
+            Assert.Equal(baseMax + baseMax * 25 / 100, player.MaxWeight);
+            // The piece keeps its true default weight — the lane no longer lightens the armor itself.
+            Assert.Equal(chest.DefaultWeight, chest.Weight);
+        }
+        finally
+        {
+            chest.Delete();
+            player.Delete();
+        }
+    }
+
+    [Fact]
     public void TwoOlympianLegendaryPieces_StrongestFullSecondHalf()
     {
         var player = CreatePlayerMobile(new Point3D(4580, 600, 0));

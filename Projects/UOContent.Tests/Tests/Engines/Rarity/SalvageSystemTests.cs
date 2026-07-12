@@ -55,6 +55,31 @@ public class SalvageSystemTests
     }
 
     [Fact]
+    public void CanSalvage_BelowHalfDurability_HalvesYield()
+    {
+        var player = CreatePlayerMobile(Map.Felucca, new Point3D(4520, 600, 0));
+        var katana = CreateThemedKatana(player, ItemRarity.Epic); // full Epic yield = 8
+
+        try
+        {
+            katana.HitPoints = katana.MaxHitPoints / 4; // below half durability
+
+            Assert.True(SalvageSystem.CanSalvage(player, katana, out var yield, out _));
+            Assert.Equal(4, yield); // halved from 8
+
+            // At (or above) half durability the full yield is paid.
+            katana.HitPoints = katana.MaxHitPoints;
+            Assert.True(SalvageSystem.CanSalvage(player, katana, out var fullYield, out _));
+            Assert.Equal(8, fullYield);
+        }
+        finally
+        {
+            katana.Delete();
+            player.Delete();
+        }
+    }
+
+    [Fact]
     public void CanSalvage_CommonItem_Rejected()
     {
         var player = CreatePlayerMobile(Map.Felucca, new Point3D(4510, 600, 0));

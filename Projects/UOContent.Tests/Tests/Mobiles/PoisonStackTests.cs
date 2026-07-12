@@ -152,14 +152,18 @@ public class PoisonStackTests
     public void SpellDrVsPoisonDot_EnablerReducesMergedPoisonTick()
     {
         var player = CreatePlayerMobile(new Point3D(4772, 600, 0));
-        var chest = new StuddedChest(); // Skia is the studded material root
+        // SpellDrVsPoisonDot re-homed from Skylla (Studded) to Machaon (id 192, Ringmail/Alkimos) in
+        // the 2026-07-12 arming-group split: Studded's SPELL_DR slot signature forced Skylla off the
+        // spell-DR lane, and Ringmail is SPELL_DR-clear. Machaon's Alkimos lane is shrug-only, so the
+        // enabler still carries no spell DR of its own.
+        var chest = new RingmailChest();
         // ChainCoif on purpose: its (Chainmail x Helm) slot signature is burst-gated (inactive at
         // rest) — a LeatherCap would add SpellDrBoostFirstHit(10) and skew the expected pct.
         var cap = new ChainCoif();
 
         try
         {
-            RarityEffects.ApplyLegendary(chest, 211); // Skylla — the SpellDrVsPoisonDot enabler
+            RarityEffects.ApplyLegendary(chest, 192); // Machaon — the SpellDrVsPoisonDot enabler
             RarityEffects.ApplyVariant(cap, VariantRoot.Tritonian, ItemRarity.Epic); // spell DR source
 
             Assert.True(player.EquipItem(chest));
