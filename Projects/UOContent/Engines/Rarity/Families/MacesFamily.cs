@@ -92,45 +92,45 @@ public static class MacesFamily
             new LegendaryEntry(91, "Briareos", VariantRoot.Ennosigaios, LegendaryRegistry.FamilyMaces, 0, ClauseType.ExtraSwingEveryN, 5, 0, 0, 0),
             new LegendaryEntry(92, "Kottos", VariantRoot.Ennosigaios, LegendaryRegistry.FamilyMaces, 1, ClauseType.ExtraSwingFirstHit, 0, 0, 0, 0),
             new LegendaryEntry(93, "Gyges", VariantRoot.Ennosigaios, LegendaryRegistry.FamilyMaces, 2, ClauseType.ExtraSwingEveryN, 5, 10, 0, 0), // P2=armor pen %
-            new LegendaryEntry(94, "Polyphemos", VariantRoot.Ennosigaios, LegendaryRegistry.FamilyMaces, 3, ClauseType.ExtraSwingSplash, 6, 10, 3, 0), // signature is NthHitSplash, so no collision
+            new LegendaryEntry(94, "Polyphemos", VariantRoot.Ennosigaios, LegendaryRegistry.FamilyMaces, 3, ClauseType.ExtraSwingElemental, 6, 1, 0, 0), // de-overlap 2026-07-12: was ExtraSwingSplash (== NthHitSplash sig, double-splash)
             new LegendaryEntry(95, "Pyrphoros", VariantRoot.Ennosigaios, LegendaryRegistry.FamilyMaces, 4, ClauseType.ExtraSwingEveryN, 5, 0, 5, 0), // P3=stam leech %
             new LegendaryEntry(96, "Elektor", VariantRoot.Ennosigaios, LegendaryRegistry.FamilyMaces, 5, ClauseType.ExtraSwingOnParry, 0, 0, 0, 0),
             new LegendaryEntry(97, "Selaios", VariantRoot.Ennosigaios, LegendaryRegistry.FamilyMaces, 6, ClauseType.ExtraSwingEveryN, 7, 1, 0, 0), // SWAP cadence 5→7 (5+stagger echoed the Ennosigaios signature)
 
             // Rhaistes line (was Phobos — the smasher's sunder). Signature = NthHitFullArmorPen.
             new LegendaryEntry(98, "Brontes", VariantRoot.Rhaistes, LegendaryRegistry.FamilyMaces, 0, ClauseType.CritFirstHit, 0, 0, 0, 0), // SWAP drop splash (splash is Ennosigaios')
-            new LegendaryEntry(99, "Steropes", VariantRoot.Rhaistes, LegendaryRegistry.FamilyMaces, 1, ClauseType.CritArmorPen, 5, 10, 0, 0),
-            new LegendaryEntry(100, "Arges", VariantRoot.Rhaistes, LegendaryRegistry.FamilyMaces, 2, ClauseType.CritArmorPen, 6, 15, 0, 0), // SWAP CritSplash (splash is Ennosigaios')
+            new LegendaryEntry(99, "Steropes", VariantRoot.Rhaistes, LegendaryRegistry.FamilyMaces, 1, ClauseType.CritElemental, 5, 0, 0, 0), // de-overlap 2026-07-12: was CritArmorPen (== NthHitFullArmorPen sig, armor-pen)
+            new LegendaryEntry(100, "Arges", VariantRoot.Rhaistes, LegendaryRegistry.FamilyMaces, 2, ClauseType.CritStagger, 6, 0, 0, 0), // de-overlap 2026-07-12: was CritArmorPen (== NthHitFullArmorPen sig, armor-pen)
             new LegendaryEntry(101, "Pyrakmon", VariantRoot.Rhaistes, LegendaryRegistry.FamilyMaces, 3, ClauseType.CritExecuteUnder15, 5, 0, 0, 0),
-            new LegendaryEntry(102, "Thyella", VariantRoot.Rhaistes, LegendaryRegistry.FamilyMaces, 4, ClauseType.CritArmorPen, 7, 20, 0, 0), // SWAP CritStagger (== Kataigis signature type)
+            new LegendaryEntry(102, "Thyella", VariantRoot.Rhaistes, LegendaryRegistry.FamilyMaces, 4, ClauseType.CritElemental, 7, 0, 0, 0), // de-overlap 2026-07-12: was CritArmorPen (== NthHitFullArmorPen sig, armor-pen)
             new LegendaryEntry(103, "Sthenaros", VariantRoot.Rhaistes, LegendaryRegistry.FamilyMaces, 5, ClauseType.CritEveryN, 5, 0, 0, 0),
-            new LegendaryEntry(104, "Keraunos", VariantRoot.Rhaistes, LegendaryRegistry.FamilyMaces, 6, ClauseType.CritArmorPen, 8, 25, 0, 0), // SWAP CritElemental (no owning mace lane)
+            new LegendaryEntry(104, "Keraunos", VariantRoot.Rhaistes, LegendaryRegistry.FamilyMaces, 6, ClauseType.CritElemental, 8, 0, 0, 0), // de-overlap 2026-07-12: was CritArmorPen (== NthHitFullArmorPen sig, armor-pen)
 
             // Kataigis line (was Agrotera — the tempest's concussion). Signature = CritStagger.
-            new LegendaryEntry(105, "Kelmis", VariantRoot.Kataigis, LegendaryRegistry.FamilyMaces, 0, ClauseType.CritEveryN, 3, 0, 0, 0), // SWAP MarkNearbyAllies
-            new LegendaryEntry(106, "Damnameneus", VariantRoot.Kataigis, LegendaryRegistry.FamilyMaces, 1, ClauseType.CritExecuteUnder15, 5, 0, 0, 0), // SWAP MarkAllSources25
-            new LegendaryEntry(107, "Chalybos", VariantRoot.Kataigis, LegendaryRegistry.FamilyMaces, 2, ClauseType.CritFirstHit, 0, 0, 0, 0), // SWAP MarkSpreadOnDeath
+            new LegendaryEntry(105, "Kelmis", VariantRoot.Kataigis, LegendaryRegistry.FamilyMaces, 0, ClauseType.ExtraSwingEveryN, 5, 1, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritEveryN (CRIT == CritStagger sig); P2=1 stagger keeps the concussion identity
+            new LegendaryEntry(106, "Damnameneus", VariantRoot.Kataigis, LegendaryRegistry.FamilyMaces, 1, ClauseType.ExtraSwingFirstHit, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritExecuteUnder15 (CRIT == CritStagger sig)
+            new LegendaryEntry(107, "Chalybos", VariantRoot.Kataigis, LegendaryRegistry.FamilyMaces, 2, ClauseType.ExtraSwingGuaranteedHit, 5, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritFirstHit (CRIT == CritStagger sig)
             new LegendaryEntry(108, "Chalkeus", VariantRoot.Kataigis, LegendaryRegistry.FamilyMaces, 3, ClauseType.ExtraSwingEveryN, 6, 1, 0, 0), // SWAP MarkHealBlock; literal stagger via extra-swing trigger
-            new LegendaryEntry(109, "Kabeiros", VariantRoot.Kataigis, LegendaryRegistry.FamilyMaces, 4, ClauseType.DoubleStrikeEveryN, 7, 0, 0, 0), // SWAP MarkAllSources25
-            new LegendaryEntry(110, "Pyrigenes", VariantRoot.Kataigis, LegendaryRegistry.FamilyMaces, 5, ClauseType.CritFullHpDouble, 8, 0, 0, 0), // SWAP MarkFirstHit
+            new LegendaryEntry(109, "Kabeiros", VariantRoot.Kataigis, LegendaryRegistry.FamilyMaces, 4, ClauseType.ExtraSwingElemental, 5, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was DoubleStrikeEveryN (CRIT == CritStagger sig); every-5th lightning suits the tempest
+            new LegendaryEntry(110, "Pyrigenes", VariantRoot.Kataigis, LegendaryRegistry.FamilyMaces, 5, ClauseType.ExtraSwingEveryN, 7, 1, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritFullHpDouble (CRIT == CritStagger sig); P2=1 stagger
             new LegendaryEntry(111, "Aitnaios", VariantRoot.Kataigis, LegendaryRegistry.FamilyMaces, 6, ClauseType.ExtraSwingEveryN, 9, 1, 0, 0), // SWAP PoisonTickDoubled; stagger via extra-swing trigger
 
             // Eryma line (was Pallas — the bulwark's answer). Signature = BlockGrantsDrBurst; all FIT.
-            new LegendaryEntry(112, "Khalkaspis", VariantRoot.Eryma, LegendaryRegistry.FamilyMaces, 0, ClauseType.BlockFirstHit, 0, 0, 0, 0),
-            new LegendaryEntry(113, "Chalkodamas", VariantRoot.Eryma, LegendaryRegistry.FamilyMaces, 1, ClauseType.BlockFirstHit, 0, 0, 0, 0),
-            new LegendaryEntry(114, "Akmon", VariantRoot.Eryma, LegendaryRegistry.FamilyMaces, 2, ClauseType.ReflectFirstHit, 20, 0, 0, 0),
-            new LegendaryEntry(115, "Akmonides", VariantRoot.Eryma, LegendaryRegistry.FamilyMaces, 3, ClauseType.BlockFirstHit, 0, 0, 0, 0),
-            new LegendaryEntry(116, "Skeptron", VariantRoot.Eryma, LegendaryRegistry.FamilyMaces, 4, ClauseType.ReflectFirstHit, 20, 0, 0, 0),
-            new LegendaryEntry(117, "Adamastos", VariantRoot.Eryma, LegendaryRegistry.FamilyMaces, 5, ClauseType.BlockDrainStam, 2, 0, 0, 0),
-            new LegendaryEntry(118, "Ombrios", VariantRoot.Eryma, LegendaryRegistry.FamilyMaces, 6, ClauseType.ReflectFirstHit, 20, 0, 0, 0),
+            new LegendaryEntry(112, "Khalkaspis", VariantRoot.Eryma, LegendaryRegistry.FamilyMaces, 0, ClauseType.MarkFirstHit, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was BlockFirstHit (BLOCK_PARRY == BlockGrantsDrBurst sig)
+            new LegendaryEntry(113, "Chalkodamas", VariantRoot.Eryma, LegendaryRegistry.FamilyMaces, 1, ClauseType.MarkAllSources25, 25, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was BlockFirstHit (BLOCK_PARRY == BlockGrantsDrBurst sig)
+            new LegendaryEntry(114, "Akmon", VariantRoot.Eryma, LegendaryRegistry.FamilyMaces, 2, ClauseType.MarkSpreadOnDeath, 3, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was ReflectFirstHit (BLOCK_PARRY == BlockGrantsDrBurst sig)
+            new LegendaryEntry(115, "Akmonides", VariantRoot.Eryma, LegendaryRegistry.FamilyMaces, 3, ClauseType.OnKillRestore, 2, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was BlockFirstHit (BLOCK_PARRY == BlockGrantsDrBurst sig)
+            new LegendaryEntry(116, "Skeptron", VariantRoot.Eryma, LegendaryRegistry.FamilyMaces, 4, ClauseType.MarkNearbyAllies, 3, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was ReflectFirstHit (BLOCK_PARRY == BlockGrantsDrBurst sig)
+            new LegendaryEntry(117, "Adamastos", VariantRoot.Eryma, LegendaryRegistry.FamilyMaces, 5, ClauseType.StamDrainOnCrit, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was BlockDrainStam (BLOCK_PARRY == BlockGrantsDrBurst sig)
+            new LegendaryEntry(118, "Ombrios", VariantRoot.Eryma, LegendaryRegistry.FamilyMaces, 6, ClauseType.MarkHealBlock, 3, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was ReflectFirstHit (BLOCK_PARRY == BlockGrantsDrBurst sig)
 
             // Kamatos line (was Stygian — toil unto collapse). Signature = None; all FIT.
             new LegendaryEntry(119, "Chalkoteuchos", VariantRoot.Kamatos, LegendaryRegistry.FamilyMaces, 0, ClauseType.StamDrainOnCrit, 0, 0, 0, 0),
             new LegendaryEntry(120, "Sphyreus", VariantRoot.Kamatos, LegendaryRegistry.FamilyMaces, 1, ClauseType.OnKillRestore, 2, 0, 0, 0),
-            new LegendaryEntry(121, "Empyros", VariantRoot.Kamatos, LegendaryRegistry.FamilyMaces, 2, ClauseType.LifestealOnCrit, 0, 0, 0, 0),
-            new LegendaryEntry(122, "Astrapios", VariantRoot.Kamatos, LegendaryRegistry.FamilyMaces, 3, ClauseType.LifestealOnCrit, 0, 0, 0, 0),
+            new LegendaryEntry(121, "Empyros", VariantRoot.Kamatos, LegendaryRegistry.FamilyMaces, 2, ClauseType.LifestealOnCrit, 8, 0, 0, 0),
+            new LegendaryEntry(122, "Astrapios", VariantRoot.Kamatos, LegendaryRegistry.FamilyMaces, 3, ClauseType.LifestealOnCrit, 8, 0, 0, 0),
             new LegendaryEntry(123, "Brontaios", VariantRoot.Kamatos, LegendaryRegistry.FamilyMaces, 4, ClauseType.OnKillRestore, 2, 0, 0, 0),
-            new LegendaryEntry(124, "Aitherios", VariantRoot.Kamatos, LegendaryRegistry.FamilyMaces, 5, ClauseType.LifestealOnCrit, 0, 0, 0, 0),
+            new LegendaryEntry(124, "Aitherios", VariantRoot.Kamatos, LegendaryRegistry.FamilyMaces, 5, ClauseType.LifestealOnCrit, 8, 0, 0, 0),
             new LegendaryEntry(125, "Pyriphaes", VariantRoot.Kamatos, LegendaryRegistry.FamilyMaces, 6, ClauseType.OnKillRestore, 2, 0, 0, 0)
         }
     };

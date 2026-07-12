@@ -30,7 +30,7 @@ public static class LeatherFamily
         {
             new SlotSignature(ArmorBodyType.Helmet, ClauseType.SpellDrBoostFirstHit, 10, 0, 0),
             new SlotSignature(ArmorBodyType.Gorget, ClauseType.RerollFirstResist, 0, 0, 0),
-            new SlotSignature(ArmorBodyType.Chest, ClauseType.FirstHitNoSecondaryEffect, 0, 0, 0),
+            new SlotSignature(ArmorBodyType.Chest, ClauseType.DeflectSecondaryFirstHit, 0, 0, 0),
             new SlotSignature(ArmorBodyType.Arms, ClauseType.ReflectBoostFirstHit, 10, 0, 0),
             new SlotSignature(ArmorBodyType.Gloves, ClauseType.DodgeGrantsCounterWindow, 0, 0, 0),
             new SlotSignature(ArmorBodyType.Legs, ClauseType.DodgeRegenBurst, 20, 5, 0)
@@ -68,9 +68,9 @@ public static class LeatherFamily
                 Armor = new[]
                 {
                     new ArmorEffectRow { WeightReductionPct = 10, StamRegenPct = 4 },
-                    new ArmorEffectRow { WeightReductionPct = 20, StamRegenPct = 6 },
-                    new ArmorEffectRow { WeightReductionPct = 30, StamRegenPct = 8 },
-                    new ArmorEffectRow { WeightReductionPct = 40, StamRegenPct = 10 }
+                    new ArmorEffectRow { WeightReductionPct = 15, StamRegenPct = 6 },
+                    new ArmorEffectRow { WeightReductionPct = 20, StamRegenPct = 8 },
+                    new ArmorEffectRow { WeightReductionPct = 25, StamRegenPct = 10 }
                 }
             },
             // Melissa — balm (auto-cure + heals received)
@@ -100,10 +100,10 @@ public static class LeatherFamily
         },
         Legendaries = new[]
         {
-            new LegendaryEntry(201, "Nemea", VariantRoot.Naias, LegendaryRegistry.FamilyLightArmor, 0, ClauseType.HpRegenBurstOnCritTaken, 5, 3, 0, 0), // SWAP ShrugFirstHitGuaranteed
-            new LegendaryEntry(204, "Teumessos", VariantRoot.Dryas, LegendaryRegistry.FamilyLightArmor, 0, ClauseType.ReflectBoostFirstHit, 10, 0, 0, 0), // SWAP FlameProcDoubleFirstHit
+            new LegendaryEntry(201, "Nemea", VariantRoot.Naias, LegendaryRegistry.FamilyLightArmor, 0, ClauseType.ManaRegenMirrorsHp, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was HpRegenBurstOnCritTaken (REGEN_BURST == Leather/Legs DodgeRegenBurst sig); Naias HP-regen lane feeds the mana mirror
+            new LegendaryEntry(204, "Teumessos", VariantRoot.Dryas, LegendaryRegistry.FamilyLightArmor, 0, ClauseType.ShrugFirstHitGuaranteed, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was DodgeRefundStam (DODGE == Leather Gloves/Legs slot sigs); the uncatchable fox shrugs the first blow
             new LegendaryEntry(207, "Kyrene", VariantRoot.Melissa, LegendaryRegistry.FamilyLightArmor, 0, ClauseType.AutoCureRestoresHpPct, 5, 0, 0, 0),
-            new LegendaryEntry(210, "Arethousa", VariantRoot.Panika, LegendaryRegistry.FamilyLightArmor, 0, ClauseType.DodgeGrantsCounterWindow, 0, 0, 0, 0), // SWAP FirstParaAutoFails
+            new LegendaryEntry(210, "Arethousa", VariantRoot.Panika, LegendaryRegistry.FamilyLightArmor, 0, ClauseType.HealBlockOnFirstHitLanded, 3, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was LowHpDodgeBurst (DODGE == Leather Gloves/Legs slot sigs); ungrouped hit-rider works on the dodge-only Panika lane
             new LegendaryEntry(213, "Kyllene", VariantRoot.Oreias, LegendaryRegistry.FamilyLightArmor, 0, ClauseType.StamRegenMirrorsManaHalf, 0, 0, 0, 0) // SWAP DodgeDoubleFirstAttack
         }
     };

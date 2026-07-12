@@ -131,11 +131,11 @@ public static class AxesFamily
             // Stygian line (Hades)
             new LegendaryEntry(33, "Lethe", VariantRoot.Stygian, LegendaryRegistry.FamilyAxes, 0, ClauseType.StamDrainOnCrit, 0, 0, 0, 0),
             new LegendaryEntry(34, "Acheron", VariantRoot.Stygian, LegendaryRegistry.FamilyAxes, 1, ClauseType.OnKillRestore, 2, 0, 0, 0),
-            new LegendaryEntry(35, "Kokytos", VariantRoot.Stygian, LegendaryRegistry.FamilyAxes, 2, ClauseType.LifestealOnCrit, 0, 0, 0, 0),
-            new LegendaryEntry(36, "Phlegethon", VariantRoot.Stygian, LegendaryRegistry.FamilyAxes, 3, ClauseType.LifestealOnCrit, 0, 0, 0, 0),
+            new LegendaryEntry(35, "Kokytos", VariantRoot.Stygian, LegendaryRegistry.FamilyAxes, 2, ClauseType.LifestealOnCrit, 8, 0, 0, 0),
+            new LegendaryEntry(36, "Phlegethon", VariantRoot.Stygian, LegendaryRegistry.FamilyAxes, 3, ClauseType.LifestealOnCrit, 8, 0, 0, 0),
             new LegendaryEntry(37, "Charon", VariantRoot.Stygian, LegendaryRegistry.FamilyAxes, 4, ClauseType.OnKillRestore, 2, 0, 0, 0),
             new LegendaryEntry(38, "Erebos", VariantRoot.Stygian, LegendaryRegistry.FamilyAxes, 5, ClauseType.OnKillRestore, 2, 0, 0, 0),
-            new LegendaryEntry(39, "Tartaros", VariantRoot.Stygian, LegendaryRegistry.FamilyAxes, 6, ClauseType.LifestealOnCrit, 0, 0, 0, 0),
+            new LegendaryEntry(39, "Tartaros", VariantRoot.Stygian, LegendaryRegistry.FamilyAxes, 6, ClauseType.LifestealOnCrit, 8, 0, 0, 0),
             new LegendaryEntry(40, "Thanatos", VariantRoot.Stygian, LegendaryRegistry.FamilyAxes, 7, ClauseType.OnKillRestore, 2, 0, 0, 0)
         }
     };

@@ -95,7 +95,7 @@ public static class JewelryFamily
             // Tychean line (Tyche)
             new LegendaryEntry(254, "Ananke", VariantRoot.Tychean, LegendaryRegistry.FamilyJewelry, LegendaryRegistry.JewelrySlotRing, ClauseType.HitHalvedRegenPulse, 3, 0, 0, 0),
             new LegendaryEntry(255, "Metis", VariantRoot.Tychean, LegendaryRegistry.FamilyJewelry, LegendaryRegistry.JewelrySlotBracelet, ClauseType.MissRerollGrazeRestoreStam, 10, 0, 0, 0),
-            new LegendaryEntry(256, "Nemesis", VariantRoot.Tychean, LegendaryRegistry.FamilyJewelry, LegendaryRegistry.JewelrySlotNecklace, ClauseType.HitHalvedDurabilityImmunity, 3, 0, 0, 0),
+            new LegendaryEntry(256, "Nemesis", VariantRoot.Tychean, LegendaryRegistry.FamilyJewelry, LegendaryRegistry.JewelrySlotNecklace, ClauseType.HitHalvedReflectSpared, 0, 0, 0, 0),
             new LegendaryEntry(257, "Themis", VariantRoot.Tychean, LegendaryRegistry.FamilyJewelry, LegendaryRegistry.JewelrySlotEarrings, ClauseType.HitHalvedResistBurst, 10, 3, 0, 0),
 
             // Nyxian line (Nyx)

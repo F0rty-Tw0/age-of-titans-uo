@@ -64,21 +64,24 @@ public static class RingmailFamily
                 Armor = new[]
                 {
                     new ArmorEffectRow { WeightReductionPct = 10, StamRegenPct = 4 },
-                    new ArmorEffectRow { WeightReductionPct = 20, StamRegenPct = 6 },
-                    new ArmorEffectRow { WeightReductionPct = 30, StamRegenPct = 8 },
-                    new ArmorEffectRow { WeightReductionPct = 40, StamRegenPct = 10 }
+                    new ArmorEffectRow { WeightReductionPct = 15, StamRegenPct = 6 },
+                    new ArmorEffectRow { WeightReductionPct = 20, StamRegenPct = 8 },
+                    new ArmorEffectRow { WeightReductionPct = 25, StamRegenPct = 10 }
                 }
             },
-            // Zoster — war-belt (durability/self-repair)
+            // Zoster — war-belt (bonus AR). Was the durability/self-repair lane; self-repair was
+            // removed with the durability overhaul (Part B2), so this lane now carries a plain AR
+            // ladder. Flagged for a proper re-theme in a later balance pass — it currently mirrors
+            // the Hoplites AR identity.
             new LaneDefinition
             {
                 Root = VariantRoot.Zoster, DisplayName = "zoster", MythTag = "the girdle", BaseHue = 55, StackGroup = StackGroup.Durability,
                 Armor = new[]
                 {
-                    new ArmorEffectRow { SelfRepair = true },
-                    new ArmorEffectRow { SelfRepair = true, BonusAr = 1 },
-                    new ArmorEffectRow { SelfRepair = true, BonusAr = 2 },
-                    new ArmorEffectRow { SelfRepair = true, BonusAr = 3 }
+                    new ArmorEffectRow { BonusAr = 1 },
+                    new ArmorEffectRow { BonusAr = 2 },
+                    new ArmorEffectRow { BonusAr = 3 },
+                    new ArmorEffectRow { BonusAr = 4 }
                 }
             },
             // Alkimos — valiant (shrug)
@@ -96,11 +99,11 @@ public static class RingmailFamily
         },
         Legendaries = new[]
         {
-            new LegendaryEntry(186, "Kekrops", VariantRoot.Hoplites, LegendaryRegistry.FamilyMetalArmor, 0, ClauseType.ShrugStunAttacker, 0, 0, 0, 0),
-            new LegendaryEntry(189, "Perdix", VariantRoot.Zoster, LegendaryRegistry.FamilyMetalArmor, 0, ClauseType.SelfRepairBurstOnCritBlock, 5, 0, 0, 0), // SWAP FlameProcDoubleFirstHit
-            new LegendaryEntry(192, "Machaon", VariantRoot.Alkimos, LegendaryRegistry.FamilyMetalArmor, 0, ClauseType.ShrugReflect, 10, 0, 0, 0), // SWAP AutoCureRestoresStamMana
+            new LegendaryEntry(186, "Kekrops", VariantRoot.Hoplites, LegendaryRegistry.FamilyMetalArmor, 0, ClauseType.HpRegenBurstOnCritTaken, 5, 3, 0, 0), // de-overlap 2026-07-12 (arming-group split): was ShrugFirstHitDrainStam (SHRUG == Ringmail Chest/Arms slot sigs)
+            new LegendaryEntry(189, "Perdix", VariantRoot.Zoster, LegendaryRegistry.FamilyMetalArmor, 0, ClauseType.ReflectBurstOnCritBlock, 5, 0, 0, 0), // SWAP FlameProcDoubleFirstHit
+            new LegendaryEntry(192, "Machaon", VariantRoot.Alkimos, LegendaryRegistry.FamilyMetalArmor, 0, ClauseType.SpellDrVsPoisonDot, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was ShrugReflect (SHRUG == Ringmail Chest/Arms slot sigs); Machaon the healer wards poison DoT (SPELL_DR is clear on Ringmail), and re-homes the enabler the split removed from Skylla
             new LegendaryEntry(195, "Nereus", VariantRoot.Taxis, LegendaryRegistry.FamilyMetalArmor, 0, ClauseType.ParaResistBoostsSpellDr, 10, 5, 0, 0),
-            new LegendaryEntry(198, "Automedon", VariantRoot.Dromos, LegendaryRegistry.FamilyMetalArmor, 0, ClauseType.OnKillStamRestoreExtendImmunity, 5, 0, 0, 0) // SWAP DodgeRefundStam
+            new LegendaryEntry(198, "Automedon", VariantRoot.Dromos, LegendaryRegistry.FamilyMetalArmor, 0, ClauseType.DodgeRefundStam, 10, 0, 0, 0) // de-overlap 2026-07-12: was OnKillStamRestoreExtendImmunity (== Ringmail/Gloves slot signature); restores pre-SWAP identity
         }
     };
 }

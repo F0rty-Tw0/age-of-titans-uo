@@ -84,27 +84,27 @@ public static class ArcheryFamily
             // Belos line (was Zephyr — swift arrows). Signature = NthHitSplash; all FIT.
             new LegendaryEntry(171, "Skythes", VariantRoot.Belos, LegendaryRegistry.FamilyArchery, 0, ClauseType.ExtraSwingFirstHit, 0, 0, 0, 0),
             new LegendaryEntry(172, "Molpadia", VariantRoot.Belos, LegendaryRegistry.FamilyArchery, 1, ClauseType.ExtraSwingEveryN, 5, 0, 0, 0),
-            new LegendaryEntry(173, "Stymphalia", VariantRoot.Belos, LegendaryRegistry.FamilyArchery, 2, ClauseType.ExtraSwingSplash, 5, 10, 3, 0),
+            new LegendaryEntry(173, "Stymphalia", VariantRoot.Belos, LegendaryRegistry.FamilyArchery, 2, ClauseType.ExtraSwingGuaranteedHit, 5, 0, 0, 0), // de-overlap 2026-07-12: was ExtraSwingSplash (== NthHitSplash sig, double-splash)
 
             // Hekatos line (was Phobos — killing shots). Signature = CritFirstHit.
-            new LegendaryEntry(174, "Teukros", VariantRoot.Hekatos, LegendaryRegistry.FamilyArchery, 0, ClauseType.CritFirstHitStamRefund, 0, 0, 0, 0), // SWAP CritFirstHit (== signature)
-            new LegendaryEntry(175, "Pandaros", VariantRoot.Hekatos, LegendaryRegistry.FamilyArchery, 1, ClauseType.CritFullHpDouble, 0, 0, 0, 0), // SWAP drop P3=1 (would force a first-hit crit == signature)
-            new LegendaryEntry(176, "Alkon", VariantRoot.Hekatos, LegendaryRegistry.FamilyArchery, 2, ClauseType.CritArmorPen, 5, 10, 0, 0),
+            new LegendaryEntry(174, "Teukros", VariantRoot.Hekatos, LegendaryRegistry.FamilyArchery, 0, ClauseType.MarkOnCrit, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritFirstHitStamRefund (CRIT == CritFirstHit sig)
+            new LegendaryEntry(175, "Pandaros", VariantRoot.Hekatos, LegendaryRegistry.FamilyArchery, 1, ClauseType.MarkHealBlock, 3, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritFullHpDouble (CRIT == CritFirstHit sig)
+            new LegendaryEntry(176, "Alkon", VariantRoot.Hekatos, LegendaryRegistry.FamilyArchery, 2, ClauseType.MarkFirstHit, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritArmorPen (CRIT == CritFirstHit sig)
 
-            // Toxikon line (was Agrotera — the hunt made mark). Signature = PoisonedTargetsMarked; all FIT.
-            new LegendaryEntry(177, "Skamandrios", VariantRoot.Toxikon, LegendaryRegistry.FamilyArchery, 0, ClauseType.MarkAllSources25, 25, 0, 0, 0),
-            new LegendaryEntry(178, "Nessos", VariantRoot.Toxikon, LegendaryRegistry.FamilyArchery, 1, ClauseType.PoisonTickDoubled, 0, 0, 0, 0),
-            new LegendaryEntry(179, "Penthesileia", VariantRoot.Toxikon, LegendaryRegistry.FamilyArchery, 2, ClauseType.MarkNearbyAllies, 3, 0, 0, 0),
+            // Toxikon line (was Agrotera — the hunt made mark). Signature = PoisonedTargetsMarked (MARK); uniques avoid it.
+            new LegendaryEntry(177, "Skamandrios", VariantRoot.Toxikon, LegendaryRegistry.FamilyArchery, 0, ClauseType.CritPoisonTick, 6, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was MarkAllSources25 (MARK == PoisonedTargetsMarked sig); crit-poison keeps the toxin identity
+            new LegendaryEntry(178, "Nessos", VariantRoot.Toxikon, LegendaryRegistry.FamilyArchery, 1, ClauseType.OnKillRestore, 2, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was PoisonTickDoubled (MARK == PoisonedTargetsMarked sig)
+            new LegendaryEntry(179, "Penthesileia", VariantRoot.Toxikon, LegendaryRegistry.FamilyArchery, 2, ClauseType.CritEveryN, 5, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was MarkNearbyAllies (MARK == PoisonedTargetsMarked sig)
 
-            // Skopos line (was Pallas — deflection at range). Signature = BlockNextShotCrit.
-            new LegendaryEntry(180, "Philoktetes", VariantRoot.Skopos, LegendaryRegistry.FamilyArchery, 0, ClauseType.BlockFirstHit, 0, 0, 0, 0),
-            new LegendaryEntry(181, "Kheiron", VariantRoot.Skopos, LegendaryRegistry.FamilyArchery, 1, ClauseType.BlockRestoreStam, 10, 0, 0, 0),
-            new LegendaryEntry(182, "Kydon", VariantRoot.Skopos, LegendaryRegistry.FamilyArchery, 2, ClauseType.BlockDrainStam, 3, 0, 0, 0), // SWAP BlockNextShotCrit (== signature)
+            // Skopos line (was Pallas — deflection at range). Signature = BlockNextShotCrit (BLOCK_PARRY); uniques avoid it.
+            new LegendaryEntry(180, "Philoktetes", VariantRoot.Skopos, LegendaryRegistry.FamilyArchery, 0, ClauseType.CritFirstHit, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was BlockFirstHit (BLOCK_PARRY == BlockNextShotCrit sig)
+            new LegendaryEntry(181, "Kheiron", VariantRoot.Skopos, LegendaryRegistry.FamilyArchery, 1, ClauseType.MarkFirstHit, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was BlockRestoreStam (BLOCK_PARRY == BlockNextShotCrit sig)
+            new LegendaryEntry(182, "Kydon", VariantRoot.Skopos, LegendaryRegistry.FamilyArchery, 2, ClauseType.CritEveryN, 5, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was BlockDrainStam (BLOCK_PARRY == BlockNextShotCrit sig)
 
-            // Pede line (was Stygian — the draining arrow). Signature = CritStagger.
-            new LegendaryEntry(183, "Toxeus", VariantRoot.Pede, LegendaryRegistry.FamilyArchery, 0, ClauseType.CritEveryN, 6, 0, 0, 0), // SWAP OnKillRestore
-            new LegendaryEntry(184, "Lerna", VariantRoot.Pede, LegendaryRegistry.FamilyArchery, 1, ClauseType.CritEveryN, 5, 0, 0, 0), // SWAP LifestealOnCrit
-            new LegendaryEntry(185, "Krotos", VariantRoot.Pede, LegendaryRegistry.FamilyArchery, 2, ClauseType.CritEveryN, 4, 0, 0, 0) // SWAP LifestealOnCrit
+            // Pede line (was Stygian — the draining arrow). Signature = CritStagger (CRIT); uniques avoid it.
+            new LegendaryEntry(183, "Toxeus", VariantRoot.Pede, LegendaryRegistry.FamilyArchery, 0, ClauseType.MarkFirstHit, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritEveryN (CRIT == CritStagger sig)
+            new LegendaryEntry(184, "Lerna", VariantRoot.Pede, LegendaryRegistry.FamilyArchery, 1, ClauseType.MarkAllSources25, 25, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritEveryN (CRIT == CritStagger sig)
+            new LegendaryEntry(185, "Krotos", VariantRoot.Pede, LegendaryRegistry.FamilyArchery, 2, ClauseType.OnKillRestore, 2, 0, 0, 0) // de-overlap 2026-07-12 (arming-group split): was CritEveryN (CRIT == CritStagger sig)
         }
     };
 }

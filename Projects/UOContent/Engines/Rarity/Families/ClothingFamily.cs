@@ -133,7 +133,7 @@ public static class ClothingFamily
             new LegendaryEntry(266, "Klotho", VariantRoot.Laurel, LegendaryRegistry.FamilyClothing, LegendaryRegistry.ClothingPieceBodySash, ClauseType.OnKillStamRegenBurstStacking, 20, 5, 0, 0),
             new LegendaryEntry(267, "Lachesis", VariantRoot.Charis, LegendaryRegistry.FamilyClothing, LegendaryRegistry.ClothingPieceFancyShirt, ClauseType.AnimalTamingSkillBonus, 15, 0, 0, 0),
             new LegendaryEntry(268, "Atropos", VariantRoot.Maenad, LegendaryRegistry.FamilyClothing, LegendaryRegistry.ClothingPieceKilt, ClauseType.FrenzyStaggerChance, 4, 0, 0, 0),
-            new LegendaryEntry(269, "Ariadne", VariantRoot.Hestian, LegendaryRegistry.FamilyClothing, LegendaryRegistry.ClothingPieceRobe, ClauseType.DurabilityLossImmunity, 0, 0, 0, 0),
+            new LegendaryEntry(269, "Ariadne", VariantRoot.Hestian, LegendaryRegistry.FamilyClothing, LegendaryRegistry.ClothingPieceRobe, ClauseType.LowHpDodgeBurst, 10, 5, 0, 0),
             new LegendaryEntry(270, "Penelope", VariantRoot.Arachne, LegendaryRegistry.FamilyClothing, LegendaryRegistry.ClothingPieceCloak, ClauseType.DodgeSnare, 30, 3, 0, 0),
 
             // Hat relics (crowns/veils) — armor-displacing cloth; carry the displacing Epic package
