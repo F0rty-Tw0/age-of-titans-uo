@@ -91,20 +91,20 @@ public static class FencingFamily
         Legendaries = new[]
         {
             // Aiolos line (was Zephyr — the wind-lord's flurry). All FIT.
-            new LegendaryEntry(141, "Balios", VariantRoot.Aiolos, LegendaryRegistry.FamilyFencing, 0, ClauseType.ExtraSwingEveryN, 4, 0, 0, 0),
-            new LegendaryEntry(142, "Kyknos", VariantRoot.Aiolos, LegendaryRegistry.FamilyFencing, 1, ClauseType.ExtraSwingStackingHit, 5, 20, 0, 0),
-            new LegendaryEntry(143, "Asteropaios", VariantRoot.Aiolos, LegendaryRegistry.FamilyFencing, 2, ClauseType.ExtraSwingEveryN, 4, 10, 0, 0), // P2=armor pen %
-            new LegendaryEntry(144, "Protesilaos", VariantRoot.Aiolos, LegendaryRegistry.FamilyFencing, 3, ClauseType.ExtraSwingFirstHit, 0, 0, 0, 0),
-            new LegendaryEntry(145, "Akamas", VariantRoot.Aiolos, LegendaryRegistry.FamilyFencing, 4, ClauseType.ExtraSwingEveryN, 3, 0, 5, 0), // P3=stam leech %
-            new LegendaryEntry(146, "Peleus", VariantRoot.Aiolos, LegendaryRegistry.FamilyFencing, 5, ClauseType.ExtraSwingGuaranteedHit, 4, 0, 0, 0),
+            new LegendaryEntry(141, "Balios", VariantRoot.Aiolos, LegendaryRegistry.FamilyFencing, 0, ClauseType.CritEveryN, 4, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was ExtraSwingEveryN (EXTRA_SWING == ExtraSwingChain sig)
+            new LegendaryEntry(142, "Kyknos", VariantRoot.Aiolos, LegendaryRegistry.FamilyFencing, 1, ClauseType.CritFirstHit, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was ExtraSwingStackingHit (EXTRA_SWING == ExtraSwingChain sig)
+            new LegendaryEntry(143, "Asteropaios", VariantRoot.Aiolos, LegendaryRegistry.FamilyFencing, 2, ClauseType.MarkFirstHit, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was ExtraSwingEveryN (EXTRA_SWING == ExtraSwingChain sig)
+            new LegendaryEntry(144, "Protesilaos", VariantRoot.Aiolos, LegendaryRegistry.FamilyFencing, 3, ClauseType.CritExecuteUnder15, 5, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was ExtraSwingFirstHit (EXTRA_SWING == ExtraSwingChain sig)
+            new LegendaryEntry(145, "Akamas", VariantRoot.Aiolos, LegendaryRegistry.FamilyFencing, 4, ClauseType.MarkAllSources25, 25, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was ExtraSwingEveryN (EXTRA_SWING == ExtraSwingChain sig)
+            new LegendaryEntry(146, "Peleus", VariantRoot.Aiolos, LegendaryRegistry.FamilyFencing, 5, ClauseType.CritStagger, 4, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was ExtraSwingGuaranteedHit (EXTRA_SWING == ExtraSwingChain sig)
 
             // Ephodos line (was Phobos — the opening lunge). Signature = CritFirstHitStamRefund.
-            new LegendaryEntry(147, "Parthenopaios", VariantRoot.Ephodos, LegendaryRegistry.FamilyFencing, 0, ClauseType.CritFullHpDouble, 0, 0, 0, 0), // SWAP CritFirstHit (== signature restated); P3 stays 0
-            new LegendaryEntry(148, "Kapaneus", VariantRoot.Ephodos, LegendaryRegistry.FamilyFencing, 1, ClauseType.CritSplash, 4, 10, 3, 0),
-            new LegendaryEntry(149, "Tydeus", VariantRoot.Ephodos, LegendaryRegistry.FamilyFencing, 2, ClauseType.CritExecuteUnder15, 3, 25, 0, 0), // P2=25% threshold
-            new LegendaryEntry(150, "Asios", VariantRoot.Ephodos, LegendaryRegistry.FamilyFencing, 3, ClauseType.CritSplash, 4, 15, 3, 0),
-            new LegendaryEntry(151, "Meleagros", VariantRoot.Ephodos, LegendaryRegistry.FamilyFencing, 4, ClauseType.CritStagger, 4, 0, 0, 0), // SWAP CritFirstHit (== signature restated)
-            new LegendaryEntry(152, "Pelion", VariantRoot.Ephodos, LegendaryRegistry.FamilyFencing, 5, ClauseType.CritEveryN, 3, 0, 0, 0), // SWAP CritArmorPen (pen is Kentron's)
+            new LegendaryEntry(147, "Parthenopaios", VariantRoot.Ephodos, LegendaryRegistry.FamilyFencing, 0, ClauseType.ExtraSwingFirstHit, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritFullHpDouble (CRIT == CritFirstHitStamRefund sig); the lunge grants an extra swing
+            new LegendaryEntry(148, "Kapaneus", VariantRoot.Ephodos, LegendaryRegistry.FamilyFencing, 1, ClauseType.ExtraSwingEveryN, 4, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritSplash (CRIT == CritFirstHitStamRefund sig)
+            new LegendaryEntry(149, "Tydeus", VariantRoot.Ephodos, LegendaryRegistry.FamilyFencing, 2, ClauseType.MarkFirstHit, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritExecuteUnder15 (CRIT == CritFirstHitStamRefund sig)
+            new LegendaryEntry(150, "Asios", VariantRoot.Ephodos, LegendaryRegistry.FamilyFencing, 3, ClauseType.ExtraSwingGuaranteedHit, 4, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritSplash (CRIT == CritFirstHitStamRefund sig)
+            new LegendaryEntry(151, "Meleagros", VariantRoot.Ephodos, LegendaryRegistry.FamilyFencing, 4, ClauseType.MarkAllSources25, 25, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritStagger (CRIT == CritFirstHitStamRefund sig)
+            new LegendaryEntry(152, "Pelion", VariantRoot.Ephodos, LegendaryRegistry.FamilyFencing, 5, ClauseType.ExtraSwingStackingHit, 5, 20, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritEveryN (CRIT == CritFirstHitStamRefund sig)
 
             // Ios line (was Agrotera — venomous serpents, mark re-read as venom). All FIT.
             new LegendaryEntry(153, "Amphisbaena", VariantRoot.Ios, LegendaryRegistry.FamilyFencing, 0, ClauseType.MarkFirstHit, 0, 0, 0, 0),
@@ -123,12 +123,12 @@ public static class FencingFamily
             new LegendaryEntry(164, "Bellerophon", VariantRoot.Ophis, LegendaryRegistry.FamilyFencing, 5, ClauseType.BlockFirstHit, 0, 0, 0, 0),
 
             // Kentron line (was Stygian — the sting bites through). Signature = NthHitFullArmorPen.
-            new LegendaryEntry(165, "Ketos", VariantRoot.Kentron, LegendaryRegistry.FamilyFencing, 0, ClauseType.CritArmorPen, 4, 20, 0, 0), // SWAP StamDrainOnCrit
-            new LegendaryEntry(166, "Sybaris", VariantRoot.Kentron, LegendaryRegistry.FamilyFencing, 1, ClauseType.CritArmorPen, 5, 20, 0, 0), // SWAP LifestealOnCrit (doc's NthHitFullArmorPen == signature)
-            new LegendaryEntry(167, "Drakaina", VariantRoot.Kentron, LegendaryRegistry.FamilyFencing, 2, ClauseType.CritArmorPen, 6, 25, 0, 0), // SWAP OnKillRestore (doc's NthHitFullArmorPen == signature)
-            new LegendaryEntry(168, "Ismenios", VariantRoot.Kentron, LegendaryRegistry.FamilyFencing, 3, ClauseType.CritArmorPen, 6, 25, 0, 0), // SWAP LifestealOnCrit
-            new LegendaryEntry(169, "Ophion", VariantRoot.Kentron, LegendaryRegistry.FamilyFencing, 4, ClauseType.CritArmorPen, 4, 15, 0, 0), // SWAP OnKillRestore (doc's NthHitFullArmorPen == signature)
-            new LegendaryEntry(170, "Kampe", VariantRoot.Kentron, LegendaryRegistry.FamilyFencing, 5, ClauseType.CritArmorPen, 6, 20, 0, 0) // SWAP CritManaLeech
+            new LegendaryEntry(165, "Ketos", VariantRoot.Kentron, LegendaryRegistry.FamilyFencing, 0, ClauseType.CritManaLeech, 4, 10, 0, 0), // de-overlap 2026-07-12: was CritArmorPen (== NthHitFullArmorPen sig, armor-pen)
+            new LegendaryEntry(166, "Sybaris", VariantRoot.Kentron, LegendaryRegistry.FamilyFencing, 1, ClauseType.CritHealBlock, 5, 3, 0, 0), // de-overlap 2026-07-12: was CritArmorPen (== NthHitFullArmorPen sig, armor-pen)
+            new LegendaryEntry(167, "Drakaina", VariantRoot.Kentron, LegendaryRegistry.FamilyFencing, 2, ClauseType.CritPoisonTick, 6, 0, 0, 0), // de-overlap 2026-07-12: was CritArmorPen (== NthHitFullArmorPen sig, armor-pen)
+            new LegendaryEntry(168, "Ismenios", VariantRoot.Kentron, LegendaryRegistry.FamilyFencing, 3, ClauseType.CritPoisonTick, 6, 0, 0, 0), // de-overlap 2026-07-12: was CritArmorPen (== NthHitFullArmorPen sig, armor-pen)
+            new LegendaryEntry(169, "Ophion", VariantRoot.Kentron, LegendaryRegistry.FamilyFencing, 4, ClauseType.CritManaLeech, 4, 10, 0, 0), // de-overlap 2026-07-12: was CritArmorPen (== NthHitFullArmorPen sig, armor-pen)
+            new LegendaryEntry(170, "Kampe", VariantRoot.Kentron, LegendaryRegistry.FamilyFencing, 5, ClauseType.CritExecuteUnder15, 6, 15, 0, 0) // de-overlap 2026-07-12: was CritArmorPen (== NthHitFullArmorPen sig, armor-pen)
         }
     };
 }

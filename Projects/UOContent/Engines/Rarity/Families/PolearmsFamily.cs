@@ -80,15 +80,15 @@ public static class PolearmsFamily
         },
         Legendaries = new[]
         {
-            new LegendaryEntry(81, "Hippolytos", VariantRoot.Theristes, LegendaryRegistry.FamilyPolearms, 0, ClauseType.ExtraSwingSplash, 5, 10, 3, 0),
+            new LegendaryEntry(81, "Hippolytos", VariantRoot.Theristes, LegendaryRegistry.FamilyPolearms, 0, ClauseType.ExtraSwingManaLeech, 5, 10, 0, 0), // de-overlap 2026-07-12: was ExtraSwingSplash (== CritSplash sig, double-splash)
             new LegendaryEntry(82, "Thoon", VariantRoot.Theristes, LegendaryRegistry.FamilyPolearms, 1, ClauseType.ExtraSwingFirstHit, 0, 0, 0, 0),
-            new LegendaryEntry(83, "Mimas", VariantRoot.Sarisa, LegendaryRegistry.FamilyPolearms, 0, ClauseType.CritArmorPen, 6, 10, 0, 0),
-            new LegendaryEntry(84, "Porphyrion", VariantRoot.Sarisa, LegendaryRegistry.FamilyPolearms, 1, ClauseType.CritArmorPen, 5, 15, 0, 0), // SWAP CritSplash (splash is Theristes' now)
-            new LegendaryEntry(85, "Gration", VariantRoot.Horme, LegendaryRegistry.FamilyPolearms, 0, ClauseType.ExtraSwingChain, 5, 0, 0, 0), // SWAP MarkNearbyAllies (mark foreign to momentum)
+            new LegendaryEntry(83, "Mimas", VariantRoot.Sarisa, LegendaryRegistry.FamilyPolearms, 0, ClauseType.MarkFirstHit, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritArmorPen (CRIT == CritFirstHit sig)
+            new LegendaryEntry(84, "Porphyrion", VariantRoot.Sarisa, LegendaryRegistry.FamilyPolearms, 1, ClauseType.MarkAllSources25, 25, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritArmorPen (CRIT == CritFirstHit sig)
+            new LegendaryEntry(85, "Gration", VariantRoot.Horme, LegendaryRegistry.FamilyPolearms, 0, ClauseType.CritEveryN, 5, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was ExtraSwingChain (EXTRA_SWING == ExtraSwingEveryN sig)
             new LegendaryEntry(86, "Polybotes", VariantRoot.Horme, LegendaryRegistry.FamilyPolearms, 1, ClauseType.NthHitFullArmorPen, 4, 0, 0, 0), // SWAP MarkAllSources25 (mark foreign to momentum)
-            new LegendaryEntry(87, "Enkelados", VariantRoot.Phalanx, LegendaryRegistry.FamilyPolearms, 0, ClauseType.ReflectFirstHit, 20, 0, 0, 0),
-            new LegendaryEntry(88, "Eurytos", VariantRoot.Phalanx, LegendaryRegistry.FamilyPolearms, 1, ClauseType.BlockFirstHit, 0, 0, 0, 0),
-            new LegendaryEntry(89, "Alkyoneus", VariantRoot.Zophos, LegendaryRegistry.FamilyPolearms, 0, ClauseType.LifestealOnCrit, 0, 0, 0, 0),
+            new LegendaryEntry(87, "Enkelados", VariantRoot.Phalanx, LegendaryRegistry.FamilyPolearms, 0, ClauseType.CritStagger, 5, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was ReflectFirstHit (BLOCK_PARRY == BlockGrantsDrBurst sig)
+            new LegendaryEntry(88, "Eurytos", VariantRoot.Phalanx, LegendaryRegistry.FamilyPolearms, 1, ClauseType.CritEveryN, 5, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was BlockFirstHit (BLOCK_PARRY == BlockGrantsDrBurst sig)
+            new LegendaryEntry(89, "Alkyoneus", VariantRoot.Zophos, LegendaryRegistry.FamilyPolearms, 0, ClauseType.LifestealOnCrit, 8, 0, 0, 0),
             new LegendaryEntry(90, "Klytios", VariantRoot.Zophos, LegendaryRegistry.FamilyPolearms, 1, ClauseType.OnKillRestore, 2, 0, 0, 0)
         }
     };

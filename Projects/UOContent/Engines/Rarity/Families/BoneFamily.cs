@@ -96,11 +96,11 @@ public static class BoneFamily
         },
         Legendaries = new[]
         {
-            new LegendaryEntry(203, "Erymanthos", VariantRoot.Tymbos, LegendaryRegistry.FamilyLightArmor, 2, ClauseType.FirstHitNoSecondaryEffect, 0, 0, 0, 0), // SWAP ShrugReflect
-            new LegendaryEntry(206, "Echidna", VariantRoot.Katachthon, LegendaryRegistry.FamilyLightArmor, 2, ClauseType.ReflectCritStun, 0, 0, 0, 0), // SWAP FlameProcSplash
+            new LegendaryEntry(203, "Erymanthos", VariantRoot.Tymbos, LegendaryRegistry.FamilyLightArmor, 2, ClauseType.DeflectSecondaryFirstHit, 0, 0, 0, 0), // SWAP ShrugReflect
+            new LegendaryEntry(206, "Echidna", VariantRoot.Katachthon, LegendaryRegistry.FamilyLightArmor, 2, ClauseType.HpRegenBurstOnCritTaken, 5, 3, 0, 0), // de-overlap 2026-07-12: was ReflectCritStun (== Bone/Arms slot signature)
             new LegendaryEntry(209, "Keryneia", VariantRoot.Makaria, LegendaryRegistry.FamilyLightArmor, 2, ClauseType.EmergencyRegenTick, 10, 0, 0, 0),
-            new LegendaryEntry(212, "Krommyon", VariantRoot.Nekyia, LegendaryRegistry.FamilyLightArmor, 2, ClauseType.RerollFirstResist, 0, 0, 0, 0),
-            new LegendaryEntry(215, "Kalydon", VariantRoot.Melinoe, LegendaryRegistry.FamilyLightArmor, 2, ClauseType.DodgeRegenBurst, 10, 3, 0, 0)
+            new LegendaryEntry(212, "Krommyon", VariantRoot.Nekyia, LegendaryRegistry.FamilyLightArmor, 2, ClauseType.ResistSkillDoubleLowHp, 10, 50, 0, 0), // de-overlap 2026-07-12 (arming-group split): was RerollFirstResist (SPELL_DR == Bone/Helmet SpellDrBurstOnCritTaken sig); RESIST_SKILL keeps the death-ward identity
+            new LegendaryEntry(215, "Kalydon", VariantRoot.Melinoe, LegendaryRegistry.FamilyLightArmor, 2, ClauseType.DodgeRefundStamPct, 10, 0, 0, 0) // arming-group split re-home 2026-07-12: was DodgeRegenBurst (still live as the Leather/Legs slot sig); Bone permits DODGE and Melinoe carries the dodge lane. Reworked 2026-07-12 from suit-weight refund to a flat 10% max-stamina refund (weight-independent, per user directive)
         }
     };
 }

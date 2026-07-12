@@ -104,14 +104,14 @@ public static class SwordsFamily
             new LegendaryEntry(48, "Meriones", VariantRoot.Menis, LegendaryRegistry.FamilySwords, 7, ClauseType.ExtraSwingEveryN, 5, 0, 5, 0), // P3=stam leech %
 
             // Phoibos line (was Phobos — the unerring strike). Signature = CritFirstHit; uniques avoid it.
-            new LegendaryEntry(49, "Diomedes", VariantRoot.Phoibos, LegendaryRegistry.FamilySwords, 0, ClauseType.CritFullHpDouble, 0, 0, 0, 0), // SWAP CritFirstHit (== signature)
-            new LegendaryEntry(50, "Hektor", VariantRoot.Phoibos, LegendaryRegistry.FamilySwords, 1, ClauseType.CritSplash, 5, 10, 3, 0),
-            new LegendaryEntry(51, "Sarpedon", VariantRoot.Phoibos, LegendaryRegistry.FamilySwords, 2, ClauseType.CritExecuteUnder15, 6, 0, 0, 0),
-            new LegendaryEntry(52, "Aineias", VariantRoot.Phoibos, LegendaryRegistry.FamilySwords, 3, ClauseType.CritArmorPen, 5, 15, 0, 0), // SWAP CritPoisonTick (poison belongs to Haima)
-            new LegendaryEntry(53, "Idomeneus", VariantRoot.Phoibos, LegendaryRegistry.FamilySwords, 4, ClauseType.CritSplash, 6, 15, 3, 0),
-            new LegendaryEntry(54, "Neoptolemos", VariantRoot.Phoibos, LegendaryRegistry.FamilySwords, 5, ClauseType.CritSplash, 0, 10, 3, 0), // SWAP CritFirstHit(splash) (== signature); splash rider survives
-            new LegendaryEntry(55, "Agenor", VariantRoot.Phoibos, LegendaryRegistry.FamilySwords, 6, ClauseType.CritEveryN, 5, 0, 0, 0),
-            new LegendaryEntry(56, "Chrysaor", VariantRoot.Phoibos, LegendaryRegistry.FamilySwords, 7, ClauseType.CritArmorPen, 6, 15, 0, 0),
+            new LegendaryEntry(49, "Diomedes", VariantRoot.Phoibos, LegendaryRegistry.FamilySwords, 0, ClauseType.MarkOnCrit, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritFullHpDouble (CRIT == CritFirstHit sig)
+            new LegendaryEntry(50, "Hektor", VariantRoot.Phoibos, LegendaryRegistry.FamilySwords, 1, ClauseType.MarkAllSources25, 25, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritSplash (CRIT == CritFirstHit sig)
+            new LegendaryEntry(51, "Sarpedon", VariantRoot.Phoibos, LegendaryRegistry.FamilySwords, 2, ClauseType.MarkHealBlock, 3, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritExecuteUnder15 (CRIT == CritFirstHit sig)
+            new LegendaryEntry(52, "Aineias", VariantRoot.Phoibos, LegendaryRegistry.FamilySwords, 3, ClauseType.MarkFirstHit, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritArmorPen (CRIT == CritFirstHit sig)
+            new LegendaryEntry(53, "Idomeneus", VariantRoot.Phoibos, LegendaryRegistry.FamilySwords, 4, ClauseType.MarkSpreadOnDeath, 3, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritSplash (CRIT == CritFirstHit sig)
+            new LegendaryEntry(54, "Neoptolemos", VariantRoot.Phoibos, LegendaryRegistry.FamilySwords, 5, ClauseType.MarkNearbyAllies, 3, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritSplash (CRIT == CritFirstHit sig)
+            new LegendaryEntry(55, "Agenor", VariantRoot.Phoibos, LegendaryRegistry.FamilySwords, 6, ClauseType.MarkElemental, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritEveryN (CRIT == CritFirstHit sig)
+            new LegendaryEntry(56, "Chrysaor", VariantRoot.Phoibos, LegendaryRegistry.FamilySwords, 7, ClauseType.MarkManaLeech, 10, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was CritArmorPen (CRIT == CritFirstHit sig)
 
             // Haima line (was Agrotera — the opened vein; "mark" reads as a bleeding gash). All FIT.
             new LegendaryEntry(57, "Kephalos", VariantRoot.Haima, LegendaryRegistry.FamilySwords, 0, ClauseType.MarkAllSources25, 25, 0, 0, 0),
@@ -124,23 +124,23 @@ public static class SwordsFamily
             new LegendaryEntry(64, "Harpe", VariantRoot.Haima, LegendaryRegistry.FamilySwords, 7, ClauseType.MarkOnCrit, 0, 0, 0, 0),
 
             // Areia line (was Pallas — the perfect riposte). Signature = BlockNextShotCrit; all FIT.
-            new LegendaryEntry(65, "Nestor", VariantRoot.Areia, LegendaryRegistry.FamilySwords, 0, ClauseType.BlockFirstHit, 0, 0, 0, 0),
-            new LegendaryEntry(66, "Polydamas", VariantRoot.Areia, LegendaryRegistry.FamilySwords, 1, ClauseType.BlockFirstHit, 0, 0, 0, 0),
-            new LegendaryEntry(67, "Antenor", VariantRoot.Areia, LegendaryRegistry.FamilySwords, 2, ClauseType.ReflectFirstHit, 20, 0, 0, 0),
-            new LegendaryEntry(68, "Menestheus", VariantRoot.Areia, LegendaryRegistry.FamilySwords, 3, ClauseType.BlockRestoreStam, 10, 0, 0, 0),
-            new LegendaryEntry(69, "Eurypylos", VariantRoot.Areia, LegendaryRegistry.FamilySwords, 4, ClauseType.BlockFirstHit, 0, 0, 0, 0),
-            new LegendaryEntry(70, "Sthenelos", VariantRoot.Areia, LegendaryRegistry.FamilySwords, 5, ClauseType.ReflectFirstHit, 20, 0, 0, 0),
-            new LegendaryEntry(71, "Amphitryon", VariantRoot.Areia, LegendaryRegistry.FamilySwords, 6, ClauseType.ReflectFirstHit, 20, 0, 0, 0),
-            new LegendaryEntry(72, "Deiphobos", VariantRoot.Areia, LegendaryRegistry.FamilySwords, 7, ClauseType.BlockRestoreStam, 10, 0, 0, 0),
+            new LegendaryEntry(65, "Nestor", VariantRoot.Areia, LegendaryRegistry.FamilySwords, 0, ClauseType.CritFirstHit, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was BlockFirstHit (BLOCK_PARRY == BlockNextShotCrit sig)
+            new LegendaryEntry(66, "Polydamas", VariantRoot.Areia, LegendaryRegistry.FamilySwords, 1, ClauseType.CritEveryN, 5, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was BlockFirstHit (BLOCK_PARRY == BlockNextShotCrit sig)
+            new LegendaryEntry(67, "Antenor", VariantRoot.Areia, LegendaryRegistry.FamilySwords, 2, ClauseType.CritExecuteUnder15, 6, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was ReflectFirstHit (BLOCK_PARRY == BlockNextShotCrit sig)
+            new LegendaryEntry(68, "Menestheus", VariantRoot.Areia, LegendaryRegistry.FamilySwords, 3, ClauseType.CritArmorPen, 5, 15, 0, 0), // de-overlap 2026-07-12 (arming-group split): was BlockRestoreStam (BLOCK_PARRY == BlockNextShotCrit sig)
+            new LegendaryEntry(69, "Eurypylos", VariantRoot.Areia, LegendaryRegistry.FamilySwords, 4, ClauseType.CritFullHpDouble, 5, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was BlockFirstHit (BLOCK_PARRY == BlockNextShotCrit sig)
+            new LegendaryEntry(70, "Sthenelos", VariantRoot.Areia, LegendaryRegistry.FamilySwords, 5, ClauseType.CritSplash, 5, 10, 3, 0), // de-overlap 2026-07-12 (arming-group split): was ReflectFirstHit (BLOCK_PARRY == BlockNextShotCrit sig)
+            new LegendaryEntry(71, "Amphitryon", VariantRoot.Areia, LegendaryRegistry.FamilySwords, 6, ClauseType.MarkFirstHit, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was ReflectFirstHit (BLOCK_PARRY == BlockNextShotCrit sig)
+            new LegendaryEntry(72, "Deiphobos", VariantRoot.Areia, LegendaryRegistry.FamilySwords, 7, ClauseType.CritStagger, 5, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was BlockRestoreStam (BLOCK_PARRY == BlockNextShotCrit sig)
 
             // Aristeia line (was Stygian — glory drinks deep). Signature = OnKillFullStamNextHitCrit.
-            new LegendaryEntry(73, "Iphitos", VariantRoot.Aristeia, LegendaryRegistry.FamilySwords, 0, ClauseType.OnKillRestore, 2, 0, 0, 0),
-            new LegendaryEntry(74, "Memnon", VariantRoot.Aristeia, LegendaryRegistry.FamilySwords, 1, ClauseType.OnKillRestore, 2, 0, 0, 0), // SWAP: doc's OnKillFullStamNextHitCrit == the Aristeia signature (invariant); on-kill restore instead
-            new LegendaryEntry(75, "Euphorbos", VariantRoot.Aristeia, LegendaryRegistry.FamilySwords, 2, ClauseType.OnKillRestore, 2, 0, 0, 0),
-            new LegendaryEntry(76, "Palamedes", VariantRoot.Aristeia, LegendaryRegistry.FamilySwords, 3, ClauseType.LifestealOnCrit, 0, 0, 0, 0),
-            new LegendaryEntry(77, "Agamemnon", VariantRoot.Aristeia, LegendaryRegistry.FamilySwords, 4, ClauseType.OnKillRestore, 2, 0, 0, 0),
-            new LegendaryEntry(78, "Aigisthos", VariantRoot.Aristeia, LegendaryRegistry.FamilySwords, 5, ClauseType.LifestealOnCrit, 0, 0, 0, 0),
-            new LegendaryEntry(79, "Elektryon", VariantRoot.Aristeia, LegendaryRegistry.FamilySwords, 6, ClauseType.LifestealOnCrit, 0, 0, 0, 0),
+            new LegendaryEntry(73, "Iphitos", VariantRoot.Aristeia, LegendaryRegistry.FamilySwords, 0, ClauseType.StamDrainOnCrit, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was OnKillRestore (ON_KILL == OnKillFullStamNextHitCrit sig)
+            new LegendaryEntry(74, "Memnon", VariantRoot.Aristeia, LegendaryRegistry.FamilySwords, 1, ClauseType.CritExecuteUnder15, 6, 25, 0, 0), // de-overlap 2026-07-12 (arming-group split): was OnKillRestore (ON_KILL == OnKillFullStamNextHitCrit sig); P2=25 execute threshold suits the glory finisher and re-homes the ClauseText threshold example off Tydeus
+            new LegendaryEntry(75, "Euphorbos", VariantRoot.Aristeia, LegendaryRegistry.FamilySwords, 2, ClauseType.MarkFirstHit, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was OnKillRestore (ON_KILL == OnKillFullStamNextHitCrit sig)
+            new LegendaryEntry(76, "Palamedes", VariantRoot.Aristeia, LegendaryRegistry.FamilySwords, 3, ClauseType.LifestealOnCrit, 8, 0, 0, 0),
+            new LegendaryEntry(77, "Agamemnon", VariantRoot.Aristeia, LegendaryRegistry.FamilySwords, 4, ClauseType.CritEveryN, 5, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was OnKillRestore (ON_KILL == OnKillFullStamNextHitCrit sig)
+            new LegendaryEntry(78, "Aigisthos", VariantRoot.Aristeia, LegendaryRegistry.FamilySwords, 5, ClauseType.LifestealOnCrit, 8, 0, 0, 0),
+            new LegendaryEntry(79, "Elektryon", VariantRoot.Aristeia, LegendaryRegistry.FamilySwords, 6, ClauseType.LifestealOnCrit, 8, 0, 0, 0),
             new LegendaryEntry(80, "Achilles", VariantRoot.Aristeia, LegendaryRegistry.FamilySwords, 7, ClauseType.StamDrainOnCrit, 0, 0, 0, 0)
         }
     };

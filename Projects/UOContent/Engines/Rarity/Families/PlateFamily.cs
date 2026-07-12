@@ -74,38 +74,38 @@ public static class PlateFamily
                     new ArmorEffectRow { ShrugPct = 8, ParaResistPct = 30 }
                 }
             },
-            // Panoplia — panoply (AR + durability)
+            // Panoplia — panoply (AR). Self-repair removed with the durability overhaul (Part B2).
             new LaneDefinition
             {
                 Root = VariantRoot.Panoplia, DisplayName = "panoplia", MythTag = "the panoply", BaseHue = 72, StackGroup = StackGroup.Bulwark,
                 Armor = new[]
                 {
-                    new ArmorEffectRow { BonusAr = 1, SelfRepair = true },
-                    new ArmorEffectRow { BonusAr = 2, SelfRepair = true },
-                    new ArmorEffectRow { BonusAr = 3, SelfRepair = true },
-                    new ArmorEffectRow { BonusAr = 4, SelfRepair = true }
+                    new ArmorEffectRow { BonusAr = 1 },
+                    new ArmorEffectRow { BonusAr = 2 },
+                    new ArmorEffectRow { BonusAr = 3 },
+                    new ArmorEffectRow { BonusAr = 4 }
                 }
             },
-            // Akamatos — unwearying (self-repair + HP regen)
+            // Akamatos — unwearying (HP regen). Self-repair removed with the durability overhaul (Part B2).
             new LaneDefinition
             {
                 Root = VariantRoot.Akamatos, DisplayName = "akamatos", MythTag = "tireless", BaseHue = 74, StackGroup = StackGroup.Mending,
                 Armor = new[]
                 {
-                    new ArmorEffectRow { HpRegenPct = 8, SelfRepair = true },
-                    new ArmorEffectRow { HpRegenPct = 12, SelfRepair = true },
-                    new ArmorEffectRow { HpRegenPct = 18, SelfRepair = true },
-                    new ArmorEffectRow { HpRegenPct = 25, SelfRepair = true }
+                    new ArmorEffectRow { HpRegenPct = 8 },
+                    new ArmorEffectRow { HpRegenPct = 12 },
+                    new ArmorEffectRow { HpRegenPct = 18 },
+                    new ArmorEffectRow { HpRegenPct = 25 }
                 }
             }
         },
         Legendaries = new[]
         {
-            new LegendaryEntry(188, "Kadmos", VariantRoot.Adamas, LegendaryRegistry.FamilyMetalArmor, 2, ClauseType.ShrugFirstHitGuaranteed, 0, 0, 0, 0),
+            new LegendaryEntry(188, "Kadmos", VariantRoot.Adamas, LegendaryRegistry.FamilyMetalArmor, 2, ClauseType.HpRegenBurstOnCritTaken, 5, 3, 0, 0), // de-overlap 2026-07-12 (arming-group split): was ShrugFirstHitDrBurst (SHRUG == Plate Chest/Arms slot sigs); Plate sigs span SHRUG/SPELL_DR/RESIST_SKILL/ON_KILL, so the adamant endures via REGEN_BURST
             new LegendaryEntry(191, "Talos", VariantRoot.Kaminos, LegendaryRegistry.FamilyMetalArmor, 2, ClauseType.FlameProcBoostLowHp, 12, 30, 0, 0),
             new LegendaryEntry(194, "Iapyx", VariantRoot.Akamatos, LegendaryRegistry.FamilyMetalArmor, 2, ClauseType.StamRegenMirrorsHp, 0, 0, 0, 0), // SWAP AutoCureClearsDebuffsOnce
-            new LegendaryEntry(197, "Glaukos", VariantRoot.Kolossos, LegendaryRegistry.FamilyMetalArmor, 2, ClauseType.ResistSkillDoubleLowHp, 10, 50, 0, 0),
-            new LegendaryEntry(200, "Damastor", VariantRoot.Panoplia, LegendaryRegistry.FamilyMetalArmor, 2, ClauseType.FirstHitNoSecondaryEffect, 0, 0, 0, 0) // SWAP DodgeRestoreMana
+            new LegendaryEntry(197, "Glaukos", VariantRoot.Kolossos, LegendaryRegistry.FamilyMetalArmor, 2, ClauseType.EmergencyRegenTick, 10, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was SpellDrVsPoisonDot (SPELL_DR == Plate/Gorget FirstParaAutoFails sig); ward lanes are all forbidden on Plate, colossus falls back to REGEN_BURST
+            new LegendaryEntry(200, "Damastor", VariantRoot.Panoplia, LegendaryRegistry.FamilyMetalArmor, 2, ClauseType.DeflectSecondaryFirstHit, 0, 0, 0, 0) // SWAP DodgeRestoreMana
         }
     };
 

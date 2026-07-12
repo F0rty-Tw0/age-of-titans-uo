@@ -97,9 +97,9 @@ public static class StavesFamily
             new LegendaryEntry(134, "Phineus", VariantRoot.Manteia, LegendaryRegistry.FamilyStaves, 2, ClauseType.LowHpEmergencyCure, 30, 15, 0, 0), // SWAP MarkHealBlockFirstHit
 
             // Alexikakos line (was Pallas — the ward that turns evil aside). Signature = SpellDrBoostFirstHit.
-            new LegendaryEntry(135, "Orpheus", VariantRoot.Alexikakos, LegendaryRegistry.FamilyStaves, 0, ClauseType.ParaResistBoostsSpellDr, 10, 5, 0, 0), // SWAP BlockManaLeech
-            new LegendaryEntry(136, "Polyeidos", VariantRoot.Alexikakos, LegendaryRegistry.FamilyStaves, 1, ClauseType.SpellDrBurstOnCritTaken, 6, 0, 0, 0), // SWAP BlockElemental
-            new LegendaryEntry(137, "Helenos", VariantRoot.Alexikakos, LegendaryRegistry.FamilyStaves, 2, ClauseType.FirstParaAutoFails, 0, 0, 0, 0), // SWAP ReflectHealBlock
+            new LegendaryEntry(135, "Orpheus", VariantRoot.Alexikakos, LegendaryRegistry.FamilyStaves, 0, ClauseType.ResistSkillBoostLowHp, 5, 50, 0, 0), // de-overlap 2026-07-12 (arming-group split): was FirstParaAutoFails (SPELL_DR == SpellDrBoostFirstHit sig); RESIST_SKILL keeps the ward identity
+            new LegendaryEntry(136, "Polyeidos", VariantRoot.Alexikakos, LegendaryRegistry.FamilyStaves, 1, ClauseType.ResistSkillDoubleLowHp, 10, 50, 0, 0), // de-overlap 2026-07-12 (arming-group split): was RerollFirstResist (SPELL_DR == SpellDrBoostFirstHit sig)
+            new LegendaryEntry(137, "Helenos", VariantRoot.Alexikakos, LegendaryRegistry.FamilyStaves, 2, ClauseType.ParaResistBoostsResistSkill, 10, 5, 0, 0), // de-overlap 2026-07-12 (arming-group split): was FirstParaAutoFails (SPELL_DR == SpellDrBoostFirstHit sig)
 
             // Baskania line (was Stygian — the evil eye lingers). Signature = CritHealBlock; uniques avoid it.
             new LegendaryEntry(138, "Manto", VariantRoot.Baskania, LegendaryRegistry.FamilyStaves, 0, ClauseType.MarkHealBlock, 3, 0, 0, 0), // SWAP CritManaLeech

@@ -14,7 +14,7 @@ public static class ChainmailFamily
         Material = ArmorMaterialType.Chainmail,
         LadderIndex = 1,
         CapstoneThreshold = 3,
-        CapstoneName = "Ward-Surge",
+        CapstoneName = "Bulwark",
         CapstoneIcon = BuffIcon.Toughness,
         SlotFactories = new Func<Item>[]
         {
@@ -68,16 +68,19 @@ public static class ChainmailFamily
                     new ArmorEffectRow { DrPct = 3, BonusAr = 1 }
                 }
             },
-            // Halysis — the chain (durability/self-repair)
+            // Halysis — the chain (bonus AR). Was the durability/self-repair lane; self-repair was
+            // removed with the durability overhaul (Part B2), so this lane now carries a plain AR
+            // ladder. Flagged for a proper re-theme in a later balance pass — it currently mirrors
+            // the Phylax AR identity.
             new LaneDefinition
             {
                 Root = VariantRoot.Halysis, DisplayName = "halysis", MythTag = "the chain", BaseHue = 2219, StackGroup = StackGroup.Durability,
                 Armor = new[]
                 {
-                    new ArmorEffectRow { SelfRepair = true },
-                    new ArmorEffectRow { SelfRepair = true, BonusAr = 1 },
-                    new ArmorEffectRow { SelfRepair = true, BonusAr = 2 },
-                    new ArmorEffectRow { SelfRepair = true, BonusAr = 3 }
+                    new ArmorEffectRow { BonusAr = 1 },
+                    new ArmorEffectRow { BonusAr = 2 },
+                    new ArmorEffectRow { BonusAr = 3 },
+                    new ArmorEffectRow { BonusAr = 4 }
                 }
             },
             // Phrourion — fortress (spell DR)
@@ -96,10 +99,10 @@ public static class ChainmailFamily
         Legendaries = new[]
         {
             new LegendaryEntry(187, "Erechtheus", VariantRoot.Phylax, LegendaryRegistry.FamilyMetalArmor, 1, ClauseType.ShrugReflect, 15, 0, 0, 0),
-            new LegendaryEntry(190, "Erichthonios", VariantRoot.Halysis, LegendaryRegistry.FamilyMetalArmor, 1, ClauseType.SelfRepairRestoresHp, 1, 0, 0, 0), // SWAP FlameProcHealBlock
-            new LegendaryEntry(193, "Podaleirios", VariantRoot.Phrourion, LegendaryRegistry.FamilyMetalArmor, 1, ClauseType.SpellDrBurstOnCritTaken, 3, 3, 0, 0), // SWAP OnKillRestoreMissingHpPct
-            new LegendaryEntry(196, "Proteus", VariantRoot.Egregoros, LegendaryRegistry.FamilyMetalArmor, 1, ClauseType.ParaResistStunsAttacker, 0, 0, 0, 0),
-            new LegendaryEntry(199, "Patroklos", VariantRoot.Teichos, LegendaryRegistry.FamilyMetalArmor, 1, ClauseType.FirstHitNoSecondaryEffect, 0, 0, 0, 0) // SWAP OnKillDodgeDoubleDuration
+            new LegendaryEntry(190, "Erichthonios", VariantRoot.Halysis, LegendaryRegistry.FamilyMetalArmor, 1, ClauseType.BlockRestoresHp, 5, 0, 0, 0), // SWAP FlameProcHealBlock
+            new LegendaryEntry(193, "Podaleirios", VariantRoot.Phrourion, LegendaryRegistry.FamilyMetalArmor, 1, ClauseType.ResistSkillBoostLowHp, 5, 50, 0, 0), // de-overlap 2026-07-12 (arming-group split): was RerollFirstResist (SPELL_DR == Chainmail/Helmet sig); RESIST_SKILL clears both SPELL_DR (Helmet) and REGEN_BURST (Chest/Legs) chainmail lanes
+            new LegendaryEntry(196, "Proteus", VariantRoot.Egregoros, LegendaryRegistry.FamilyMetalArmor, 1, ClauseType.ParaResistBoostsResistSkill, 10, 5, 0, 0), // de-overlap 2026-07-12 (arming-group split): was ParaResistStunsAttacker (SPELL_DR == Chainmail/Helmet sig); RESIST_SKILL keeps the Egregoros para-resist identity
+            new LegendaryEntry(199, "Patroklos", VariantRoot.Teichos, LegendaryRegistry.FamilyMetalArmor, 1, ClauseType.DeflectSecondaryFirstHit, 0, 0, 0, 0) // SWAP OnKillDodgeDoubleDuration
         }
     };
 }

@@ -30,16 +30,16 @@ public static class LegacyRoots
                 Armor = new[]
                 {
                     new ArmorEffectRow { ReflectPct = 2 },
-                    new ArmorEffectRow { ReflectPct = 3, SelfRepair = true },
-                    new ArmorEffectRow { ReflectPct = 5, SelfRepair = true, FlameProcPct = 4 },
-                    new ArmorEffectRow { ReflectPct = 6, SelfRepair = true, FlameProcPct = 8 }
+                    new ArmorEffectRow { ReflectPct = 3 },
+                    new ArmorEffectRow { ReflectPct = 5, FlameProcPct = 4 },
+                    new ArmorEffectRow { ReflectPct = 6, FlameProcPct = 8 }
                 },
                 Shield = new[]
                 {
                     new ArmorEffectRow { ReflectPct = 4 },
-                    new ArmorEffectRow { ReflectPct = 6, SelfRepair = true },
-                    new ArmorEffectRow { ReflectPct = 8, SelfRepair = true, FlameProcPct = 6 },
-                    new ArmorEffectRow { ReflectPct = 10, SelfRepair = true, FlameProcPct = 10 }
+                    new ArmorEffectRow { ReflectPct = 6 },
+                    new ArmorEffectRow { ReflectPct = 8, FlameProcPct = 6 },
+                    new ArmorEffectRow { ReflectPct = 10, FlameProcPct = 10 }
                 }
             },
             // Paean — Apollo (mending). Armor + shield.
@@ -87,16 +87,16 @@ public static class LegacyRoots
                 Armor = new[]
                 {
                     new ArmorEffectRow { WeightReductionPct = 10, StamRegenPct = 4 },
-                    new ArmorEffectRow { WeightReductionPct = 20, StamRegenPct = 6 },
-                    new ArmorEffectRow { WeightReductionPct = 30, StamRegenPct = 8, DodgePct = 3 },
-                    new ArmorEffectRow { WeightReductionPct = 40, StamRegenPct = 10, DodgePct = 5 }
+                    new ArmorEffectRow { WeightReductionPct = 15, StamRegenPct = 6 },
+                    new ArmorEffectRow { WeightReductionPct = 20, StamRegenPct = 8, DodgePct = 3 },
+                    new ArmorEffectRow { WeightReductionPct = 25, StamRegenPct = 10, DodgePct = 5 }
                 },
                 Shield = new[]
                 {
-                    new ArmorEffectRow { WeightReductionPct = 20, StamRegenPct = 5 },
-                    new ArmorEffectRow { WeightReductionPct = 30, StamRegenPct = 8 },
-                    new ArmorEffectRow { WeightReductionPct = 40, StamRegenPct = 10, DodgePct = 4 },
-                    new ArmorEffectRow { WeightReductionPct = 50, StamRegenPct = 12, DodgePct = 6 }
+                    new ArmorEffectRow { WeightReductionPct = 10, StamRegenPct = 5 },
+                    new ArmorEffectRow { WeightReductionPct = 15, StamRegenPct = 8 },
+                    new ArmorEffectRow { WeightReductionPct = 20, StamRegenPct = 10, DodgePct = 4 },
+                    new ArmorEffectRow { WeightReductionPct = 25, StamRegenPct = 12, DodgePct = 6 }
                 }
             }
         }

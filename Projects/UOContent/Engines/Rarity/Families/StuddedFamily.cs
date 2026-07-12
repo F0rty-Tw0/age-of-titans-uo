@@ -79,9 +79,9 @@ public static class StuddedFamily
                 Armor = new[]
                 {
                     new ArmorEffectRow { WeightReductionPct = 10, DodgePct = 3 },
-                    new ArmorEffectRow { WeightReductionPct = 20, DodgePct = 4 },
-                    new ArmorEffectRow { WeightReductionPct = 30, DodgePct = 5 },
-                    new ArmorEffectRow { WeightReductionPct = 40, DodgePct = 8 }
+                    new ArmorEffectRow { WeightReductionPct = 15, DodgePct = 4 },
+                    new ArmorEffectRow { WeightReductionPct = 20, DodgePct = 5 },
+                    new ArmorEffectRow { WeightReductionPct = 25, DodgePct = 8 }
                 }
             },
             // Skia — shadow (poison resist + Hiding)
@@ -99,11 +99,11 @@ public static class StuddedFamily
         },
         Legendaries = new[]
         {
-            new LegendaryEntry(202, "Kithairon", VariantRoot.Arkas, LegendaryRegistry.FamilyLightArmor, 1, ClauseType.ShrugStunAttacker, 0, 0, 0, 0),
+            new LegendaryEntry(202, "Kithairon", VariantRoot.Arkas, LegendaryRegistry.FamilyLightArmor, 1, ClauseType.HpRegenBurstOnCritTaken, 5, 3, 0, 0), // de-overlap 2026-07-12 (arming-group split): was ShrugStunAttacker (SHRUG == Studded Chest/Arms slot sigs); bear endurance via REGEN_BURST
             new LegendaryEntry(205, "Khimaira", VariantRoot.Batos, LegendaryRegistry.FamilyLightArmor, 1, ClauseType.ReflectCritStun, 0, 0, 0, 0), // SWAP FlameProcPoison
-            new LegendaryEntry(208, "Daphne", VariantRoot.Elaphis, LegendaryRegistry.FamilyLightArmor, 1, ClauseType.DodgeRefundStamSuitWeight, 4, 0, 0, 0), // SWAP LowHpEmergencyCure; re-spec 2026-07-11, P1 = weight divisor
-            new LegendaryEntry(211, "Skylla", VariantRoot.Skia, LegendaryRegistry.FamilyLightArmor, 1, ClauseType.SpellDrVsPoisonDot, 0, 0, 0, 0),
-            new LegendaryEntry(214, "Melanippe", VariantRoot.Kynegis, LegendaryRegistry.FamilyLightArmor, 1, ClauseType.DodgeRefundStam, 15, 0, 0, 0)
+            new LegendaryEntry(208, "Daphne", VariantRoot.Elaphis, LegendaryRegistry.FamilyLightArmor, 1, ClauseType.EmergencyRegenTick, 10, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was DodgeRefundStamPct (DODGE == Studded/Gloves OnKillDodgeDoubleDuration sig); laurel regrowth via REGEN_BURST
+            new LegendaryEntry(211, "Skylla", VariantRoot.Skia, LegendaryRegistry.FamilyLightArmor, 1, ClauseType.PoisonResistDoubleWhileHidden, 0, 0, 0, 0), // de-overlap 2026-07-12 (arming-group split): was SpellDrVsPoisonDot (SPELL_DR == Studded/Gorget ParaResistStunsAttacker sig); Skia stealth+poison-resist lane fits perfectly
+            new LegendaryEntry(214, "Melanippe", VariantRoot.Kynegis, LegendaryRegistry.FamilyLightArmor, 1, ClauseType.StamRegenMirrorsManaHalf, 0, 0, 0, 0) // de-overlap 2026-07-12 (arming-group split): was DodgeRefundStam (DODGE == Studded/Gloves OnKillDodgeDoubleDuration sig); Kynegis stam-regen lane carries it
         }
     };
 }
