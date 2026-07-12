@@ -6,6 +6,7 @@ using Server.Engines.LootBags;
 using Server.Engines.Rarity;
 using Server.Items;
 using Server.Mobiles;
+using Server.Tests;
 using Xunit;
 
 namespace UOContent.Tests;
@@ -289,9 +290,10 @@ public class RarityBuildSimTests
     // THE BALANCE BAND — the deliverable threshold: after the 2026-07-11 tuning pass every
     // archetype's composite power sits within [0.45x, 2.2x] of the preset median. A future data
     // change that lets one build lap the field (or guts one) fails here, with names and numbers.
-    [Fact]
+    [SkippableFact]
     public void AllBuildPresets_WithinPowerBand()
     {
+        TileDataRequirement.SkipIfMissing();
         var results = MeasureAll(new Point3D(5200, 600, 0));
 
         var powers = new List<double>(results.Count);

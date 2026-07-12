@@ -6,6 +6,7 @@ using Server.Engines.LootBags;
 using Server.Engines.Rarity;
 using Server.Items;
 using Server.Mobiles;
+using Server.Tests;
 using Xunit;
 
 namespace UOContent.Tests;
@@ -164,9 +165,10 @@ public class RarityDpsSimTests
         Assert.InRange(dps, 0.5, 100.0);
     }
 
-    [Fact]
+    [SkippableFact]
     public void DevotionDamage_MeasurablyRaisesDps_Smoke()
     {
+        TileDataRequirement.SkipIfMissing();
         Assert.True(LegendaryRegistry.TryGet(12, out var labrys));
 
         var loc = new Point3D(5020, 600, 0);
@@ -333,9 +335,10 @@ public class RarityDpsSimTests
     // must produce damage through the real pipeline. This is the class of bug the ranged sim
     // found (no-ammo / stand-still gate / NetState NRE): had this test existed, "bows deal
     // nothing" could never have shipped silently.
-    [Fact]
+    [SkippableFact]
     public void EveryWeaponFamily_ProducesDamage_Smoke()
     {
+        TileDataRequirement.SkipIfMissing();
         var families = FamilyRegistry.WeaponFamilies;
         var entries = LegendaryRegistry.Entries;
         var loc = new Point3D(5060, 600, 0);

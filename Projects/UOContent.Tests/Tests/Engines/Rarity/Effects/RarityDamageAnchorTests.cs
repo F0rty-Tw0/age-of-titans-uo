@@ -152,7 +152,7 @@ public class RarityDamageAnchorTests
             var lines = new List<string>();
             RarityEffects.CollectSingleClickLines(weapon, lines);
 
-            Assert.StartsWith("Damage 11-14", lines[0]);
+            Assert.StartsWith("Damage: 11-14", lines[0]);
         }
         finally
         {

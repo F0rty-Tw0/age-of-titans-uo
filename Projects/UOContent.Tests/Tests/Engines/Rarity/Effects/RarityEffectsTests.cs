@@ -228,17 +228,14 @@ public class RarityEffectsTests
                 $"Expected at most 4 label lines (+ name == 5-line cap), got {messages.Count}: {string.Join(" | ", messages)}"
             );
 
-            // Effects line: myth-tagged effect summary WITHOUT the base shape (user directive
-            // 2026-07-11 — shape is not shown on single-click; the OPL subtitle keeps it).
-            Assert.Contains(
-                messages,
-                m => m.Contains(" — ", StringComparison.Ordinal) &&
-                     m.Contains("lifesteal", StringComparison.OrdinalIgnoreCase)
-            );
+            // Effects line: bare effect summary — no myth tag (user directive 2026-07-12, pantheon
+            // name removed from the click tooltip) and no base shape (2026-07-11).
+            Assert.Contains(messages, m => m.Contains("lifesteal", StringComparison.OrdinalIgnoreCase));
+            Assert.DoesNotContain(messages, m => m.Contains(" — ", StringComparison.Ordinal));
             Assert.DoesNotContain(messages, m => m.StartsWith(shape, StringComparison.OrdinalIgnoreCase));
             // Stats line is present and first.
-            Assert.StartsWith("Damage ", messages[0]);
-            Assert.Contains(messages, m => m.Contains("on-kill: restores stamina and mana", StringComparison.OrdinalIgnoreCase));
+            Assert.StartsWith("Damage:", messages[0]);
+            Assert.Contains(messages, m => m.Contains("on kill: restores full stamina and mana", StringComparison.OrdinalIgnoreCase));
         }
         finally
         {

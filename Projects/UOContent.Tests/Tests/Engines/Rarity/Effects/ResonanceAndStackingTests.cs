@@ -4,6 +4,7 @@ using Server;
 using Server.Engines.Rarity;
 using Server.Items;
 using Server.Mobiles;
+using Server.Tests;
 using Xunit;
 
 namespace UOContent.Tests;
@@ -61,27 +62,28 @@ public class ResonanceAndStackingTests
         Assert.Equal(2, list.Count);
     }
 
-    [Fact]
+    [SkippableFact]
     public void FullLegendaryPair_SameClauseAcrossWeaponAndShield_Resonates()
     {
-        // Ladon (kryss, ReflectFirstHit 20) + Amphion (buckler, ReflectFirstHit 15) are the real
-        // co-wearable duplicate from the registry: one dispatch survives, the duplicate echoes
-        // as +2% DR (defensive resonance) instead of being silently wasted.
+        TileDataRequirement.SkipIfMissing();
+        // Kekrops (Ringmail chest, HpRegenBurstOnCritTaken) + Zethos (buckler, HpRegenBurstOnCritTaken)
+        // are the real co-wearable duplicate from the registry after the 2026-07-12 arming-group split
+        // (which moved shields off the ReflectFirstHit lane): one dispatch survives, the duplicate
+        // echoes as +2% DR (defensive resonance) instead of being silently wasted.
         var player = CreatePlayerMobile(new Point3D(4700, 600, 0));
-        var kryss = new Kryss();
+        var chest = new RingmailChest();
         var buckler = new Buckler();
 
         try
         {
-            RarityEffects.ApplyLegendary(kryss, 160);   // Ladon
-            RarityEffects.ApplyLegendary(buckler, 222); // Amphion
+            RarityEffects.ApplyLegendary(chest, 186);   // Kekrops
+            RarityEffects.ApplyLegendary(buckler, 223); // Zethos
 
-            Assert.True(player.EquipItem(kryss));
+            Assert.True(player.EquipItem(chest));
             Assert.True(player.EquipItem(buckler));
 
             var legendaries = WornEffectState.GetLegendaries(player);
-            Assert.Single(legendaries, e => e.Clause == ClauseType.ReflectFirstHit);
-            Assert.Contains(legendaries, e => e.Id == 160); // stronger P1 (20 > 15) survives
+            Assert.Single(legendaries, e => e.Clause == ClauseType.HpRegenBurstOnCritTaken); // duplicate deduped to one
 
             var agg = WornEffectState.GetAggregate(player);
             Assert.Equal(1, agg.ResonanceDefense);
@@ -95,7 +97,7 @@ public class ResonanceAndStackingTests
         }
         finally
         {
-            kryss.Delete();
+            chest.Delete();
             buckler.Delete();
             player.Delete();
         }

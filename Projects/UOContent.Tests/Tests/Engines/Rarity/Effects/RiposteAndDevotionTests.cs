@@ -4,6 +4,7 @@ using Server;
 using Server.Engines.Rarity;
 using Server.Items;
 using Server.Mobiles;
+using Server.Tests;
 using Xunit;
 
 namespace UOContent.Tests;
@@ -23,9 +24,10 @@ public class RiposteAndDevotionTests
         return m;
     }
 
-    [Fact]
+    [SkippableFact]
     public void Riposte_OnShieldParry_SwingsBackThroughRealPipeline()
     {
+        TileDataRequirement.SkipIfMissing();
         // Elektor (war mace) is the one-handed ExtraSwingOnParry carrier — the only one that can
         // actually hold a shield (Aello's hatchet is two-handed; it rides the dodge path below).
         var owner = CreatePlayerMobile(new Point3D(4800, 600, 0));
@@ -58,9 +60,10 @@ public class RiposteAndDevotionTests
         }
     }
 
-    [Fact]
+    [SkippableFact]
     public void Riposte_AttackerOutOfWeaponRange_DoesNotSwing()
     {
+        TileDataRequirement.SkipIfMissing();
         var owner = CreatePlayerMobile(new Point3D(4820, 600, 0));
         var attacker = CreatePlayerMobile(new Point3D(4830, 600, 0), AccessLevel.Player); // 10 tiles away
         var mace = new WarMace();
@@ -89,9 +92,10 @@ public class RiposteAndDevotionTests
         }
     }
 
-    [Fact]
+    [SkippableFact]
     public void Riposte_AelloTwoHander_AnswersAThemedDodge()
     {
+        TileDataRequirement.SkipIfMissing();
         // Aello's hatchet is two-handed — no shield, no Zephyr block — so its riposte answers a
         // themed dodge instead (the fix this test pinned down: without the dodge path the clause
         // was unreachable on its only axe carrier).
@@ -125,24 +129,28 @@ public class RiposteAndDevotionTests
         }
     }
 
-    [Fact]
-    public void Daphne_DodgeRefundsStamFromSuitWeight()
+    [SkippableFact]
+    public void Kalydon_DodgeRefundsPctOfMaxStamina()
     {
+        TileDataRequirement.SkipIfMissing();
         var defender = CreatePlayerMobile(new Point3D(4840, 600, 0));
         var attacker = CreatePlayerMobile(new Point3D(4841, 600, 0), AccessLevel.Player);
-        var chest = new StuddedChest();
+        var chest = new BoneChest();
 
         try
         {
-            RarityEffects.ApplyLegendary(chest, 208); // Daphne — DodgeRefundStamSuitWeight
+            // Kalydon (id 215, Bone/Melinoe) carries DodgeRefundStamPct: a successful dodge refunds a
+            // flat 10% of max stamina (weight-independent, reworked 2026-07-12 from the old suit-weight
+            // refund per user directive).
+            RarityEffects.ApplyLegendary(chest, 215); // Kalydon — DodgeRefundStamPct
             Assert.True(defender.EquipItem(chest));
             Assert.True(WornEffectState.GetAggregate(defender).DodgePct > 0); // dodge package live
 
-            defender.RawDex = 50; // fresh test mobiles have StamMax 0 — give the refund headroom
+            defender.RawDex = 50; // fresh test mobiles have StamMax 0 — give the refund headroom (10% of 50 = 5)
             defender.Stam = 1;
             RarityEffects.OnMeleeMiss(attacker, defender); // a suffered miss = themed dodge
 
-            Assert.True(defender.Stam > 1, $"expected suit-weight stam refund, stam is {defender.Stam}");
+            Assert.True(defender.Stam > 1, $"expected a %-max-stamina dodge refund, stam is {defender.Stam}");
         }
         finally
         {
@@ -152,9 +160,10 @@ public class RiposteAndDevotionTests
         }
     }
 
-    [Fact]
+    [SkippableFact]
     public void ThreeWarLegendaries_PledgeThePatron_AndBreakOnRemoval()
     {
+        TileDataRequirement.SkipIfMissing();
         // Kekrops (Hoplites ringmail) + Nereus (Taxis ringmail) + Amphion (Amyntor buckler) —
         // three distinct clauses (no resonance), all War-domain roots -> Patron: Ares, +4% damage.
         var player = CreatePlayerMobile(new Point3D(4860, 600, 0));
@@ -175,7 +184,7 @@ public class RiposteAndDevotionTests
             var agg = WornEffectState.GetAggregate(player);
 
             Assert.True(agg.HasDevotion);
-            Assert.Equal(PantheonDomain.War, agg.DevotionDomain);
+            Assert.True(agg.IsDevotedTo(PantheonDomain.War));
             Assert.Equal(4, agg.DevotionDamagePct); // War is an offense domain
             Assert.Equal(0, agg.ResonanceOffense + agg.ResonanceDefense + agg.ResonanceUtility);
 
@@ -192,9 +201,10 @@ public class RiposteAndDevotionTests
         }
     }
 
-    [Fact]
+    [SkippableFact]
     public void FiveWarLegendaries_ReachExarchTier_PerkDoubles()
     {
+        TileDataRequirement.SkipIfMissing();
         // War trio (Kekrops/Nereus/Amphion) + the two Maenad relics (Atropos kilt, Kisseus hat)
         // = 5 War-domain legendaries -> Exarch: the +4% damage perk doubles to +8%.
         var player = CreatePlayerMobile(new Point3D(4900, 600, 0));
@@ -222,7 +232,8 @@ public class RiposteAndDevotionTests
 
             Assert.True(agg.HasDevotion);
             Assert.True(agg.IsExarch);
-            Assert.Equal(PantheonDomain.War, agg.DevotionDomain);
+            Assert.True(agg.IsDevotedTo(PantheonDomain.War));
+            Assert.True(agg.IsExarchOf(PantheonDomain.War));
             Assert.Equal(8, agg.DevotionDamagePct); // doubled at Exarch
 
             // Dropping to 4 pieces falls back to Patron tier, not zero.

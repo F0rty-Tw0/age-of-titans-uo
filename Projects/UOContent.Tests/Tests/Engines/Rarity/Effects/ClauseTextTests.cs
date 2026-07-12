@@ -32,7 +32,7 @@ public class ClauseTextTests
     public void NoLegendary_RendersAZerothCadence()
     {
         // A cadence clause left at N=0 used to print the nonsensical "every 0th ...". Every legendary
-        // must degrade to a sensible phrase (e.g. Kalchas → "natural crits grant an extra swing ...").
+        // must degrade to a sensible phrase (e.g. Kalchas → "critical hits strike an additional time ...").
         foreach (var entry in LegendaryRegistry.Entries)
         {
             if (entry.Clause == ClauseType.None)
@@ -52,20 +52,23 @@ public class ClauseTextTests
     {
         var text = ClauseText.Describe(ClauseType.ExtraSwingManaLeech, 0, 8, 0);
 
-        Assert.StartsWith("natural crits grant an extra swing", text);
+        Assert.StartsWith("critical hits strike an additional time", text);
     }
 
     [Fact]
     public void CritExecuteUnder15_RendersTheEnginesEffectiveThreshold()
     {
         // The engine (RarityEffects.WeaponHit.cs) reads `p2 > 0 ? p2 : 15` as the low-HP execute
-        // threshold. Tydeus (id 149) sets P2=25, so the tooltip must read "25%", not a hardcoded
-        // "15%" that drifts from the real in-game trigger.
-        Assert.True(LegendaryRegistry.TryGet(149, out var tydeus));
-        Assert.Equal("Tydeus", tydeus.Name);
-        Assert.Equal(25, tydeus.P2);
+        // threshold. Memnon (id 74) sets P2=25, so the tooltip must read "25%", not a hardcoded
+        // "15%" that drifts from the real in-game trigger. (The 25% example moved here from Tydeus
+        // in the 2026-07-12 arming-group split — Tydeus's Ephodos crit signature forced its unique
+        // off the crit lane.)
+        Assert.True(LegendaryRegistry.TryGet(74, out var memnon));
+        Assert.Equal("Memnon", memnon.Name);
+        Assert.Equal(ClauseType.CritExecuteUnder15, memnon.Clause);
+        Assert.Equal(25, memnon.P2);
 
-        var text = ClauseText.Describe(tydeus.Clause, tydeus.P1, tydeus.P2, tydeus.P3);
+        var text = ClauseText.Describe(memnon.Clause, memnon.P1, memnon.P2, memnon.P3);
 
         Assert.Contains("under 25% health", text);
         Assert.DoesNotContain("under 15% health", text);

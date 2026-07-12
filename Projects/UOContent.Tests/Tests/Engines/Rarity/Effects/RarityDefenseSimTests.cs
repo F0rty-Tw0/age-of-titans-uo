@@ -5,6 +5,7 @@ using Server;
 using Server.Engines.Rarity;
 using Server.Items;
 using Server.Mobiles;
+using Server.Tests;
 using Xunit;
 
 namespace UOContent.Tests;
@@ -152,9 +153,10 @@ public class RarityDefenseSimTests
         }
     }
 
-    [Fact]
+    [SkippableFact]
     public void LegendaryPlateSuit_TakesLessDamageThanNaked_Smoke()
     {
+        TileDataRequirement.SkipIfMissing();
         var loc = new Point3D(5100, 600, 0);
         var naked = SimulateDefense(null, 400, loc);
         var plated = SimulateDefense(d => DressSuit(d, ArmorMaterialType.Plate, VariantRoot.Adamas, ItemRarity.Legendary), 400, loc);
@@ -165,9 +167,10 @@ public class RarityDefenseSimTests
         );
     }
 
-    [Fact]
+    [SkippableFact]
     public void DodgeSuit_RaisesZeroDamageRate_InRealCombat_Smoke()
     {
+        TileDataRequirement.SkipIfMissing();
         // The §9.8 dodge cap is 12% — a full Legendary Panika (dodge-lane) suit should show up
         // as a measurably higher zero-damage swing rate through the REAL CheckHit path.
         var loc = new Point3D(5120, 600, 0);
@@ -185,9 +188,10 @@ public class RarityDefenseSimTests
         );
     }
 
-    [Fact]
+    [SkippableFact]
     public void ThornsSuit_ReflectsDamageToAttacker_Smoke()
     {
+        TileDataRequirement.SkipIfMissing();
         var loc = new Point3D(5140, 600, 0);
         var bramble = SimulateDefense(d => DressSuit(d, ArmorMaterialType.Studded, VariantRoot.Batos, ItemRarity.Legendary), 400, loc);
 

@@ -30,7 +30,7 @@ public class ClauseDispatchCoverageTests
             [ClauseTrigger.WeaponBlock] = new[] { RarityEffects.HandledByWeaponBlock },
             [ClauseTrigger.ArmorDefense] = new[] { RarityEffects.HandledByArmorDefense },
             [ClauseTrigger.ShieldParry] = new[] { RarityEffects.HandledByShieldParry },
-            [ClauseTrigger.RegenTick] = new[] { RarityEffects.HandledByHitsRegen, RarityEffects.HandledByHitsTickSideEffects, RarityEffects.HandledBySelfRepair, RarityEffects.HandledByStamRegen, RarityEffects.HandledByManaRegen },
+            [ClauseTrigger.RegenTick] = new[] { RarityEffects.HandledByHitsRegen, RarityEffects.HandledByHitsTickSideEffects, RarityEffects.HandledByStamRegen, RarityEffects.HandledByManaRegen },
             [ClauseTrigger.SpellDr] = new[] { RarityEffects.HandledBySpellDrPoisonDot, RarityEffects.HandledBySpellDr },
             [ClauseTrigger.ParaResist] = new[] { RarityEffects.HandledByParaResist },
             [ClauseTrigger.OnKill] = new[] { RarityEffects.HandledByOnKillWeapon, RarityEffects.HandledByOnKillWorn },
@@ -42,9 +42,7 @@ public class ClauseDispatchCoverageTests
             [ClauseTrigger.SpellManaLeech] = new[] { RarityEffects.HandledBySpellManaLeech },
             [ClauseTrigger.LightningProc] = new[] { RarityEffects.HandledByLightningProc },
             [ClauseTrigger.ArmorHitRider] = new[] { RarityEffects.HandledByArmorHitRider },
-            [ClauseTrigger.WornStatMod] = new[] { WornEffectState.HandledByRebuildAggregate, WornEffectState.HandledByAnimalTaming, WornEffectState.HandledByHealsReceived },
-            // The one dispatch site outside Engines/Rarity — its coverage list lives beside the site.
-            [ClauseTrigger.DurabilityLoss] = new[] { BaseClothing.HandledByDurabilityLoss }
+            [ClauseTrigger.WornStatMod] = new[] { WornEffectState.HandledByRebuildAggregate, WornEffectState.HandledByAnimalTaming, WornEffectState.HandledByHealsReceived }
         };
 
     private static IEnumerable<ClauseType> AllClausesExceptNone() =>

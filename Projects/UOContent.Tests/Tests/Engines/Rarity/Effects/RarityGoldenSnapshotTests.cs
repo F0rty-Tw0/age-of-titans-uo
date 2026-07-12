@@ -153,7 +153,6 @@ public class RarityGoldenSnapshotTests
                         .Append(" Dr=").Append(r.DrPct)
                         .Append(" Shrug=").Append(r.ShrugPct)
                         .Append(" Reflect=").Append(r.ReflectPct)
-                        .Append(" SelfRepair=").Append(r.SelfRepair)
                         .Append(" Flame=").Append(r.FlameProcPct)
                         .Append(" HpRegen=").Append(r.HpRegenPct)
                         .Append(" HealsRecv=").Append(r.HealsReceivedPct)
