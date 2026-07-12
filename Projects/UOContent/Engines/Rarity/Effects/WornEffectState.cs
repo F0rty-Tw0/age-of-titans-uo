@@ -26,7 +26,6 @@ public readonly struct WornAggregate
     public int ShrugPct { get; init; }
     public int ReflectPct { get; init; }
     public int FlameProcPct { get; init; }
-    public bool SelfRepair { get; init; }
     public int HpRegenPct { get; init; }
     public int HealsReceivedPct { get; init; }
     public bool AutoCure { get; init; }
@@ -38,6 +37,10 @@ public readonly struct WornAggregate
     public int ParryPct { get; init; }
     public int ParryDrPct { get; init; }
     public bool ParryThorns { get; init; }
+
+    // Light-armor "weight" lane: a % boost to the wearer's carry capacity (PlayerMobile.MaxWeight),
+    // suit-capped at CarryWeightCap. Replaces the old per-piece weight shave (2026-07-12).
+    public int CarryWeightBonusPct { get; init; }
 
     // ---- P3b: jewelry ----
     public int LightningProcPct { get; init; }
@@ -78,17 +81,26 @@ public readonly struct WornAggregate
     public int ResonanceUtility { get; init; }
     public int ResonanceDamagePct { get; init; }
 
-    // ---- P6: Patron God devotion. 3+ real worn legendaries whose roots share one pantheon
-    // domain pledge the wearer to that god: a small themed perk (offense domains fill
-    // DevotionDamagePct; defense/utility domains fed the capped pools during Rebuild) and a
-    // louder PantheonFx flourish when that domain procs.
-    public bool HasDevotion { get; init; }
-    public PantheonDomain DevotionDomain { get; init; }
+    // The full Divine Resonance buff-bar text (with per-item source names), rebuilt every equip
+    // change. SyncResonanceBuff keys on THIS rather than the raw counts, so a same-count source
+    // swap (Part B5's equip bug) still refreshes the buff instead of leaving stale text.
+    public string ResonanceText { get; init; }
+
+    // ---- P6: Patron God devotion (Part B4: stacks ACROSS domains). Each pantheon domain with
+    // >=3 worn legendaries pledges the wearer to that god; DevotionMask/ExarchMask are the
+    // per-domain bitmasks (bit d = PantheonDomain d). Every pledged domain grants its perk
+    // (offense domains sum into DevotionDamagePct; defense/utility domains fed the capped pools
+    // during Rebuild), doubled for a domain at Exarch tier (>=5). A louder PantheonFx flourish
+    // fires when a proccing root's domain is pledged.
+    public int DevotionMask { get; init; }
+    public int ExarchMask { get; init; }
     public int DevotionDamagePct { get; init; }
 
-    // Exarch tier: 5+ same-domain legendaries double the devotion perk (offense +8% / defense
-    // +4% DR / utility +20% regen) and upgrade the buff label to "Exarch of <god>".
-    public bool IsExarch { get; init; }
+    // Convenience reads for the FX/tests: pledged to anything, at Exarch anywhere, or to a domain.
+    public bool HasDevotion => DevotionMask != 0;
+    public bool IsExarch => ExarchMask != 0;
+    public bool IsDevotedTo(PantheonDomain domain) => (DevotionMask & (1 << (int)domain)) != 0;
+    public bool IsExarchOf(PantheonDomain domain) => (ExarchMask & (1 << (int)domain)) != 0;
 }
 
 // Per-Mobile aggregate of every worn variant armor/shield/jewelry/clothing item, rebuilt on
@@ -109,7 +121,8 @@ public static class WornEffectState
     public const int ReflectCap = 25;
     public const int HpRegenCap = 60;
     private const int SpellDrCap = 18;
-    private const int DodgeCap = 12;
+    public const int DodgeCap = 12;
+    public const int CarryWeightCap = 25; // suit-wide carry-capacity ceiling (user directive 2026-07-12)
 
     private static readonly Dictionary<Mobile, WornAggregate> _aggregates = new();
     private static readonly Dictionary<Mobile, List<LegendaryEntry>> _legendaries = new();
@@ -133,10 +146,11 @@ public static class WornEffectState
     // read so "once per fight" always lines up with the same window as "first hit of fight".
     private static readonly HashSet<(Mobile, ClauseType)> _usedOncePerFight = new();
 
-    // Hyperbios: armed by AdjustShieldParryChance when the wearer's first hit of the fight is
-    // about to resolve, consumed by ApplyMark so that hit applies no mark/poison. A single-hit
-    // pending flag (not a burst window) — always cleared by the consuming read.
-    private static readonly HashSet<Mobile> _suppressSecondaryEffect = new();
+    // DeflectSecondaryFirstHit (Hyperbios & the re-themed armor carriers): armed on the wearer's
+    // first hit taken each fight (AbsorbForDefenderArmor), consumed by ApplyMark to REBOUND the
+    // first mark/poison/heal-block onto the attacker. A single-hit pending flag (not a burst
+    // window) — always cleared by the consuming read.
+    private static readonly HashSet<Mobile> _deflectSecondary = new();
 
     public static WornAggregate GetAggregate(Mobile wearer) =>
         wearer != null && _aggregates.TryGetValue(wearer, out var agg) ? agg : default;
@@ -272,12 +286,12 @@ public static class WornEffectState
             }
         }
 
-        // P6 — Patron God devotion, counted HERE: after the item walk the list holds only real
+        // P6 / B4 — Patron God devotion, counted HERE: after the item walk the list holds only real
         // legendaries (lane/slot signature synthetics are appended by the loops below), so only
-        // genuine legendaries pledge. Ties pick the lowest domain index; threshold is 3.
-        var hasDevotion = false;
-        var isExarch = false;
-        var devotionDomain = default(PantheonDomain);
+        // genuine legendaries pledge. Devotion now STACKS across domains: every domain with >=3
+        // worn legendaries sets its bit in devotionMask (>=5 also sets exarchMask).
+        var devotionMask = 0;
+        var exarchMask = 0;
 
         if (legendaries is { Count: >= 3 })
         {
@@ -289,26 +303,24 @@ public static class WornEffectState
                 domainCounts[(int)PantheonFx.GetDomain(legendaries[i].Root)]++;
             }
 
-            var best = 0;
-
             for (var d = 0; d < domainCounts.Length; d++)
             {
-                if (domainCounts[d] > best)
+                if (domainCounts[d] >= 3)
                 {
-                    best = domainCounts[d];
-                    devotionDomain = (PantheonDomain)d;
+                    devotionMask |= 1 << d;
+                }
+
+                if (domainCounts[d] >= 5)
+                {
+                    exarchMask |= 1 << d;
                 }
             }
-
-            hasDevotion = best >= 3;
-            isExarch = best >= 5;
         }
 
         var dr = 0;
         var shrug = 0;
         var reflect = 0;
         var flameProc = 0;
-        var selfRepair = false;
         var hpRegen = 0;
         var healsReceived = 0;
         var autoCure = false;
@@ -320,6 +332,7 @@ public static class WornEffectState
         var parry = 0;
         var parryDr = 0;
         var parryThorns = false;
+        var carryWeightBonus = 0;
 
         var lightningProc = 0;
         var manaRegen = 0;
@@ -376,7 +389,6 @@ public static class WornEffectState
             shrug += row.ShrugPct * weight / 100;
             reflect += row.ReflectPct * weight / 100;
             flameProc += row.FlameProcPct * weight / 100;
-            selfRepair |= row.SelfRepair;
             hpRegen += row.HpRegenPct * weight / 100;
             healsReceived += row.HealsReceivedPct * weight / 100;
             autoCure |= row.AutoCure;
@@ -394,6 +406,7 @@ public static class WornEffectState
             hidingBonus += row.HidingBonus * weight / 100;
             onKillStamina += row.OnKillStamPct * weight / 100;
             onKillHp += row.OnKillHpPct * weight / 100;
+            carryWeightBonus += row.WeightReductionPct * weight / 100; // light-armor carry-capacity lane
         }
 
         for (var i = 0; i < accessoryItems.Count; i++)
@@ -479,7 +492,10 @@ public static class WornEffectState
 
         // P5b Divine Resonance: duplicates removed by the dedupe echo as category bonuses —
         // capped at 2 per category, folded in BEFORE the §9.8 clamps so every ceiling stays law.
-        var (resonanceOffense, resonanceDefense, resonanceUtility) = DedupeClausesCounted(legendaries);
+        // B5: also collect per-pair source names for the buff-bar readout (cold path — a small
+        // list allocation on equip changes only).
+        var resonanceEchoes = new List<(int Category, string A, string B)>();
+        var (resonanceOffense, resonanceDefense, resonanceUtility) = DedupeClausesCounted(legendaries, resonanceEchoes);
 
         resonanceOffense = Math.Min(resonanceOffense, 2);
         resonanceDefense = Math.Min(resonanceDefense, 2);
@@ -492,27 +508,38 @@ public static class WornEffectState
         stamRegen += resonanceUtility * 10;
         manaRegen += resonanceUtility * 10;
 
-        // P6 devotion perk — same magnitudes as one resonance echo (doubled at Exarch tier),
-        // same pre-clamp fold.
+        var resonanceText = BuildResonanceText(resonanceOffense, resonanceDefense, resonanceUtility, resonanceEchoes);
+
+        // P6 / B4 devotion perk — every PLEDGED domain grants its perk (offense sums into
+        // DevotionDamagePct; defense/utility fold into the capped pools), doubled for any domain
+        // at Exarch tier. Same magnitudes as one resonance echo, same pre-clamp fold.
         var devotionDamage = 0;
 
-        if (hasDevotion)
+        if (devotionMask != 0)
         {
-            var scale = isExarch ? 2 : 1;
-
-            switch (PantheonFx.GetDomainCategory(devotionDomain))
+            for (var d = 0; d <= (int)PantheonDomain.Nature; d++)
             {
-                case 0:
-                    devotionDamage = 4 * scale;
-                    break;
-                case 1:
-                    dr += 2 * scale;
-                    break;
-                default:
-                    hpRegen += 10 * scale;
-                    stamRegen += 10 * scale;
-                    manaRegen += 10 * scale;
-                    break;
+                if ((devotionMask & (1 << d)) == 0)
+                {
+                    continue;
+                }
+
+                var scale = (exarchMask & (1 << d)) != 0 ? 2 : 1;
+
+                switch (PantheonFx.GetDomainCategory((PantheonDomain)d))
+                {
+                    case 0:
+                        devotionDamage += 4 * scale;
+                        break;
+                    case 1:
+                        dr += 2 * scale;
+                        break;
+                    default:
+                        hpRegen += 10 * scale;
+                        stamRegen += 10 * scale;
+                        manaRegen += 10 * scale;
+                        break;
+                }
             }
         }
 
@@ -561,7 +588,6 @@ public static class WornEffectState
             ShrugPct = Math.Min(shrug, ShrugCap),
             ReflectPct = Math.Min(reflect, ReflectCap),
             FlameProcPct = flameProc,
-            SelfRepair = selfRepair,
             HpRegenPct = Math.Min(hpRegen, HpRegenCap),
             HealsReceivedPct = healsReceived,
             AutoCure = autoCure,
@@ -573,6 +599,7 @@ public static class WornEffectState
             ParryPct = parry,
             ParryDrPct = Math.Min(parryDr, DrCap),
             ParryThorns = parryThorns,
+            CarryWeightBonusPct = Math.Min(carryWeightBonus, CarryWeightCap),
 
             LightningProcPct = lightningProc,
             ManaRegenPct = manaRegen,
@@ -602,16 +629,16 @@ public static class WornEffectState
             ResonanceDefense = resonanceDefense,
             ResonanceUtility = resonanceUtility,
             ResonanceDamagePct = resonanceDamage,
+            ResonanceText = resonanceText,
 
-            HasDevotion = hasDevotion,
-            DevotionDomain = devotionDomain,
-            DevotionDamagePct = devotionDamage,
-            IsExarch = isExarch
+            DevotionMask = devotionMask,
+            ExarchMask = exarchMask,
+            DevotionDamagePct = devotionDamage
         };
 
         SyncCapstoneBuff(wearer, previous, hasCapstone, capstoneMaterial);
-        SyncResonanceBuff(wearer, previous, resonanceOffense, resonanceDefense, resonanceUtility);
-        SyncDevotionBuff(wearer, previous, hasDevotion, devotionDomain, isExarch);
+        SyncResonanceBuff(wearer, previous, resonanceText);
+        SyncDevotionBuff(wearer, previous, devotionMask, exarchMask);
 
         if (legendaries != null)
         {
@@ -686,7 +713,7 @@ public static class WornEffectState
         ArmorMaterialType.Studded   => "your hits poison the target",
         ArmorMaterialType.Bone      => "your hits heal-block the target",
         ArmorMaterialType.Ringmail  => "+8% reflect while struck",
-        ArmorMaterialType.Chainmail => "damage reduction maxes briefly after you take a crit",
+        ArmorMaterialType.Chainmail => "damage reduction rises to its maximum for 5s after you take a crit",
         ArmorMaterialType.Plate     => "your hits briefly stun the target",
         _                           => "full set bonus"
     };
@@ -701,7 +728,11 @@ public static class WornEffectState
 
     // P5b Divine Resonance: the counted form reports how many duplicates were folded away, per
     // resonance category, so Rebuild can convert them into echo bonuses instead of pure waste.
-    internal static (int Offense, int Defense, int Utility) DedupeClausesCounted(List<LegendaryEntry> legendaries)
+    // B5: when `echoes` is supplied, each legendary-bearing resonating pair also records its
+    // category and the two source names (real legendaries only, Id != 0) for the buff-bar readout.
+    internal static (int Offense, int Defense, int Utility) DedupeClausesCounted(
+        List<LegendaryEntry> legendaries, List<(int Category, string A, string B)> echoes = null
+    )
     {
         if (legendaries == null || legendaries.Count < 2)
         {
@@ -725,6 +756,10 @@ public static class WornEffectState
                 // slot signatures (both Id 0, i.e. an Epic-only suit) dedupes silently, no echo.
                 var pairHasLegendary = legendaries[i].Id != 0 || legendaries[j].Id != 0;
 
+                // Source names captured BEFORE the swap collapses the pair (synthetics carry none).
+                var nameA = legendaries[i].Id != 0 ? legendaries[i].Name : null;
+                var nameB = legendaries[j].Id != 0 ? legendaries[j].Name : null;
+
                 if (Beats(legendaries[j], legendaries[i]))
                 {
                     legendaries[i] = legendaries[j];
@@ -732,7 +767,9 @@ public static class WornEffectState
 
                 if (pairHasLegendary)
                 {
-                    switch (ResonanceCategory(legendaries[i].Clause))
+                    var category = ResonanceCategory(legendaries[i].Clause);
+
+                    switch (category)
                     {
                         case 0:
                             offense++;
@@ -744,6 +781,8 @@ public static class WornEffectState
                             utility++;
                             break;
                     }
+
+                    echoes?.Add((category, nameA, nameB));
                 }
 
                 legendaries.RemoveAt(j);
@@ -776,41 +815,92 @@ public static class WornEffectState
         return (triggers & DefensiveTriggers) != 0 ? 1 : 2;
     }
 
-    // Keeps the indefinite Divine Resonance buff icon in step with the rebuilt aggregate —
-    // same lifecycle as the capstone buff above. Icon chosen to not collide with any other
-    // icon the rarity engine adds/removes (see CapstoneIcon's comment).
-    private static void SyncResonanceBuff(Mobile wearer, in WornAggregate previous, int offense, int defense, int utility)
+    // Builds the full Divine Resonance buff text with per-item source names, or null when nothing
+    // resonates. B5: naming the sources ("+4% damage (Klytios + Skiron)") both explains the echo
+    // and — because SyncResonanceBuff keys on this whole string — fixes the equip bug where a
+    // same-count source swap left the old text on the bar. Cold path (equip only) — allocations fine.
+    private static string BuildResonanceText(
+        int offense, int defense, int utility, List<(int Category, string A, string B)> echoes
+    )
     {
-        var had = previous.ResonanceOffense + previous.ResonanceDefense + previous.ResonanceUtility > 0;
-        var has = offense + defense + utility > 0;
+        if (offense + defense + utility == 0)
+        {
+            return null;
+        }
 
-        if (had && (!has || previous.ResonanceOffense != offense || previous.ResonanceDefense != defense ||
-                    previous.ResonanceUtility != utility))
+        var text = "Divine Resonance:";
+        var parts = 0;
+
+        if (offense > 0)
+        {
+            text += $" +{offense * 4}% damage{ResonanceSources(echoes, 0)}";
+            parts++;
+        }
+
+        if (defense > 0)
+        {
+            text += $"{(parts > 0 ? "," : "")} +{defense * 2}% damage reduction{ResonanceSources(echoes, 1)}";
+            parts++;
+        }
+
+        if (utility > 0)
+        {
+            text += $"{(parts > 0 ? "," : "")} +{utility * 10}% regen{ResonanceSources(echoes, 2)}";
+        }
+
+        return text;
+    }
+
+    // " (Klytios + Skiron)" for one category, or empty if no named sources were recorded. Multiple
+    // echoes in the same category comma-join their names.
+    private static string ResonanceSources(List<(int Category, string A, string B)> echoes, int category)
+    {
+        if (echoes == null)
+        {
+            return "";
+        }
+
+        var names = new List<string>();
+
+        foreach (var (cat, a, b) in echoes)
+        {
+            if (cat != category)
+            {
+                continue;
+            }
+
+            if (!string.IsNullOrEmpty(a))
+            {
+                names.Add(a);
+            }
+
+            if (!string.IsNullOrEmpty(b))
+            {
+                names.Add(b);
+            }
+        }
+
+        return names.Count > 0 ? $" ({string.Join(" + ", names)})" : "";
+    }
+
+    // Keeps the indefinite Divine Resonance buff icon in step with the rebuilt aggregate — same
+    // lifecycle as the capstone buff above. B5: keyed on the full source-naming text, so ANY
+    // composition change (including a same-count source swap) refreshes it. Icon chosen to not
+    // collide with any other icon the rarity engine adds/removes (see CapstoneIcon's comment).
+    private static void SyncResonanceBuff(Mobile wearer, in WornAggregate previous, string text)
+    {
+        if (previous.ResonanceText == text)
+        {
+            return;
+        }
+
+        if (previous.ResonanceText != null)
         {
             BuffHelper.RemoveBuff(wearer, BuffIcon.ArcaneEmpowerment);
         }
 
-        if (has && (!had || previous.ResonanceOffense != offense || previous.ResonanceDefense != defense ||
-                    previous.ResonanceUtility != utility))
+        if (text != null)
         {
-            // Cold path (equip/unequip only) — plain string building is fine here.
-            var text = "Divine Resonance:";
-
-            if (offense > 0)
-            {
-                text += $" +{offense * 4}% damage";
-            }
-
-            if (defense > 0)
-            {
-                text += $"{(offense > 0 ? "," : "")} +{defense * 2}% damage reduction";
-            }
-
-            if (utility > 0)
-            {
-                text += $"{(offense + defense > 0 ? "," : "")} +{utility * 10}% regen";
-            }
-
             BuffHelper.AddCustomBuff(wearer, BuffIcon.ArcaneEmpowerment, text);
 
             // Visibility: the moment a duplicate starts (or strengthens) an echo, say so overhead —
@@ -819,34 +909,53 @@ public static class WornEffectState
         }
     }
 
-    // P6 — keeps the indefinite Patron God buff in step with the rebuilt aggregate (Surge icon,
-    // unused anywhere else in the codebase). Same lifecycle as the capstone/resonance buffs.
-    private static void SyncDevotionBuff(
-        Mobile wearer, in WornAggregate previous, bool hasDevotion, PantheonDomain domain, bool isExarch
-    )
+    // P6 / B4 — keeps the indefinite Patron God buff in step with the rebuilt aggregate (Surge icon,
+    // unused anywhere else in the codebase). Devotion now stacks across domains, so the single buff
+    // lists EVERY pledged patron and its perk. Keyed on the mask pair so any change re-syncs.
+    private static void SyncDevotionBuff(Mobile wearer, in WornAggregate previous, int devotionMask, int exarchMask)
     {
-        var changed = previous.HasDevotion != hasDevotion || previous.DevotionDomain != domain ||
-                      previous.IsExarch != isExarch;
-
-        if (!changed)
+        if (previous.DevotionMask == devotionMask && previous.ExarchMask == exarchMask)
         {
             return;
         }
 
-        if (previous.HasDevotion)
+        if (previous.DevotionMask != 0)
         {
             BuffHelper.RemoveBuff(wearer, BuffIcon.Surge);
         }
 
-        if (hasDevotion)
+        if (devotionMask == 0)
         {
-            var patron = PantheonFx.GetPatronName(domain);
-            var title = isExarch ? "Exarch of" : "Patron:";
-            var perk = ExarchPerkText(domain, isExarch);
-
-            BuffHelper.AddCustomBuff(wearer, BuffIcon.Surge, $"{title} {patron} — {perk}");
-            FloatingCombatText.ShowSelfStatus(wearer, $"{title} {patron}");
+            return;
         }
+
+        // Cold path (equip only) — plain string building is fine.
+        var text = "";
+        var overhead = "";
+
+        for (var d = 0; d <= (int)PantheonDomain.Nature; d++)
+        {
+            if ((devotionMask & (1 << d)) == 0)
+            {
+                continue;
+            }
+
+            var domain = (PantheonDomain)d;
+            var patron = PantheonFx.GetPatronName(domain);
+            var exarch = (exarchMask & (1 << d)) != 0;
+            var title = exarch ? "Exarch of " : "";
+            var perk = ExarchPerkText(domain, exarch);
+
+            text += text.Length > 0 ? $", {title}{patron} ({perk})" : $"Patron: {title}{patron} ({perk})";
+
+            if (overhead.Length == 0)
+            {
+                overhead = exarch ? $"Exarch of {patron}" : $"Patron: {patron}";
+            }
+        }
+
+        BuffHelper.AddCustomBuff(wearer, BuffIcon.Surge, text);
+        FloatingCombatText.ShowSelfStatus(wearer, overhead);
     }
 
     // Exarch doubles the devotion perk — text mirrors the Rebuild fold above.
@@ -867,7 +976,7 @@ public static class WornEffectState
     private static bool Beats(in LegendaryEntry a, in LegendaryEntry b)
     {
         // "Every Nth" clauses: a smaller nonzero interval fires more often, so it is stronger.
-        if (a.Clause is ClauseType.FlameProcEveryN or ClauseType.ParryRepairsEveryN && a.P1 != b.P1)
+        if (a.Clause is ClauseType.FlameProcEveryN or ClauseType.ParryForcesMissEveryN && a.P1 != b.P1)
         {
             return a.P1 > 0 && (b.P1 <= 0 || a.P1 < b.P1);
         }
@@ -1018,18 +1127,32 @@ public static class WornEffectState
 
         _clauseBursts[(wearer, clause)] = Core.TickCount + (long)duration.TotalMilliseconds;
 
-        // Dodge/regen bursts previously surfaced only floating text; add a timed buff-bar icon too.
-        // Timed icons auto-expire with `duration`, so no removal bookkeeping is needed. Icons reuse
-        // anachronistic regen/stamina buff art (buff bar intentionally enabled on T2A) and are chosen
-        // not to collide with the mark/heal-block/frenzy/ward-surge/capstone/crit-ready icons already
-        // in use; in-client rendering flagged for verification in the text-pass report.
+        // Every timed burst gets a buff-bar icon so the player can see the remaining duration
+        // (2026-07-12 pass — previously only the four regen bursts had one). Timed icons
+        // auto-expire with `duration`, so no removal bookkeeping is needed. Icons reuse
+        // anachronistic buff art (buff bar intentionally enabled on T2A) and are chosen not to
+        // collide with the mark/heal-block/frenzy/Bulwark/capstone/crit-ready icons already in
+        // use (capstones hold Toughness/DeathStrike/InjectedStrike/Evasion/Block/Knockout).
+        // The five spell-resist bursts share one icon deliberately — they raise the same stat,
+        // and two running at once is a rare, purely cosmetic overlap.
         var (icon, label) = clause switch
         {
-            ClauseType.DodgeRegenBurst         => (BuffIcon.Invigorate, "Dodge Surge: stamina regen up"),
-            ClauseType.HpRegenBurstOnCritTaken => (BuffIcon.GiftOfLife, "Regen Surge: health regen up"),
-            ClauseType.HitHalvedRegenPulse     => (BuffIcon.GiftOfRenewal, "Regen Pulse: health/stamina/mana regen up"),
-            ClauseType.RegenDoubleAfterPotion  => (BuffIcon.OrangePetals, "Elixir: regen doubled"),
-            _                                  => (default(BuffIcon), null)
+            ClauseType.DodgeRegenBurst              => (BuffIcon.Invigorate, "Dodge Surge: stamina regen up"),
+            ClauseType.HpRegenBurstOnCritTaken      => (BuffIcon.GiftOfLife, "Regen Surge: health regen up"),
+            ClauseType.HitHalvedRegenPulse          => (BuffIcon.GiftOfRenewal, "Regen Pulse: health/stamina/mana regen up"),
+            ClauseType.RegenDoubleAfterPotion       => (BuffIcon.OrangePetals, "Elixir: regen doubled"),
+            ClauseType.SpellDrBurstOnCritTaken      => (BuffIcon.MagicReflection, "Warded: spell resist doubled"),
+            ClauseType.ParaResistBoostsSpellDr      => (BuffIcon.MagicReflection, "Warded: spell resist up"),
+            ClauseType.LightningProcResistBurst     => (BuffIcon.MagicReflection, "Warded: spell resist up"),
+            ClauseType.ManaLeechResistBurst         => (BuffIcon.MagicReflection, "Warded: spell resist up"),
+            ClauseType.HitHalvedResistBurst         => (BuffIcon.MagicReflection, "Warded: spell resist up"),
+            ClauseType.ParaResistBoostsResistSkill  => (BuffIcon.Warding, "Warded: Magic Resistance up"),
+            ClauseType.ShrugFirstHitDrBurst         => (BuffIcon.ReactiveArmor, "Fortified: damage reduction up"),
+            ClauseType.BlockGrantsDrBurst           => (BuffIcon.DefenseMastery, "Braced: damage reduction up"),
+            ClauseType.OnKillDodgeDoubleDuration    => (BuffIcon.EssenceOfWind, "Fleet: dodge chance doubled"),
+            ClauseType.LowHpDodgeBurst              => (BuffIcon.EssenceOfWind, "Fleet: dodge chance up"),
+            ClauseType.ReflectBurstOnCritBlock      => (BuffIcon.CounterAttack, "Retribution: reflect doubled"),
+            _                                       => (default(BuffIcon), null)
         };
 
         if (label != null)
@@ -1059,6 +1182,14 @@ public static class WornEffectState
         }
 
         _klothoStacks[wearer] = (stacks, now + (long)duration.TotalMilliseconds);
+
+        // Buff-bar readout so the on-kill stamina-regen stack (and its remaining time) is visible.
+        // Refreshes on each kill; the label carries the current stack count.
+        BuffHelper.AddCustomBuff(
+            wearer, BuffIcon.Rampage,
+            stacks > 1 ? $"Second Wind x{stacks}: stamina regen up" : "Second Wind: stamina regen up",
+            duration
+        );
         return stacks;
     }
 
@@ -1091,16 +1222,16 @@ public static class WornEffectState
         return true;
     }
 
-    public static void ArmSecondaryEffectSuppression(Mobile wearer)
+    public static void ArmSecondaryDeflect(Mobile wearer)
     {
         if (wearer != null)
         {
-            _suppressSecondaryEffect.Add(wearer);
+            _deflectSecondary.Add(wearer);
         }
     }
 
-    public static bool ConsumeSecondaryEffectSuppression(Mobile wearer) =>
-        wearer != null && _suppressSecondaryEffect.Remove(wearer);
+    public static bool ConsumeSecondaryDeflect(Mobile wearer) =>
+        wearer != null && _deflectSecondary.Remove(wearer);
 
     public static void Evict(Mobile wearer)
     {
@@ -1129,7 +1260,7 @@ public static class WornEffectState
 
         _aggregates.Remove(wearer);
         _legendaries.Remove(wearer);
-        _suppressSecondaryEffect.Remove(wearer);
+        _deflectSecondary.Remove(wearer);
         _klothoStacks.Remove(wearer);
 
         RemoveSkillMod(wearer, _resistSkillMods);

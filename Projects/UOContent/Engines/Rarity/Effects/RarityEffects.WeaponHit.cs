@@ -39,9 +39,9 @@ public static partial class RarityEffects
         return delaySeconds * 100.0 / divisor;
     }
 
-    // Coverage list for AdjustHitChance's DodgeDoubleFirstAttack check (ClauseDispatchCoverageTests).
+    // Coverage list for AdjustHitChance's dodge clause checks (ClauseDispatchCoverageTests).
     internal static readonly ClauseType[] HandledByHitChance =
-        { ClauseType.DodgeDoubleFirstAttack };
+        { ClauseType.DodgeDoubleFirstAttack, ClauseType.LowHpDodgeBurst };
 
     // P3 — hit chance. Adds the weapon's HitChancePct to the to-hit roll (chance is 0..1), then
     // subtracts the defender's worn Talarian dodge% (armor/shield P3a).
@@ -51,6 +51,13 @@ public static partial class RarityEffects
         if (ForceHit)
         {
             chance = 1.0;
+            return;
+        }
+
+        // Telamon (ParryForcesMissEveryN): a parry threw this attacker off balance — this swing misses.
+        if (CombatFxState.ConsumeForcedMiss(attacker))
+        {
+            chance = 0;
             return;
         }
 
@@ -74,14 +81,28 @@ public static partial class RarityEffects
         }
 
         var agg = WornEffectState.GetAggregate(defender);
+        var legendaries = WornEffectState.GetLegendaries(defender);
         var dodge = agg.DodgePct;
+
+        // LowHpDodgeBurst (Ariadne): while the low-HP burst is active, add its dodge %. Ariadne is
+        // clothing with no base dodge package, so this is checked before the dodge<=0 short-circuit.
+        if (WornEffectState.IsClauseBurstActive(defender, ClauseType.LowHpDodgeBurst))
+        {
+            for (var i = 0; i < legendaries.Count; i++)
+            {
+                if (legendaries[i].Clause == ClauseType.LowHpDodgeBurst)
+                {
+                    dodge += legendaries[i].P1 > 0 ? legendaries[i].P1 : 10;
+                    break;
+                }
+            }
+        }
 
         if (dodge <= 0)
         {
             return;
         }
 
-        var legendaries = WornEffectState.GetLegendaries(defender);
         var fightFresh = CombatFxState.IsFightFreshForDefender(defender);
 
         for (var i = 0; i < legendaries.Count; i++)
@@ -91,6 +112,9 @@ public static partial class RarityEffects
                 dodge *= 2; // Kyllene
             }
         }
+
+        // The burst arms after Rebuild's suit-wide clamp, so re-assert the dodge ceiling (§9.8).
+        dodge = Math.Min(dodge, WornEffectState.DodgeCap);
 
         chance -= dodge / 100.0;
 
@@ -109,7 +133,7 @@ public static partial class RarityEffects
     internal static readonly ClauseType[] HandledByMeleeMiss =
     {
         ClauseType.DodgeGrantsCounterWindow, ClauseType.DodgeRefundStam, ClauseType.DodgeRestoreMana,
-        ClauseType.DodgeRegenBurst, ClauseType.DodgeRefundStamSuitWeight, ClauseType.DodgeSnare,
+        ClauseType.DodgeRegenBurst, ClauseType.DodgeRefundStamPct, ClauseType.DodgeSnare,
         ClauseType.ExtraSwingOnParry
     };
 
@@ -165,21 +189,9 @@ public static partial class RarityEffects
                         WornEffectState.ArmClauseBurst(defender, entry.Clause, TimeSpan.FromSeconds(entry.P2 > 0 ? entry.P2 : 3));
                         break;
                     }
-                case ClauseType.DodgeRefundStamSuitWeight: // Daphne — burden into vigor: the heavier
-                    // the worn armor, the bigger the stamina refund (weight / P1, min 1).
+                case ClauseType.DodgeRefundStamPct: // Melinoe — a successful dodge refunds P1% of max stamina.
                     {
-                        var suitWeight = 0.0;
-                        var items = defender.Items;
-
-                        for (var k = 0; k < items.Count; k++)
-                        {
-                            if (items[k] is BaseArmor wornArmor)
-                            {
-                                suitWeight += wornArmor.Weight;
-                            }
-                        }
-
-                        var refund = Math.Max(1, (int)(suitWeight / (entry.P1 > 0 ? entry.P1 : 4)));
+                        var refund = Math.Max(1, defender.StamMax * (entry.P1 > 0 ? entry.P1 : 10) / 100);
                         var before = defender.Stam;
                         defender.Stam = Math.Min(defender.StamMax, defender.Stam + refund);
                         FloatingCombatText.ShowRestore(defender, 'S', defender.Stam - before);
@@ -329,20 +341,28 @@ public static partial class RarityEffects
         }
 
         // P27 armor-pen for this hit — stashed for BaseWeapon's AR-absorb step to consume.
-        // Always-on row pen; NthHitFullArmorPen (either slot) forces 100 at cadence; CritArmorPen's
-        // P2 applies only when the hit actually crits. Cross-family clause reuse is allowed, so the
-        // Nth-pen check honours both the signature slot and a legendary's unique clause.
+        // B3 stacking-waste fix: the pen sources now ADD (row pen + NthHitFullArmorPen's 100 at
+        // cadence + CritArmorPen's P2 on a crit) instead of one masking another. Once the total
+        // passes 100 the armor is already fully ignored, so the overflow converts to bonus damage
+        // at half rate rather than being wasted; pen then clamps to 100. Cross-family clause reuse
+        // is allowed, so the Nth-pen check honours both the signature slot and the unique clause.
         var pen = row.ArmorPenPct;
 
         if (signature == ClauseType.NthHitFullArmorPen && s1 > 0 && hitCount % s1 == 0 ||
             clause == ClauseType.NthHitFullArmorPen && p1 > 0 && hitCount % p1 == 0)
         {
-            pen = 100;
+            pen += 100;
         }
 
         if (isCrit && clause == ClauseType.CritArmorPen)
         {
-            pen = Math.Max(pen, p2);
+            pen += p2;
+        }
+
+        if (pen > 100)
+        {
+            bonus += (pen - 100) / 2;
+            pen = 100;
         }
 
         SetPendingArmorPen(Math.Clamp(pen, 0, 100));
@@ -598,9 +618,8 @@ public static partial class RarityEffects
 
         if (row.OnKillStamPct > 0 && !defender.Alive)
         {
-            var before = attacker.Stam;
-            attacker.Stam = Math.Min(attacker.StamMax, attacker.Stam + attacker.StamMax * row.OnKillStamPct / 100);
-            FloatingCombatText.ShowRestore(attacker, 'S', attacker.Stam - before);
+            // B3: a % stam restore spills into health when it lands alongside a full-stam on-kill clause.
+            RestoreWithSpill(attacker, 'S', attacker.StamMax * row.OnKillStamPct / 100);
         }
 
         // Ephodos signature: the guaranteed first-hit crit refunds the swing's stamina cost. No
@@ -709,12 +728,12 @@ public static partial class RarityEffects
                 }
             }
 
-            // Ward-Surge (chainmail set capstone): taking a crit opens a DR-to-cap window.
+            // Bulwark (chainmail set capstone): taking a crit opens a DR-to-cap window.
             if (WornEffectState.GetAggregate(defender) is
                 { HasCapstone: true, CapstoneMaterial: ArmorMaterialType.Chainmail })
             {
                 CombatFxState.ArmWardSurge(defender, TimeSpan.FromSeconds(5));
-                FloatingCombatText.ShowSelfStatus(defender, "Ward-Surge");
+                FloatingCombatText.ShowSelfStatus(defender, "Bulwark");
             }
         }
 
@@ -816,25 +835,19 @@ public static partial class RarityEffects
 
                         if (missing > 0)
                         {
-                            var gain = missing * (entry.P1 > 0 ? entry.P1 : 50) / 100;
-                            attacker.Hits += gain;
-                            FloatingCombatText.ShowRestore(attacker, 'L', gain);
+                            RestoreWithSpill(attacker, 'L', missing * (entry.P1 > 0 ? entry.P1 : 50) / 100);
                         }
 
                         break;
                     }
                 case ClauseType.OnKillRestoreExtraHp: // Autonoos
                     {
-                        var gain = attacker.HitsMax * (entry.P1 > 0 ? entry.P1 : 15) / 100;
-                        attacker.Hits += gain;
-                        FloatingCombatText.ShowRestore(attacker, 'L', gain);
+                        RestoreWithSpill(attacker, 'L', attacker.HitsMax * (entry.P1 > 0 ? entry.P1 : 15) / 100);
                         break;
                     }
                 case ClauseType.OnKillRestoreHpPct: // Asklepios
                     {
-                        var gain = attacker.HitsMax * (entry.P1 > 0 ? entry.P1 : 25) / 100;
-                        attacker.Hits += gain;
-                        FloatingCombatText.ShowRestore(attacker, 'L', gain);
+                        RestoreWithSpill(attacker, 'L', attacker.HitsMax * (entry.P1 > 0 ? entry.P1 : 25) / 100);
                         break;
                     }
                 case ClauseType.OnKillDodgeDoubleDuration: // Patroklos
@@ -844,10 +857,8 @@ public static partial class RarityEffects
                     }
                 case ClauseType.OnKillStamRestoreExtendImmunity: // Melanippos
                     {
-                        var before = attacker.Stam;
-                        attacker.Stam = attacker.StamMax;
+                        RestoreWithSpill(attacker, 'S', attacker.StamMax - attacker.Stam);
                         CombatFxState.ExtendStunImmunity(attacker, TimeSpan.FromSeconds(entry.P1 > 0 ? entry.P1 : 5));
-                        FloatingCombatText.ShowRestore(attacker, 'S', attacker.Stam - before);
                         break;
                     }
             }

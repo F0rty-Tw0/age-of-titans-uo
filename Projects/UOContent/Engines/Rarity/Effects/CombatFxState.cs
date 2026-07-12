@@ -225,7 +225,7 @@ public static class CombatFxState
         // bare text in a PropertyList handler is treated as a delimiter, not literal text).
         if (TryGetMark(target, out var bonus))
         {
-            var label = $"Marked +{bonus}%";
+            var label = $"Marked: +{bonus}% damage taken";
             list.Add(1114057, $"{label}");
         }
 
@@ -518,6 +518,21 @@ public static class CombatFxState
         return true;
     }
 
+    // Telamon (ParryForcesMissEveryN): every Nth parry throws the attacker off balance so their
+    // next swing automatically misses. Armed on the parried attacker, consumed at the top of
+    // AdjustHitChance (a single-swing pending flag, cleared by the consuming read).
+    private static readonly HashSet<Mobile> _forcedMiss = new();
+
+    public static void ArmForcedMiss(Mobile attacker)
+    {
+        if (attacker != null)
+        {
+            _forcedMiss.Add(attacker);
+        }
+    }
+
+    public static bool ConsumeForcedMiss(Mobile attacker) => attacker != null && _forcedMiss.Remove(attacker);
+
     // Maenad: arms (or refreshes) the struck-frenzy buff.
     public static void ArmFrenzy(Mobile m, int dmgPct, int swingPct, TimeSpan duration)
     {
@@ -544,7 +559,7 @@ public static class CombatFxState
         if (m != null)
         {
             _wardSurgeUntil[m] = Core.TickCount + (long)duration.TotalMilliseconds;
-            BuffHelper.AddCustomBuff(m, BuffIcon.Protection, "Ward-Surge: max damage reduction", duration);
+            BuffHelper.AddCustomBuff(m, BuffIcon.Protection, "Bulwark: damage reduction at its maximum", duration);
         }
     }
 
@@ -587,6 +602,10 @@ public static class CombatFxState
 
         var expiry = now + (long)duration.TotalMilliseconds;
         _snare[target] = (pct, expiry);
+
+        // Buff-bar readout on the snared mobile so the slow's remaining duration is visible
+        // (matches the "Webbed" overhead float fired by the Penelope dodge rider).
+        BuffHelper.AddCustomBuff(target, BuffIcon.Webbing, $"Webbed: hit speed -{pct}%", duration);
 
         if (target.Player)
         {
@@ -650,6 +669,7 @@ public static class CombatFxState
 
         _snare.Remove(m);
         _ramps.Remove(m);
+        _forcedMiss.Remove(m);
         _lastRevealTick.Remove(m);
         _healBlockLockoutUntil.Remove(m);
         _snareLockoutUntil.Remove(m);

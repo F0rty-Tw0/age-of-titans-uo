@@ -20,6 +20,13 @@ public static partial class RarityEffects
 {
     private static readonly TimeSpan MarkDuration = TimeSpan.FromSeconds(5);
 
+    // Fallback "+% damage taken" for a mark whose lane row carries no MarkBonusPct — e.g. a
+    // mark-family unique retargeted onto a crit lane by the arming-group split (2026-07-12).
+    // Without it those marks would apply +0% (a dead effect) and read "for bonus damage".
+    // Both the combat dispatch (ApplyMark) and the tooltip (InjectMarkBonus) use this so the
+    // number shown always matches the number applied.
+    internal const int DefaultMarkBonusPct = 15;
+
     // Re-entrancy guard depth: a normal extra swing must not itself proc another (mirrors
     // BaseWeapon.InDoubleStrike). ExtraSwingChain relaxes this to depth 2 — its chained swing
     // may proc ONE further swing — so the guard is a depth counter, not a bool.
@@ -82,7 +89,7 @@ public static partial class RarityEffects
 
         item.Hue = VariantRootInfo.GetBodyHue(root, clamped);
         item.Name = BuildRootName(item, root);
-        ApplyArmorWeightReduction(item, root, clamped);
+        ResetArmorWeight(item);
         item.InvalidateProperties();
     }
 
@@ -115,7 +122,7 @@ public static partial class RarityEffects
 
         item.Hue = entry.Hue != 0 ? entry.Hue : VariantRootInfo.GetBodyHue(entry.Root, ItemRarity.Legendary);
         item.Name = entry.Name;
-        ApplyArmorWeightReduction(item, entry.Root, rarity);
+        ResetArmorWeight(item);
         item.InvalidateProperties();
     }
 
@@ -132,23 +139,20 @@ public static partial class RarityEffects
         ((IRarity)item).Rarity = ItemRarity.Common;
         item.Hue = 0;
         item.Name = null;
-        ApplyArmorWeightReduction(item, VariantRoot.None, ItemRarity.Common);
+        ResetArmorWeight(item);
         item.InvalidateProperties();
     }
 
-    // Talarian/Aegis weight reduction is a per-item stat (not a pooled aggregate, mirrors the
-    // per-piece bonus-AR call in GetBonusArmorRating) — applied once here rather than read on
-    // every hook. Re-applied on every Apply/Clear so re-rolling an item's variant never leaves a
-    // stale reduction behind.
-    private static void ApplyArmorWeightReduction(Item item, VariantRoot root, ItemRarity rarity)
+    // The light-armor "weight" lane no longer shaves the piece's own weight — it now boosts the
+    // wearer's carry capacity (WornEffectState aggregate -> PlayerMobile.MaxWeight), per the
+    // 2026-07-12 directive. This reset keeps the item at its true DefaultWeight on every
+    // Apply/Clear, normalizing any piece that had a reduced weight persisted under the old model.
+    private static void ResetArmorWeight(Item item)
     {
-        if (item is not BaseArmor armor)
+        if (item is BaseArmor armor)
         {
-            return;
+            armor.Weight = armor.DefaultWeight;
         }
-
-        var pct = ArmorEffectTable.Get(root, rarity, armor is BaseShield).WeightReductionPct;
-        armor.Weight = pct > 0 ? armor.DefaultWeight * (100 - pct) / 100.0 : armor.DefaultWeight;
     }
 
     // Armor/shield legendaries are restricted to the material family their name implies (e.g.
@@ -336,6 +340,93 @@ public static partial class RarityEffects
         m.HitsMax > 0 && m.Hits < m.HitsMax * fraction;
 
     private static bool IsFullHp(Mobile m) => m.Hits >= m.HitsMax;
+
+    // B3 stacking-waste fix: apply an on-kill stat restore (S/M/L), spilling any portion that can't
+    // land (the stat is already at max — e.g. a 25% stamina restore firing in the same kill as a
+    // full-stamina restore) into HEALTH at 50% rate rather than wasting it. Floats show the real
+    // deltas only. Health is the spill target, so an over-restore of HP simply caps (no re-spill).
+    // `intended` is the amount THIS restore attempts to add (a full restore passes its headroom).
+    // Internal so the spill math can be unit-tested directly (the on-kill call sites are private).
+    internal static void RestoreWithSpill(Mobile m, char kind, int intended)
+    {
+        if (m == null || intended <= 0)
+        {
+            return;
+        }
+
+        int cur, max;
+
+        switch (kind)
+        {
+            case 'S':
+                {
+                    cur = m.Stam;
+                    max = m.StamMax;
+                    break;
+                }
+            case 'M':
+                {
+                    cur = m.Mana;
+                    max = m.ManaMax;
+                    break;
+                }
+            default: // 'L' — life
+                {
+                    cur = m.Hits;
+                    max = m.HitsMax;
+                    break;
+                }
+        }
+
+        var applied = Math.Min(intended, Math.Max(0, max - cur));
+
+        if (applied > 0)
+        {
+            switch (kind)
+            {
+                case 'S':
+                    {
+                        m.Stam = cur + applied;
+                        break;
+                    }
+                case 'M':
+                    {
+                        m.Mana = cur + applied;
+                        break;
+                    }
+                default:
+                    {
+                        m.Hits = cur + applied;
+                        break;
+                    }
+            }
+
+            FloatingCombatText.ShowRestore(m, kind, applied);
+        }
+
+        var wasted = intended - applied;
+
+        if (wasted <= 0 || kind == 'L')
+        {
+            return;
+        }
+
+        var life = wasted / 2;
+
+        if (life <= 0)
+        {
+            return;
+        }
+
+        var before = m.Hits;
+        m.Hits = Math.Min(m.HitsMax, m.Hits + life);
+        var gained = m.Hits - before;
+
+        if (gained > 0)
+        {
+            FloatingCombatText.ShowRestore(m, 'L', gained);
+        }
+    }
 
     private static void ValidateRootForItem(VariantRoot root, Item item)
     {

@@ -12,7 +12,6 @@ public readonly struct ArmorEffectRow
 
     // Cyclopean (forge)
     public int ReflectPct { get; init; }
-    public bool SelfRepair { get; init; }
     public int FlameProcPct { get; init; }
 
     // Paean (mending)
@@ -50,7 +49,7 @@ public readonly struct ArmorEffectRow
     public bool IsEmpty => this is
     {
         BonusAr: 0, DrPct: 0, ShrugPct: 0,
-        ReflectPct: 0, FlameProcPct: 0, SelfRepair: false,
+        ReflectPct: 0, FlameProcPct: 0,
         HpRegenPct: 0, HealsReceivedPct: 0, AutoCure: false,
         SpellDrPct: 0, ParaResistPct: 0, ResistSkillBonus: 0,
         WeightReductionPct: 0, StamRegenPct: 0, DodgePct: 0,

@@ -117,16 +117,11 @@ public static partial class RarityEffects
     {
         ClauseType.AutoCureRestoresStamMana, ClauseType.AutoCureClearsDebuffsOnce, ClauseType.AutoCureRestoresHpPct,
         ClauseType.LowHpEmergencyCure, ClauseType.ResistSkillDoubleLowHp, ClauseType.ParaResistBoostsResistSkill,
-        ClauseType.ResistSkillBoostLowHp
+        ClauseType.ResistSkillBoostLowHp, ClauseType.LowHpDodgeBurst
     };
 
     private static void RunHitsTickSideEffects(Mobile m, in WornAggregate agg, IReadOnlyList<LegendaryEntry> legendaries)
     {
-        if (agg.SelfRepair)
-        {
-            TryArmorSelfRepairTick(m);
-        }
-
         if (agg.AutoCure && m.Poisoned && Utility.Random(100) < 5)
         {
             m.CurePoison(m);
@@ -205,49 +200,14 @@ public static partial class RarityEffects
 
                 WornEffectState.BoostResistSkill(m, agg.ResistSkillBonus + (boosted ? entry.P1 > 0 ? entry.P1 : 5 : 0));
             }
-        }
-    }
-
-    // Cyclopean "slow self-repair" (Rare+). No exact rate is specified in the design docs, so
-    // this rolls a modest 10% chance per HP-regen tick per qualifying piece — a deliberately
-    // slow trickle, tunable later. Danaos additionally mirrors 1% max HP per tick on its shield.
-    // Coverage list for TryArmorSelfRepairTick's SelfRepair burst + Danaos HP-mirror checks below.
-    internal static readonly ClauseType[] HandledBySelfRepair =
-        { ClauseType.SelfRepairBurstOnCritBlock, ClauseType.SelfRepairRestoresHp };
-
-    private static void TryArmorSelfRepairTick(Mobile m)
-    {
-        var items = m.Items;
-
-        for (var i = 0; i < items.Count; i++)
-        {
-            if (items[i] is not BaseArmor armor || armor is not IVariantItem variant ||
-                variant.VariantRoot == VariantRoot.None && variant.LegendaryId == 0)
+            else if (entry.Clause == ClauseType.LowHpDodgeBurst && m.HitsMax > 0 && m.Hits < m.HitsMax / 4) // Ariadne
             {
-                continue;
-            }
-
-            var (root, rarity) = ResolveRootRarity(variant, armor.Rarity);
-            var row = ArmorEffectTable.Get(root, rarity, armor is BaseShield);
-
-            if (!row.SelfRepair || armor.MaxHitPoints <= 0 || armor.HitPoints >= armor.MaxHitPoints)
-            {
-                continue;
-            }
-
-            var repairChance = WornEffectState.IsClauseBurstActive(m, ClauseType.SelfRepairBurstOnCritBlock) ? 20 : 10; // Zethos
-
-            if (Utility.Random(100) >= repairChance)
-            {
-                continue;
-            }
-
-            armor.HitPoints++;
-
-            if (variant.LegendaryId != 0 && LegendaryRegistry.TryGet(variant.LegendaryId, out var entry) &&
-                entry.Clause == ClauseType.SelfRepairRestoresHp) // Danaos
-            {
-                m.Hits += Math.Max(1, m.HitsMax * (entry.P1 > 0 ? entry.P1 : 1) / 100);
+                // Once per fight below 25% health: a short dodge burst (read in AdjustHitChance).
+                if (WornEffectState.TryUseOncePerFight(m, entry.Clause, CombatFxState.IsFightFreshForDefender(m)))
+                {
+                    WornEffectState.ArmClauseBurst(m, entry.Clause, TimeSpan.FromSeconds(entry.P2 > 0 ? entry.P2 : 5));
+                    FloatingCombatText.ShowSelfStatus(m, "Evasion");
+                }
             }
         }
     }
@@ -374,5 +334,14 @@ public static partial class RarityEffects
     {
         var pct = WornEffectState.GetAggregate(target).HealsReceivedPct;
         return pct > 0 ? amount + amount * pct / 100 : amount;
+    }
+
+    // Light-armor "carry capacity" lane: the extra weight a wearer can bear, as a % of their base
+    // MaxWeight. Folded into PlayerMobile.MaxWeight so the whole carried load is lightened, not the
+    // armor piece's own weight (user directive 2026-07-12). Suit-capped in WornEffectState.
+    public static int CarryWeightBonus(Mobile m, int baseMaxWeight)
+    {
+        var pct = WornEffectState.GetAggregate(m).CarryWeightBonusPct;
+        return pct > 0 ? baseMaxWeight * pct / 100 : 0;
     }
 }

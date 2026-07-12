@@ -43,7 +43,6 @@ public enum ClauseTrigger : uint
     SpellManaLeech  = 1u << 17, // Hecatean spell mana-leech riders (ApplyHecateanSpellManaLeech)
     LightningProc   = 1u << 18, // Olympian lightning-proc riders (ApplyOlympianLightningProc)
     WornStatMod     = 1u << 19, // stat/skill mods folded in on Rebuild (WornEffectState.cs)
-    DurabilityLoss  = 1u << 20, // durability-loss-immunity query on the wear path (Items/Clothing/BaseClothing.cs OnHit)
 
     // Declared but not dispatched anywhere yet — a known gap, not a category.
     Deferred        = 1u << 21
@@ -125,7 +124,6 @@ public static class ClauseTraits
             [ClauseType.FlameProcBoostLowHp]               = ClauseTrigger.ArmorDefense,
             [ClauseType.FlameProcPoison]                   = ClauseTrigger.ArmorDefense,
             [ClauseType.FlameProcSplash]                   = ClauseTrigger.ArmorDefense,
-            [ClauseType.FlameProcDoubleLowDurability]      = ClauseTrigger.ArmorDefense,
             [ClauseType.FlameProcEveryN]                   = ClauseTrigger.ArmorDefense,
             [ClauseType.AutoCureRestoresStamMana]          = ClauseTrigger.RegenTick,
             [ClauseType.OnKillRestoreMissingHpPct]         = ClauseTrigger.OnKill,
@@ -143,22 +141,22 @@ public static class ClauseTraits
             [ClauseType.SpellDrBoostFirstHit]              = ClauseTrigger.SpellDr,
             [ClauseType.SpellDrBurstOnCritTaken]           = ClauseTrigger.SpellDr | ClauseTrigger.ArmorHitRider,
             [ClauseType.ParaResistBoostsResistSkill]       = ClauseTrigger.RegenTick | ClauseTrigger.ParaResist,
-            [ClauseType.FirstHitNoSecondaryEffect]         = ClauseTrigger.ShieldParry,
+            [ClauseType.DeflectSecondaryFirstHit]          = ClauseTrigger.ArmorDefense,
             [ClauseType.DodgeRefundStam]                   = ClauseTrigger.Dodge,
             [ClauseType.OnKillDodgeDoubleDuration]         = ClauseTrigger.OnKill,
             [ClauseType.DodgeRestoreMana]                  = ClauseTrigger.Dodge,
             [ClauseType.DodgeDoubleFirstAttack]            = ClauseTrigger.Dodge,
             [ClauseType.DodgeRegenBurst]                   = ClauseTrigger.RegenTick | ClauseTrigger.Dodge,
-            [ClauseType.DodgeRefundStamSuitWeight]         = ClauseTrigger.Dodge,
+            [ClauseType.DodgeRefundStamPct]         = ClauseTrigger.Dodge,
             [ClauseType.ParryFirstHitGuaranteed]           = ClauseTrigger.ShieldParry,
             [ClauseType.ParryCritStun]                     = ClauseTrigger.ShieldParry,
             [ClauseType.ParryExtraReflect]                 = ClauseTrigger.ShieldParry,
-            [ClauseType.ParryRepairsEveryN]                = ClauseTrigger.ShieldParry,
+            [ClauseType.ParryForcesMissEveryN]             = ClauseTrigger.ShieldParry,
             [ClauseType.LowHpGuaranteedParry]              = ClauseTrigger.ShieldParry,
             [ClauseType.ParryFirstHitGuaranteedStun]       = ClauseTrigger.ShieldParry,
             [ClauseType.ReflectBoostFirstHit]              = ClauseTrigger.ArmorDefense,
-            [ClauseType.SelfRepairBurstOnCritBlock]        = ClauseTrigger.ShieldParry | ClauseTrigger.RegenTick,
-            [ClauseType.SelfRepairRestoresHp]              = ClauseTrigger.RegenTick,
+            [ClauseType.ReflectBurstOnCritBlock]           = ClauseTrigger.ShieldParry | ClauseTrigger.ArmorDefense,
+            [ClauseType.BlockRestoresHp]                   = ClauseTrigger.ShieldParry | ClauseTrigger.ArmorDefense,
             [ClauseType.ReflectCritStun]                   = ClauseTrigger.ArmorDefense,
             [ClauseType.HpRegenBurstOnCritTaken]           = ClauseTrigger.RegenTick | ClauseTrigger.ArmorHitRider,
             [ClauseType.OnKillRestoreExtraHp]              = ClauseTrigger.OnKill,
@@ -178,7 +176,7 @@ public static class ClauseTraits
             [ClauseType.ManaLeechResistBurst]              = ClauseTrigger.SpellDr | ClauseTrigger.SpellManaLeech,
             [ClauseType.HitHalvedRegenPulse]               = ClauseTrigger.ArmorDefense | ClauseTrigger.RegenTick,
             [ClauseType.MissRerollGrazeRestoreStam]        = ClauseTrigger.MissReroll,
-            [ClauseType.HitHalvedDurabilityImmunity]       = ClauseTrigger.ArmorDefense,
+            [ClauseType.HitHalvedReflectSpared]            = ClauseTrigger.ArmorDefense,
             [ClauseType.HitHalvedResistBurst]              = ClauseTrigger.ArmorDefense | ClauseTrigger.SpellDr,
             [ClauseType.StealthBreakRefundStam]            = ClauseTrigger.ArmorHitRider,
             [ClauseType.RegenDoubleWhileHidden]            = ClauseTrigger.RegenTick,
@@ -191,7 +189,7 @@ public static class ClauseTraits
             [ClauseType.OnKillStamRegenBurstStacking]      = ClauseTrigger.RegenTick | ClauseTrigger.OnKill,
             [ClauseType.AnimalTamingSkillBonus]            = ClauseTrigger.WornStatMod,
             [ClauseType.FrenzyStaggerChance]               = ClauseTrigger.ArmorHitRider,
-            [ClauseType.DurabilityLossImmunity]            = ClauseTrigger.DurabilityLoss,
+            [ClauseType.LowHpDodgeBurst]                   = ClauseTrigger.RegenTick | ClauseTrigger.Dodge,
             [ClauseType.DodgeSnare]                        = ClauseTrigger.Dodge,
             [ClauseType.HealsReceivedBonusPct]             = ClauseTrigger.WornStatMod,
             [ClauseType.StationaryRegenFaster]             = ClauseTrigger.RegenTick,
