@@ -23,11 +23,6 @@ public static partial class RarityEffects
 
     private static void ApplyMark(Mobile attacker, Mobile defender, in WeaponHitContext ctx)
     {
-        if (WornEffectState.ConsumeSecondaryEffectSuppression(defender)) // Hyperbios
-        {
-            return;
-        }
-
         var row = ctx.Row;
         var doMark = row.MarkChancePct > 0 && Utility.Random(100) < row.MarkChancePct;
         var allSources = false;
@@ -42,12 +37,38 @@ public static partial class RarityEffects
             return;
         }
 
+        // A mark-family clause on a lane whose row carries no MarkBonusPct (e.g. a mark unique
+        // moved onto a crit lane by the split) would otherwise apply +0% — a dead mark. Floor it.
+        if (bonus <= 0)
+        {
+            bonus = DefaultMarkBonusPct;
+        }
+
+        var poisons = row.MarkPoisonTick || ctx.Signature == ClauseType.PoisonTickDoubled || ctx.Clause == ClauseType.PoisonTickDoubled;
+
+        // DeflectSecondaryFirstHit (Hyperbios & the re-themed armor carriers): the first mark/poison
+        // aimed at the defender each fight rebounds onto the ATTACKER instead — the defender is
+        // spared and the attacker wears the mark (and poison, if this mark carried one).
+        if (WornEffectState.ConsumeSecondaryDeflect(defender))
+        {
+            CombatFxState.SetMark(attacker, defender, bonus, allSources, MarkDuration);
+            FloatingCombatText.ShowOffensiveStatus(attacker, defender, "Deflected");
+
+            if (poisons)
+            {
+                attacker.ApplyPoison(defender, Poison.Lesser);
+                FloatingCombatText.ShowOffensiveStatus(attacker, defender, "Poisoned", FloatingCombatText.PoisonHue);
+            }
+
+            return;
+        }
+
         CombatFxState.SetMark(defender, attacker, bonus, allSources, MarkDuration);
         FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Marked");
 
         // Poison tick fires at most once even if both the always-on flag and a PoisonTickDoubled
         // clause are present (preserves the original `||` semantics).
-        if (row.MarkPoisonTick || ctx.Signature == ClauseType.PoisonTickDoubled || ctx.Clause == ClauseType.PoisonTickDoubled)
+        if (poisons)
         {
             defender.ApplyPoison(attacker, Poison.Lesser);
             FloatingCombatText.ShowOffensiveStatus(defender, attacker, "Poisoned", FloatingCombatText.PoisonHue);
@@ -161,7 +182,11 @@ public static partial class RarityEffects
                 {
                     if (ctx.IsCrit && damageGiven > 0)
                     {
-                        var heal = AOS.Scale(damageGiven, ctx.Row.LifestealPct);
+                        // The clause carries its own lifesteal % (P1); fall back to the row's rate for
+                        // any legacy entry that left it 0. Prevents a dead heal on a lane (e.g. Kamatos
+                        // maces) whose row has no lifesteal of its own.
+                        var pct = p1 > 0 ? p1 : ctx.Row.LifestealPct;
+                        var heal = AOS.Scale(damageGiven, pct);
 
                         if (heal > 0)
                         {
@@ -186,15 +211,11 @@ public static partial class RarityEffects
                 {
                     if (!defender.Alive)
                     {
-                        var beforeStam = attacker.Stam;
-                        attacker.Stam = attacker.StamMax;
-                        FloatingCombatText.ShowRestore(attacker, 'S', attacker.Stam - beforeStam);
+                        RestoreWithSpill(attacker, 'S', attacker.StamMax - attacker.Stam);
 
                         if (p1 >= 2)
                         {
-                            var beforeMana = attacker.Mana;
-                            attacker.Mana = attacker.ManaMax;
-                            FloatingCombatText.ShowRestore(attacker, 'M', attacker.Mana - beforeMana);
+                            RestoreWithSpill(attacker, 'M', attacker.ManaMax - attacker.Mana);
                         }
 
                         // Pantheon flourish on the killer — the target is already down.

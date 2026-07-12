@@ -92,7 +92,6 @@ public enum ClauseType : byte
     FlameProcBoostLowHp,         // proc chance rises to P1% while wearer is under P2% HP (Talos)
     FlameProcPoison,             // proc also applies a poison tick to the attacker (Khimaira)
     FlameProcSplash,             // proc also splashes to P1 extra nearby attackers (Echidna)
-    FlameProcDoubleLowDurability,// proc chance doubles while the shield is under P1% durability (Amphion)
     FlameProcEveryN,             // guaranteed proc every Pth hit taken; P1 = N (Tiryns)
 
     // Paean mending riders
@@ -114,7 +113,7 @@ public enum ClauseType : byte
     SpellDrBoostFirstHit,         // spell DR rises to P1% vs the first spell hit of any fight (Laomedon)
     SpellDrBurstOnCritTaken,      // spell DR doubles for P1s after taking a crit (Palaimon)
     ParaResistBoostsResistSkill,  // resisting a paralyze grants +P1 Resisting Spells for P2s (Alkathous)
-    FirstHitNoSecondaryEffect,    // the first hit taken each fight applies no secondary effect (Hyperbios)
+    DeflectSecondaryFirstHit,     // the first mark/poison/heal-block aimed at the wearer each fight rebounds onto the attacker (Hyperbios) [was FirstHitNoSecondaryEffect]
 
     // Talarian stride riders
     DodgeRefundStam,          // a successful dodge instantly refunds P1 stamina (Automedon/Melanippe)
@@ -122,20 +121,20 @@ public enum ClauseType : byte
     DodgeRestoreMana,         // a successful dodge also restores P1% mana (Damastor)
     DodgeDoubleFirstAttack,   // dodge chance doubles vs the first attack of any fight (Kyllene)
     DodgeRegenBurst,          // a successful dodge grants +P1% stam regen for P2s (Kalydon/Panoptes)
-    DodgeRefundStamSuitWeight, // a dodge converts armor burden into vigor: refunds (worn armor weight / P1) stamina (Daphne). Re-spec 2026-07-11 of the never-consumed WeightReductionSuiteBurstOnDodge burst — ClauseType is not serialized, so the rename is save-safe.
+    DodgeRefundStamPct, // a successful dodge refunds P1% of max stamina (Kalydon). Reworked 2026-07-12 from the old suit-weight refund to a weight-independent % (per user directive); ClauseType is not serialized, so the rename is save-safe.
 
     // Aegis shield-parry riders
     ParryFirstHitGuaranteed,      // guaranteed parry vs the first hit of any fight (Ankyle/Abderos/Kerberos)
     ParryCritStun,                // parrying a crit briefly stuns the attacker (Oiliades)
     ParryExtraReflect,            // every parry reflects an extra P1% on top of thorns (Salamis)
-    ParryRepairsEveryN,           // every Pth parry repairs 1 durability point; P1 = N (Telamon)
+    ParryForcesMissEveryN,        // every Pth parry throws the attacker off balance: their next swing misses; P1 = N (Telamon) [was ParryRepairsEveryN]
     LowHpGuaranteedParry,         // while under P1% HP, the first hit taken is guaranteed-parried (Sakos)
     ParryFirstHitGuaranteedStun,  // guaranteed parry + always-stun vs the first hit of any fight (Aias)
 
     // Shield-only riders (Cyclopean/Paean/Tritonian/Talarian on a shield)
     ReflectBoostFirstHit,         // reflect % rises to P1% vs the first hit of any fight (Proitos)
-    SelfRepairBurstOnCritBlock,   // self-repair rate doubles for P1s after blocking a crit (Zethos)
-    SelfRepairRestoresHp,         // each self-repair tick also restores P1% max HP (Danaos)
+    ReflectBurstOnCritBlock,      // reflect doubles for P1s after blocking/shrugging a crit (Zethos) [was SelfRepairBurstOnCritBlock]
+    BlockRestoresHp,              // a block/parry/shrug restores P1% max HP (Danaos) [was SelfRepairRestoresHp]
     ReflectCritStun,              // reflect damage from a blocked crit briefly stuns the attacker (Akrisios)
     HpRegenBurstOnCritTaken,      // HP regen rate triples for P1s after taking a crit (Phylakos)
     OnKillRestoreExtraHp,         // on the wearer's first kill each fight, restore an extra P1% max HP (Autonoos)
@@ -163,7 +162,7 @@ public enum ClauseType : byte
     // Tychean riders (jewelry — incoming hit halved / attacker miss-reroll)
     HitHalvedRegenPulse,             // a halved hit grants a P1s HP/stam/mana regen pulse (Ananke)
     MissRerollGrazeRestoreStam,      // a re-rolled miss that fails again still restores P1 stamina (Metis)
-    HitHalvedDurabilityImmunity,     // no durability loss for P1s after a halved hit (Nemesis)
+    HitHalvedReflectSpared,          // a shrugged (halved) hit reflects the spared half back at the attacker (Nemesis) [was HitHalvedDurabilityImmunity]
     HitHalvedResistBurst,            // a halved hit grants +P1% spell DR for P2s (Themis)
 
     // Nyxian riders (jewelry — hide/stealth)
@@ -182,7 +181,7 @@ public enum ClauseType : byte
     OnKillStamRegenBurstStacking,    // on-kill: +P1% stam regen for P2s, stacks once more on a 2nd kill, max 2 (Klotho)
     AnimalTamingSkillBonus,          // +P1 Animal Taming while worn (Lachesis)
     FrenzyStaggerChance,             // while frenzied, hits carry a P1% chance to stagger the target 1s (Atropos)
-    DurabilityLossImmunity,          // immune to durability loss while worn (Ariadne)
+    LowHpDodgeBurst,                 // once per fight below 25% HP: +P1% dodge for P2s (Ariadne) [was DurabilityLossImmunity]
     DodgeSnare,                      // a successful dodge webs the attacker: -P1% swing speed for P2s (Penelope)
 
     // Hat-bound clothing relics (family 11 — displacing-cloth cycle, 21-clothing.md §3)

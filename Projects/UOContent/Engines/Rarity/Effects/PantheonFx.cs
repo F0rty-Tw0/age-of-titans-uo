@@ -46,11 +46,8 @@ public static class PantheonFx
     public static void PlayWornProc(Mobile wearer, VariantRoot root) =>
         Play(wearer, root, IsDevotedTo(wearer, root));
 
-    private static bool IsDevotedTo(Mobile m, VariantRoot root)
-    {
-        var agg = WornEffectState.GetAggregate(m);
-        return agg.HasDevotion && agg.DevotionDomain == GetDomain(root);
-    }
+    private static bool IsDevotedTo(Mobile m, VariantRoot root) =>
+        WornEffectState.GetAggregate(m).IsDevotedTo(GetDomain(root));
 
     private static void Play(Mobile on, VariantRoot root, bool devoted)
     {

@@ -466,18 +466,17 @@ public static partial class RarityEffects
     {
         var agg = WornEffectState.GetAggregate(killer);
 
+        // B3: every on-kill restore spills its unusable remainder into health (see RestoreWithSpill),
+        // so overlapping restores in the same kill (e.g. a full-stam clause + a flat stam clause) no
+        // longer waste the second.
         if (agg.OnKillStamina > 0)
         {
-            var before = killer.Stam;
-            killer.Stam = Math.Min(killer.StamMax, killer.Stam + agg.OnKillStamina);
-            FloatingCombatText.ShowRestore(killer, 'S', killer.Stam - before);
+            RestoreWithSpill(killer, 'S', agg.OnKillStamina);
         }
 
         if (agg.OnKillHp > 0)
         {
-            var before = killer.Hits;
-            killer.Hits = Math.Min(killer.HitsMax, killer.Hits + agg.OnKillHp);
-            FloatingCombatText.ShowRestore(killer, 'L', killer.Hits - before);
+            RestoreWithSpill(killer, 'L', agg.OnKillHp);
         }
 
         var legendaries = WornEffectState.GetLegendaries(killer);
@@ -490,9 +489,7 @@ public static partial class RarityEffects
             {
                 case ClauseType.OnKillFullManaRestore: // Asteria
                     {
-                        var before = killer.Mana;
-                        killer.Mana = killer.ManaMax;
-                        FloatingCombatText.ShowRestore(killer, 'M', killer.Mana - before);
+                        RestoreWithSpill(killer, 'M', killer.ManaMax - killer.Mana);
                         break;
                     }
                 case ClauseType.OnKillStamRegenBurstStacking: // Klotho
@@ -507,10 +504,8 @@ public static partial class RarityEffects
                     }
                 case ClauseType.OnKillFullStamNextHitCrit: // Aristeia signature (via a held weapon's synthetic entry)
                     {
-                        var before = killer.Stam;
-                        killer.Stam = killer.StamMax;
+                        RestoreWithSpill(killer, 'S', killer.StamMax - killer.Stam);
                         CombatFxState.SetNextHitCrit(killer); // P1s crit window ~ a single pending crit
-                        FloatingCombatText.ShowRestore(killer, 'S', killer.Stam - before);
                         FloatingCombatText.ShowSelfStatus(killer, "Crit Ready");
                         break;
                     }

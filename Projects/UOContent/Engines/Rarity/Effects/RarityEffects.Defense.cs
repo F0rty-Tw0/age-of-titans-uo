@@ -246,10 +246,11 @@ public static partial class RarityEffects
         ClauseType.ShrugFirstHitGuaranteed, ClauseType.ShrugFirstHitPoisonAttacker,
         ClauseType.ShrugFirstHitDrainStam, ClauseType.ShrugFirstHitDrBurst, ClauseType.ShrugStunAttacker,
         ClauseType.ShrugReflect, ClauseType.ShrugReflectStun, ClauseType.HitHalvedRegenPulse,
-        ClauseType.HitHalvedDurabilityImmunity, ClauseType.HitHalvedResistBurst, ClauseType.ReflectBoostFirstHit,
+        ClauseType.HitHalvedReflectSpared, ClauseType.HitHalvedResistBurst, ClauseType.ReflectBoostFirstHit,
         ClauseType.ReflectCritStun, ClauseType.FlameProcDoubleFirstHit, ClauseType.FlameProcBoostLowHp,
-        ClauseType.FlameProcDoubleLowDurability, ClauseType.FlameProcEveryN, ClauseType.FlameProcHealBlock,
-        ClauseType.FlameProcPoison, ClauseType.FlameProcSplash, ClauseType.EmergencyRegenTick
+        ClauseType.FlameProcEveryN, ClauseType.FlameProcHealBlock,
+        ClauseType.FlameProcPoison, ClauseType.FlameProcSplash, ClauseType.EmergencyRegenTick,
+        ClauseType.ReflectBurstOnCritBlock, ClauseType.BlockRestoresHp, ClauseType.DeflectSecondaryFirstHit
     };
 
     public static int AbsorbForDefenderArmor(Mobile attacker, Mobile defender, int damage)
@@ -264,6 +265,26 @@ public static partial class RarityEffects
         }
 
         CombatFxState.RegisterHitTaken(defender, out var firstHit, out var hitCount);
+
+        // Whether this incoming hit was a crit — captured once (consumes the pending flag) so both
+        // the ReflectBurstOnCritBlock arming (shrug block) and ReflectCritStun (reflect block) read it.
+        var incomingCrit = ConsumePendingHitCrit();
+
+        // DeflectSecondaryFirstHit (Hyperbios & the re-themed armor carriers): the first hit taken
+        // each fight arms a one-shot flag that ApplyMark consumes to rebound the incoming secondary
+        // onto the attacker. Armed here (the universal armor-absorb site) so it works for the armor
+        // carriers too, not only shield users on the parry path.
+        if (firstHit)
+        {
+            for (var i = 0; i < legendaries.Count; i++)
+            {
+                if (legendaries[i].Clause == ClauseType.DeflectSecondaryFirstHit)
+                {
+                    WornEffectState.ArmSecondaryDeflect(defender);
+                    break;
+                }
+            }
+        }
 
         // ---- shrug ----
         var shrugged = agg.ShrugPct > 0 && Utility.Random(100) < agg.ShrugPct;
@@ -286,12 +307,28 @@ public static partial class RarityEffects
 
         if (shrugged)
         {
+            var preShrug = damage;
             damage /= 2;
+            var spared = preShrug - damage; // the half a shrug removed — reflected by Nemesis below
             // "Shrugged" is folded into this hit's damage number by BaseWeapon.OnHit, which consumes
             // this flag right before the main AOS.Damage. Only a plain bool is set here — the display
             // context is applied later in OnHit, so the riders' own reflect/flame damage below never
             // inherits the shrug label.
             _pendingShrugDisplay = true;
+
+            // ReflectBurstOnCritBlock (Perdix ringmail): shrugging a crit arms the reflect-doubling
+            // burst, mirroring Zethos's shield-parry arming. Consumed in the reflect section below.
+            if (incomingCrit)
+            {
+                for (var i = 0; i < legendaries.Count; i++)
+                {
+                    if (legendaries[i].Clause == ClauseType.ReflectBurstOnCritBlock)
+                    {
+                        WornEffectState.ArmClauseBurst(defender, ClauseType.ReflectBurstOnCritBlock,
+                            TimeSpan.FromSeconds(legendaries[i].P1 > 0 ? legendaries[i].P1 : 5));
+                    }
+                }
+            }
 
             for (var i = 0; i < legendaries.Count; i++)
             {
@@ -367,11 +404,23 @@ public static partial class RarityEffects
                             fxRoot = entry.Root;
                             break;
                         }
-                    case ClauseType.HitHalvedDurabilityImmunity: // Nemesis — burst armed correctly;
-                        // NOT wired into every durability-loss path (armor/weapon/clothing each
-                        // reduce HP independently across several files) — flagged in the P3b report.
+                    case ClauseType.HitHalvedReflectSpared: // Nemesis — throw the spared half back
                         {
-                            WornEffectState.ArmClauseBurst(defender, entry.Clause, TimeSpan.FromSeconds(entry.P1 > 0 ? entry.P1 : 3));
+                            if (spared > 0)
+                            {
+                                AOS.Damage(attacker, defender, spared, 100, 0, 0, 0, 0);
+                                FloatingCombatText.ShowOffensiveStatus(attacker, defender, "Reflect");
+                            }
+
+                            fxRoot = entry.Root;
+                            break;
+                        }
+                    case ClauseType.BlockRestoresHp: // Erichthonios — armor "block" (shrug) heals
+                        {
+                            var before = defender.Hits;
+                            defender.Hits = Math.Min(defender.HitsMax, defender.Hits + defender.HitsMax * (entry.P1 > 0 ? entry.P1 : 5) / 100);
+                            FloatingCombatText.ShowRestore(defender, 'L', defender.Hits - before);
+                            fxRoot = entry.Root;
                             break;
                         }
                     case ClauseType.HitHalvedResistBurst: // Themis
@@ -446,6 +495,13 @@ public static partial class RarityEffects
             }
         }
 
+        // ReflectBurstOnCritBlock (Zethos/Perdix): while the burst is active (a crit was just
+        // blocked/shrugged) reflect doubles, re-clamped to the suit-wide cap (§9.8 stays law).
+        if (reflectPct > 0 && WornEffectState.IsClauseBurstActive(defender, ClauseType.ReflectBurstOnCritBlock))
+        {
+            reflectPct = Math.Min(reflectPct * 2, WornEffectState.ReflectCap);
+        }
+
         if (reflectPct > 0 && damage > 0)
         {
             var reflectDamage = ReflectAmount(damage, reflectPct);
@@ -456,7 +512,7 @@ public static partial class RarityEffects
                 FloatingCombatText.ShowOffensiveStatus(attacker, defender, "Reflect");
             }
 
-            if (ConsumePendingHitCrit())
+            if (incomingCrit)
             {
                 for (var i = 0; i < legendaries.Count; i++)
                 {
@@ -488,12 +544,6 @@ public static partial class RarityEffects
                      IsUnderHpFraction(defender, (entry.P2 > 0 ? entry.P2 : 30) / 100.0))
             {
                 procChance = Math.Max(procChance, entry.P1); // Talos
-            }
-            else if (entry.Clause == ClauseType.FlameProcDoubleLowDurability &&
-                     defender.FindItemOnLayer<BaseShield>(Layer.TwoHanded) is { MaxHitPoints: > 0 } shield &&
-                     shield.HitPoints * 100 / shield.MaxHitPoints < (entry.P1 > 0 ? entry.P1 : 50))
-            {
-                procChance *= 2; // Amphion
             }
         }
 
@@ -578,16 +628,15 @@ public static partial class RarityEffects
     // before the Parry skill check. Registers this hit-taken for the owner so "first hit of
     // fight" and "every Nth parry" clauses share the same counter the armor absorb step uses.
     // Coverage list for the shield-parry path: AdjustShieldParryChance's guaranteed-parry checks
-    // (incl. the IsBlockClause set gated by IsShieldSourced) + FirstHitNoSecondaryEffect, and
-    // OnShieldParried's rider switch below.
+    // (incl. the IsBlockClause set gated by IsShieldSourced), and OnShieldParried's rider switch below.
     internal static readonly ClauseType[] HandledByShieldParry =
     {
         ClauseType.ParryFirstHitGuaranteed, ClauseType.ParryFirstHitGuaranteedStun, ClauseType.BlockFirstHit,
         ClauseType.BlockRestoreStam, ClauseType.BlockDrainStam, ClauseType.BlockManaLeech,
         ClauseType.BlockElemental, ClauseType.BlockNextShotCrit, ClauseType.LowHpGuaranteedParry,
-        ClauseType.FirstHitNoSecondaryEffect, ClauseType.ParryExtraReflect, ClauseType.ParryCritStun,
-        ClauseType.ParryRepairsEveryN, ClauseType.SelfRepairBurstOnCritBlock, ClauseType.ParryRestoresStam,
-        ClauseType.ExtraSwingOnParry
+        ClauseType.ParryExtraReflect, ClauseType.ParryCritStun,
+        ClauseType.ParryForcesMissEveryN, ClauseType.ReflectBurstOnCritBlock, ClauseType.ParryRestoresStam,
+        ClauseType.BlockRestoresHp, ClauseType.ExtraSwingOnParry
     };
 
     public static double AdjustShieldParryChance(Mobile owner, double chance)
@@ -616,14 +665,6 @@ public static partial class RarityEffects
             {
                 PantheonFx.PlayWornProc(owner, entry.Root);
                 return 1.0; // Ankyle / Aias / Abderos / Kerberos / Sakos
-            }
-
-            // Hyperbios: the first hit taken each fight applies no secondary effect (mark/
-            // poison). Narrowly scoped to the weapon-side Agrotera mark/poison path (ApplyMark)
-            // — a fully general "no secondary effect" across every subsystem is out of scope.
-            if (entry.Clause == ClauseType.FirstHitNoSecondaryEffect && firstHit)
-            {
-                WornEffectState.ArmSecondaryEffectSuppression(owner);
             }
         }
 
@@ -659,7 +700,15 @@ public static partial class RarityEffects
         if ((agg.ParryThorns || extraReflectPct > 0) && attacker != null)
         {
             // 5% base thorns + rider, floored to 1 so a parried weak hit still stings.
-            var reflect = ReflectAmount(Math.Max(1, damage), 5 + extraReflectPct);
+            var thornsPct = 5 + extraReflectPct;
+
+            // ReflectBurstOnCritBlock (Zethos): thorns double while the crit-block burst is active.
+            if (WornEffectState.IsClauseBurstActive(owner, ClauseType.ReflectBurstOnCritBlock))
+            {
+                thornsPct = Math.Min(thornsPct * 2, WornEffectState.ReflectCap);
+            }
+
+            var reflect = ReflectAmount(Math.Max(1, damage), thornsPct);
 
             if (reflect > 0)
             {
@@ -697,24 +746,33 @@ public static partial class RarityEffects
                         fxRoot = entry.Root;
                         break;
                     }
-                case ClauseType.ParryRepairsEveryN: // Telamon
+                case ClauseType.ParryForcesMissEveryN when attacker != null: // Telamon
                     {
-                        var n = entry.P1 > 0 ? entry.P1 : 10;
+                        var n = entry.P1 > 0 ? entry.P1 : 5;
 
                         CombatFxState.RegisterHitTaken(owner, out _, out var count);
 
-                        if (count % n == 0 && shield.HitPoints < shield.MaxHitPoints)
+                        if (count % n == 0)
                         {
-                            shield.HitPoints++;
-                            FloatingCombatText.ShowSelfStatus(owner, "Repair");
+                            // Throw the attacker off balance: their next swing automatically misses.
+                            CombatFxState.ArmForcedMiss(attacker);
+                            FloatingCombatText.ShowOffensiveStatus(attacker, owner, "Off Balance");
                             fxRoot = entry.Root;
                         }
 
                         break;
                     }
-                case ClauseType.SelfRepairBurstOnCritBlock when crit: // Zethos
+                case ClauseType.ReflectBurstOnCritBlock when crit: // Zethos
                     {
                         WornEffectState.ArmClauseBurst(owner, entry.Clause, TimeSpan.FromSeconds(entry.P1 > 0 ? entry.P1 : 5));
+                        fxRoot = entry.Root;
+                        break;
+                    }
+                case ClauseType.BlockRestoresHp: // Danaos — a parry restores max HP
+                    {
+                        var before = owner.Hits;
+                        owner.Hits = Math.Min(owner.HitsMax, owner.Hits + owner.HitsMax * (entry.P1 > 0 ? entry.P1 : 5) / 100);
+                        FloatingCombatText.ShowRestore(owner, 'L', owner.Hits - before);
                         fxRoot = entry.Root;
                         break;
                     }
