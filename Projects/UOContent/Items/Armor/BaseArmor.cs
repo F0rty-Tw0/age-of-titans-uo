@@ -1576,7 +1576,7 @@ namespace Server.Items
                 return;
             }
 
-            LabelTo(from, $"Armor Rating: {ArmorRating:0.#}");
+            LabelTo(from, $"Armor Rating: {ArmorRatingScaled:0.#}");
 
             if (_hitPoints >= 0 && _maxHitPoints > 0)
             {

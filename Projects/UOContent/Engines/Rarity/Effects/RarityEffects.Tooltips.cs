@@ -316,9 +316,13 @@ public static partial class RarityEffects
         return baseSeconds * 100.0 / (100 + swingSpeedPct);
     }
 
-    // Armor/shield effective rating — BaseArmor.ArmorRating already folds in the variant bonus AR
-    // (RarityEffects.GetBonusArmorRating) and durability scaling, so it is the live effective value.
-    private static string ArmorStatsLine(BaseArmor armor) => $"Armor: {(int)Math.Round(armor.ArmorRating)}";
+    // Armor/shield effective (scaled) rating to the player's total armor pool. Uses
+    // ArmorRatingScaled (which includes the body-position scalar, variant bonus AR from
+    // RarityEffects.GetBonusArmorRating, and durability scaling) so the tooltip matches
+    // the value that feeds PlayerMobile.ArmorRating. The raw ArmorRating is only relevant
+    // for per-hit-location absorption in the pre-AOS OnHit formula and would overstate the
+    // piece's contribution by 1x/ArmorScalar (e.g. 34 vs 12 for a bone chest).
+    private static string ArmorStatsLine(BaseArmor armor) => $"Armor: {(int)Math.Round(armor.ArmorRatingScaled)}";
 
     // The theme's short myth tag (framework §3) as the OPL effects-block header ("Ares:").
     // Tags are stored lowercase where they are concepts ("unbreakable") — capitalize uniformly so
