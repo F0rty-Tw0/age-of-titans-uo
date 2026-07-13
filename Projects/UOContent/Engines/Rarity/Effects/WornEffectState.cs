@@ -1112,9 +1112,20 @@ public static class WornEffectState
     // is no per-mobile "HP changed" event to react to instantly.
     public static void BoostResistSkill(Mobile wearer, int value)
     {
-        if (wearer != null && _resistSkillMods.TryGetValue(wearer, out var mod))
+        if (wearer == null)
+        {
+            return;
+        }
+
+        if (_resistSkillMods.TryGetValue(wearer, out var mod))
         {
             mod.Value = value;
+        }
+        else if (value > 0)
+        {
+            mod = new DefaultSkillMod(SkillName.MagicResist, "RarityResistingSpells", true, value);
+            wearer.AddSkillMod(mod);
+            _resistSkillMods[wearer] = mod;
         }
     }
 
