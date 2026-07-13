@@ -186,7 +186,7 @@ public enum ClauseType : byte
 
     // Hat-bound clothing relics (family 11 — displacing-cloth cycle, 21-clothing.md §3)
     HealsReceivedBonusPct,           // +P1% to all healing received while worn (Diadema)
-    StationaryRegenFaster,           // the hearth-calm settles after P1s instead of 10s (Kalyptra)
+    StationaryRegenFaster,           // regen while standing still kicks in after P1s instead of 10s (Kalyptra)
 
     // ---- P2 (re-theme 2026-07-07): per-family Epic signature clauses ---------------------
     // Populated only in the effect row's Signature slot (never a legendary's unique clause) by

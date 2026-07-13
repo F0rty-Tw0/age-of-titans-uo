@@ -4114,6 +4114,16 @@ namespace Server.Mobiles
         {
         }
 
+        public override void OnHitsChange(int oldValue)
+        {
+            base.OnHitsChange(oldValue);
+
+            // Refresh conditional resist-skill bonuses immediately when HP crosses
+            // clause thresholds (e.g. ResistSkillDoubleLowHp at 50%), instead of
+            // waiting for the next HP regen tick (up to ~11s).
+            WornEffectState.RefreshResistSkill(this);
+        }
+
         public override void OnSkillChange(SkillName skill, double oldBase)
         {
             if (Young && SkillsTotal >= 4500)

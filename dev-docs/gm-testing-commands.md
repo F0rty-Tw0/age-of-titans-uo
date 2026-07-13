@@ -10,8 +10,8 @@ In-game commands for exercising the rarity, loot-bag, and slot-set systems. All 
 | `[GenLegendaryFamily <family\|weaponType> [piece]` | Fills your backpack with EVERY legendary in the given family. Weapons: a family name (swords/axes/fencing) → all legendaries for that family; a weapon type (dagger/katana) → only that base type. Armor (plate/bone/leather/etc.) → one sub-bag per piece type with every legendary on that piece (e.g. 5 plate legendaries × 6 pieces = 30 items). Armor + piece (gorget/helm/chest/arms/gloves/legs) → all legendaries on that one piece. | `Commands/RarityTestCommands.cs` |
 | `[GenVariant <root> <rarity>` | Target an item → apply a root drop-variant at a rarity. Example: `[GenVariant Tritonian Epic`. | `Commands/RarityTestCommands.cs` |
 | `[ClearVariant` | Target an item → revert to plain (no root, Common, no hue/name). Re-roll friendly. | `Commands/RarityTestCommands.cs` |
-| `[GenVariantFamily <family\|weaponType> <rarity> [piece]` | Like GenLegendaryFamily but applies a root variant at the given rarity instead of a named legendary. Armor material (plate/bone) → sub-bags per piece type with every root variant at that rarity. Armor + piece → all roots on that one piece. Examples: `[GenVariantFamily plate epic`, `[GenVariantFamily bone gloves rare`, `[GenVariantFamily fencing uncommon`. | `Commands/RarityTestCommands.cs` |
-| `[GenArmorSet <material> [rarity=Epic] [root]` | Fill your backpack with a full armor set of that material. No root → the material's 5 thematic roots dealt round-robin (like real mixed drops; exercises §9.4 stacking + P5 dedupe). Explicit root → uniform set. Epic+ completes the slot-set capstone. | `Commands/RarityTestCommands.cs` |
+| `[GenVariantFamily <family\|weaponType> <rarity> [piece]` | Like GenLegendaryFamily but applies a root variant at the given rarity instead of a named legendary. Armor material (plate/bone) → sub-bags per piece type with every root variant at that rarity. Armor + piece → all roots on that one piece. Shields/jewelry/clothing → one bag, each root on a random shape. Family-wide armor (`metalarmor`/`lightarmor`) is NOT supported — roots are material-locked, name a material. Examples: `[GenVariantFamily plate epic`, `[GenVariantFamily bone gloves rare`, `[GenVariantFamily fencing uncommon`, `[GenVariantFamily shields epic`. | `Commands/RarityTestCommands.cs` |
+| `[GenArmorSet <material> [rarity=Epic] [root]` | Fill your backpack with a bag holding a full UNIFORM armor set of that material. No root → the material's 5 thematic roots rotate round-robin per call (call it 5× for all five uniform sets). Explicit root → that uniform set. Epic+ completes the slot-set capstone. | `Commands/RarityTestCommands.cs` |
 | `[GrantIchor [amount=100]` | Adds a stack of ichor (altar salvage/upgrade currency). Salvage/upgrade run through the altar — see the **Pantheon** section below. (Rates: salvage yields 2/4/8 ichor for Uncommon/Rare/Epic — **halved for a weapon/armor below half durability**; upgrade costs 20/80 to raise a themed item one tier, Epic cap.) | `Commands/RarityTestCommands.cs` |
 
 Wrong base shape on `[Legendary`? The validation message tells you what it needs ("is a shield legendary", "bound to a different clothing piece", material mismatch).
@@ -21,7 +21,7 @@ Wrong base shape on `[Legendary`? The validation message tells you what it needs
 ```
 [Legendary Skylla            ← by name
 [Legendary 211               ← same legendary by id
-[GenArmorSet plate           ← Epic mixed-root plate set → capstone "Siege-Shock" on equip
+[GenArmorSet plate           ← Epic uniform plate set (root rotates per call) → capstone "Siege-Shock" on equip
 [GenArmorSet chainmail legendary phylax   ← uniform Legendary Phylax chain set
 [GenVariant Naias Epic       ← target a LEATHER piece (material-locked root)
 [GenLegendaryFamily fencing    ← all 30 fencing legendaries (family-wide)
@@ -36,7 +36,7 @@ Wrong base shape on `[Legendary`? The validation message tells you what it needs
 
 | Command | What it does | Source |
 |---|---|---|
-| `[Add PantheonAltar` | Spawns the altar hub ("altar of the twelve", immovable shrine). Double-click within 3 tiles → gump with three flows: **Legendary Offering** (offer two legendaries of one pantheon domain → the god grants one new random legendary of that same domain, consuming both — the two-for-one Patron chase), **Salvage** (destroy an Uncommon–Epic variant for ichor), **Upgrade** (spend ichor to raise a themed item one tier, Epic cap). | `Engines/Rarity/PantheonAltar.cs` |
+| `[Add PantheonAltar` | Spawns the altar hub ("altar of the twelve", immovable shrine). Double-click within 3 tiles → gump with three flows: **Legendary Offering** (offer two legendaries from ANY domain → the gods grant one new random legendary from the offered relics' FAMILIES — dagger + kris → fencing; dagger + axe → fencing or axes — consuming both, never returning one of the two offered while other choices exist), **Salvage** (destroy an Uncommon–Epic variant for ichor), **Upgrade** (spend ichor to raise a themed item one tier, Epic cap). | `Engines/Rarity/PantheonAltar.cs` |
 | `[GrantIchor [amount=100]` | Adds a stack of ichor (the altar's salvage/upgrade currency) to your backpack. | `Commands/RarityTestCommands.cs` |
 | `[PantheonFxTest` | Plays every pantheon domain's legendary proc flourish on you, 1.5s apart (11 domains), ending with the devotion "crown" flourish — the in-client FX/sound verification pass. Chat echoes each domain, its patron god, and its perk text. | `Commands/RarityTestCommands.cs` |
 

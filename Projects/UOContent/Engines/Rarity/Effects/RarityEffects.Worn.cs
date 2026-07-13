@@ -17,7 +17,7 @@ public static partial class RarityEffects
     {
         if (item is BaseArmor or BaseJewel or BaseClothing or BaseWeapon)
         {
-            WornEffectState.Rebuild(wearer);
+            WornEffectState.Rebuild(wearer); // ends with RefreshResistSkill — base + conditional in one write
         }
     }
 
@@ -180,26 +180,6 @@ public static partial class RarityEffects
                     m.Hits += m.HitsMax * (entry.P2 > 0 ? entry.P2 : 10) / 100; // Daphne
                 }
             }
-            else if (entry.Clause == ClauseType.ResistSkillDoubleLowHp)
-            {
-                var threshold = entry.P2 > 0 ? entry.P2 : 50;
-                var boosted = m.HitsMax > 0 && m.Hits < m.HitsMax * threshold / 100;
-
-                WornEffectState.BoostResistSkill(m, boosted ? entry.P1 > 0 ? entry.P1 : 10 : agg.ResistSkillBonus); // Glaukos
-            }
-            else if (entry.Clause == ClauseType.ParaResistBoostsResistSkill)
-            {
-                var boosted = WornEffectState.IsClauseBurstActive(m, entry.Clause);
-
-                WornEffectState.BoostResistSkill(m, boosted ? entry.P1 > 0 ? entry.P1 : 10 : agg.ResistSkillBonus); // Alkathous
-            }
-            else if (entry.Clause == ClauseType.ResistSkillBoostLowHp) // Ilion
-            {
-                var threshold = entry.P2 > 0 ? entry.P2 : 50;
-                var boosted = m.HitsMax > 0 && m.Hits < m.HitsMax * threshold / 100;
-
-                WornEffectState.BoostResistSkill(m, agg.ResistSkillBonus + (boosted ? entry.P1 > 0 ? entry.P1 : 5 : 0));
-            }
             else if (entry.Clause == ClauseType.LowHpDodgeBurst && m.HitsMax > 0 && m.Hits < m.HitsMax / 4) // Ariadne
             {
                 // Once per fight below 25% health: a short dodge burst (read in AdjustHitChance).
@@ -210,6 +190,8 @@ public static partial class RarityEffects
                 }
             }
         }
+
+        WornEffectState.RefreshResistSkill(m, agg, legendaries);
     }
 
     // Talarian stam regen + Boutes' "mirrors HP regen" + dodge-regen bursts. Lasthenes' "ticks

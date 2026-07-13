@@ -6,10 +6,11 @@ using Server.Targeting;
 namespace Server.Engines.Rarity;
 
 // Altar hub for the rarity economy, three flows behind one gump (PantheonAltarGump):
-// 1. Legendary Offering — the Patron God chase: offer TWO legendaries of one pantheon domain
-//    and the god answers with ONE new legendary of that same domain (random entry, never one of
-//    the two offered while other choices exist). Both offerings are consumed — a two-for-one
-//    gamble toward the 3-piece Patron / 5-piece Exarch thresholds without touching drop rates.
+// 1. Legendary Offering — offer TWO legendaries from any domain and the gods answer with ONE
+//    new legendary drawn from the offered relics' families (dagger + kris → fencing; dagger +
+//    axe → fencing or axes). Random entry, never one of the two offered while other choices
+//    exist. Both offerings are consumed — a two-for-one gamble toward the 3-piece Patron /
+//    5-piece Exarch thresholds without touching drop rates.
 // 2. Salvage — destroy an Uncommon..Epic variant item for ichor (SalvageSystem).
 // 3. Upgrade — spend ichor to raise a themed item one tier, Epic cap (SalvageSystem).
 // GM-placed shrine decoration ([Add PantheonAltar), no state.
@@ -115,9 +116,7 @@ public partial class PantheonAltar : Item
             return;
         }
 
-        var domain = PantheonFx.GetDomain(firstEntry.Root);
-
-        from.SendMessage($"{PantheonFx.GetPatronName(domain)} listens. Offer the second legendary of the same god.");
+        from.SendMessage("The gods listen. Offer the second legendary.");
         from.BeginTarget(-1, false, TargetFlags.None, (m, secondTargeted) =>
             OnSecondOffering(m, secondTargeted, first, firstEntry)
         );
@@ -143,19 +142,11 @@ public partial class PantheonAltar : Item
             return;
         }
 
-        var domain = PantheonFx.GetDomain(firstEntry.Root);
-
-        if (PantheonFx.GetDomain(secondEntry.Root) != domain)
-        {
-            from.SendMessage($"Both relics must belong to {PantheonFx.GetPatronName(domain)}'s domain.");
-            return;
-        }
-
-        var rolled = RollDomainLegendary(domain, firstEntry.Id, secondEntry.Id);
+        var rolled = RollFamilyLegendary(firstEntry.Family, secondEntry.Family, firstEntry.Id, secondEntry.Id);
 
         if (rolled.Id == 0)
         {
-            from.SendMessage("The god has nothing else to offer for this pairing.");
+            from.SendMessage("The gods have nothing else to offer for this pairing.");
             return;
         }
 
@@ -170,6 +161,7 @@ public partial class PantheonAltar : Item
             reward.MoveToWorld(from.Location, from.Map);
         }
 
+        var domain = PantheonFx.GetDomain(rolled.Root);
         from.SendMessage($"{PantheonFx.GetPatronName(domain)} accepts the offering and grants: {rolled.Name}.");
         PantheonFx.PlayWornProc(from, rolled.Root);
     }
@@ -195,23 +187,24 @@ public partial class PantheonAltar : Item
         return true;
     }
 
-    // Uniform pick over the domain's registry entries, excluding the two offered ids so the god
-    // never hands back what was just given up (unless the domain is too small to avoid it, in
-    // which case the exclusion relaxes). Cold path — a linear registry scan is fine.
-    private static LegendaryEntry RollDomainLegendary(PantheonDomain domain, ushort excludeA, ushort excludeB)
+    // Uniform pick over the union of the two offered families' registry entries, excluding the two
+    // offered ids so the gods never hand back what was just given up (unless the pool is too small
+    // to avoid it, in which case the exclusion relaxes). Same-family pair degenerates to a single-
+    // family pool. Cold path — a linear registry scan is fine.
+    private static LegendaryEntry RollFamilyLegendary(byte familyA, byte familyB, ushort excludeA, ushort excludeB)
     {
         var entries = LegendaryRegistry.Entries;
         var count = 0;
 
         for (var pass = 0; pass < 2; pass++)
         {
-            var exclude = pass == 0; // second pass (tiny domain): allow the offered ids back in
+            var exclude = pass == 0; // second pass (tiny pool): allow the offered ids back in
 
             for (var i = 0; i < entries.Count; i++)
             {
                 var entry = entries[i];
 
-                if (PantheonFx.GetDomain(entry.Root) != domain ||
+                if (entry.Family != familyA && entry.Family != familyB ||
                     exclude && (entry.Id == excludeA || entry.Id == excludeB))
                 {
                     continue;

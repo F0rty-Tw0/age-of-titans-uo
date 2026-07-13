@@ -112,9 +112,7 @@ public static class RarityTestCommands
             {
                 foreach (var factory in f.SetPieces)
                 {
-                    var typeName = factory().GetType().Name;
-
-                    if (typeName.Contains(pieceName, StringComparison.OrdinalIgnoreCase))
+                    if (PeekTypeName(factory).Contains(pieceName, StringComparison.OrdinalIgnoreCase))
                     {
                         return factory;
                     }
@@ -123,6 +121,17 @@ public static class RarityTestCommands
         }
 
         return null;
+    }
+
+    // Reads a factory's concrete type name. Item constructors register with the world (internal
+    // map), so the probe MUST be deleted — a bare factory().GetType().Name leaks a persistent,
+    // save-serialized item per call.
+    private static string PeekTypeName(Func<Item> factory)
+    {
+        var probe = factory();
+        var name = probe.GetType().Name;
+        probe.Delete();
+        return name;
     }
 
     // ---- [Legendary <id|name>] -------------------------------------------------------------
@@ -237,21 +246,24 @@ public static class RarityTestCommands
 
             foreach (var pf in pieceFactories)
             {
-                var pieceName = pf().GetType().Name;
+                var pieceName = PeekTypeName(pf);
                 var subBag = new Bag { Name = pieceName };
                 var pieceOk = 0;
 
                 foreach (var entry in entries)
                 {
+                    Item item = null;
+
                     try
                     {
-                        var item = pf();
+                        item = pf();
                         RarityEffects.ApplyLegendary(item, entry.Id);
                         subBag.AddItem(item);
                         pieceOk++;
                     }
                     catch (Exception ex)
                     {
+                        item?.Delete(); // constructed but never bagged — would leak on the internal map
                         from.SendMessage($"Failed to mint {entry.Name} on {pieceName}: {ex.Message}");
                         totalFailed++;
                     }
@@ -262,6 +274,10 @@ public static class RarityTestCommands
                     mainBag.AddItem(subBag);
                     totalOk += pieceOk;
                 }
+                else
+                {
+                    subBag.Delete();
+                }
             }
 
             if (totalOk > 0)
@@ -270,6 +286,10 @@ public static class RarityTestCommands
                 from.SendMessage($"Added a bag with {totalOk} {e.GetString(0)} " +
                     $"legendaries across {pieceFactories.Length} piece types" +
                     (totalFailed > 0 ? $", {totalFailed} failed." : "."));
+            }
+            else
+            {
+                mainBag.Delete();
             }
 
             return;
@@ -302,15 +322,18 @@ public static class RarityTestCommands
 
         foreach (var entry in entries)
         {
+            Item item = null;
+
             try
             {
-                var item = pieceFactory != null ? pieceFactory() : LootRoller.ConstructForLegendary(entry);
+                item = pieceFactory != null ? pieceFactory() : LootRoller.ConstructForLegendary(entry);
                 RarityEffects.ApplyLegendary(item, entry.Id);
                 bag.AddItem(item);
                 ok++;
             }
             catch (Exception ex)
             {
+                item?.Delete(); // constructed but never bagged — would leak on the internal map
                 from.SendMessage($"Failed to mint {entry.Name} (#{entry.Id}): {ex.Message}");
                 failed++;
             }
@@ -320,6 +343,10 @@ public static class RarityTestCommands
         {
             from.AddToBackpack(bag);
             from.SendMessage($"Added a bag with {ok} {e.GetString(0)} legendaries{(failed > 0 ? $", {failed} failed." : ".")}");
+        }
+        else
+        {
+            bag.Delete();
         }
     }
 
@@ -404,21 +431,24 @@ public static class RarityTestCommands
 
             foreach (var pf in pieceFactories)
             {
-                var pieceName = pf().GetType().Name;
+                var pieceName = PeekTypeName(pf);
                 var subBag = new Bag { Name = $"{pieceName} ({rarity})" };
                 var pieceOk = 0;
 
                 foreach (var root in roots)
                 {
+                    Item item = null;
+
                     try
                     {
-                        var item = pf();
+                        item = pf();
                         RarityEffects.ApplyVariant(item, root, rarity);
                         subBag.AddItem(item);
                         pieceOk++;
                     }
                     catch (Exception ex)
                     {
+                        item?.Delete(); // constructed but never bagged — would leak on the internal map
                         from.SendMessage($"Failed: {root} {rarity} on {pieceName}: {ex.Message}");
                     }
                 }
@@ -428,12 +458,20 @@ public static class RarityTestCommands
                     mainBag.AddItem(subBag);
                     totalOk += pieceOk;
                 }
+                else
+                {
+                    subBag.Delete();
+                }
             }
 
             if (totalOk > 0)
             {
                 from.AddToBackpack(mainBag);
                 from.SendMessage($"Added a bag with {totalOk} {e.GetString(0)} {rarity} variants across {pieceFactories.Length} piece types.");
+            }
+            else
+            {
+                mainBag.Delete();
             }
 
             return;
@@ -458,9 +496,23 @@ public static class RarityTestCommands
             return;
         }
 
-        var weaponFactories = !isArmor && family <= LegendaryRegistry.FamilyArchery
-            ? FamilyRegistry.WeaponFamilies[family].Factories
-            : null;
+        // Roots are material-locked, so a merged cross-material root list has no single piece
+        // source that fits every root — reject up front instead of constructing doomed items.
+        if (isArmor && baseIndex < 0)
+        {
+            from.SendMessage("Family-wide armor is not supported — use a specific material " +
+                "(plate/chainmail/ringmail/leather/studded/bone).");
+            return;
+        }
+
+        var factories = pieceFactory != null ? null : GetFamilyFactories(family, baseIndex);
+
+        if (pieceFactory == null && factories.Length == 0)
+        {
+            from.SendMessage($"No item factories found for {e.GetString(0)}.");
+            return;
+        }
+
         var bagName = pieceFactory != null
             ? $"{e.GetString(0)} {e.GetString(2)} ({rarity})"
             : $"{e.GetString(0)} {rarity} ({roots.Length})";
@@ -469,23 +521,13 @@ public static class RarityTestCommands
 
         foreach (var root in roots)
         {
+            Item item = null;
+
             try
             {
-                Item item;
-
-                if (pieceFactory != null)
-                {
-                    item = pieceFactory();
-                }
-                else if (weaponFactories != null)
-                {
-                    item = weaponFactories[Utility.Random(weaponFactories.Length)]();
-                }
-                else
-                {
-                    var pf = GetPieceFactories(family, baseIndex);
-                    item = pf.Length > 0 ? pf[Utility.Random(pf.Length)]() : new Item(0x0);
-                }
+                item = pieceFactory != null
+                    ? pieceFactory()
+                    : factories[Utility.Random(factories.Length)]();
 
                 RarityEffects.ApplyVariant(item, root, rarity);
                 bag.AddItem(item);
@@ -493,6 +535,7 @@ public static class RarityTestCommands
             }
             catch (Exception ex)
             {
+                item?.Delete(); // constructed but never bagged — would leak on the internal map
                 from.SendMessage($"Failed: {root} {rarity}: {ex.Message}");
             }
         }
@@ -502,7 +545,25 @@ public static class RarityTestCommands
             from.AddToBackpack(bag);
             from.SendMessage($"Added a bag with {ok} {e.GetString(0)} {rarity} variants.");
         }
+        else
+        {
+            bag.Delete();
+        }
     }
+
+    // Random-shape construction pool for the single-bag path — every family the root selector
+    // can produce has a real item source (the old fallback built a bare Item(0x0), which
+    // ApplyVariant rejects, leaking it on the internal map and yielding an empty bag for
+    // shields/jewelry/clothing).
+    private static Func<Item>[] GetFamilyFactories(byte family, int baseIndex) => family switch
+    {
+        <= LegendaryRegistry.FamilyArchery => FamilyRegistry.WeaponFamilies[family].Factories,
+        LegendaryRegistry.FamilyMetalArmor or LegendaryRegistry.FamilyLightArmor => GetPieceFactories(family, baseIndex),
+        LegendaryRegistry.FamilyShields => FamilyRegistry.ShieldFamilyDef.ShieldFactories,
+        LegendaryRegistry.FamilyJewelry => FamilyRegistry.JewelryFamilyDef.Factories,
+        LegendaryRegistry.FamilyClothing => FamilyRegistry.ClothingFamilyDef.Factories,
+        _ => Array.Empty<Func<Item>>()
+    };
 
     // Get all variant roots (lanes) for a family/material.
     private static VariantRoot[] GetLaneRoots(byte family, int baseIndex)

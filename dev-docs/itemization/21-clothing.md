@@ -128,11 +128,11 @@ myth.
 | **Kotinos** | Laurel (Nike) | Straw hat | on-kill: full stamina, the next hit crits within 5s | the olive victory-wreath of the games |
 | **Kisseus** | Maenad (Dionysos) | Wide-brim hat | while frenzied, a 6% chance to stagger the struck target 1s | the ivy crown of the god's revelers |
 | **Diadema** | Charis (Aphrodite) | Feathered hat | +15% to all healing received while worn | the diadem of the goddess of beauty |
-| **Kalyptra** | Hestian (Hestia) | Cap | the hearth-calm settles after 5s of standing still instead of 10s | the veil of the hearth-tender |
+| **Kalyptra** | Hestian (Hestia) | Cap | regen while standing still kicks in after 5s instead of 10s | the veil of the hearth-tender |
 | **Kalathos** | Arachne (Arachne) | Straw hat | a successful dodge grants +20% stamina regen for 5s | the weaver's basket-crown |
 
-Single-click shows the proper noun (`Klotho [legendary]`); base shape (`a body sash`) appears in
-the OPL subtitle line, per naming grammar §6.
+The item name embeds the base shape (`Klotho Body Sash`, per BuildLegendaryName), so both the
+single-click label and the OPL name line carry it — there is no separate OPL subtitle line.
 
 ## 4. Legendary registry (claimed names — review pass merges these)
 
