@@ -26,7 +26,7 @@ public static class RarityConfig
     // Index = ItemRarity. Placeholder hues, tune later. Same family as LootBag.cs.
     private static readonly int[] _hues =
     {
-        0, 0x59, 0x4F2, 0x9C4, 0x501
+        0, 0x4F8, 0x4F1, 0x4FB, 0x501
     };
 
     // Index = bag level 0..10. Absolute rarity ceiling per bag level. L0/L1/L2 are
