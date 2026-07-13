@@ -447,7 +447,7 @@ public static partial class RarityEffects
             parts.Add($"vendor prices {row.VendorPricePct}% better");
         }
 
-        AddPct(parts, "chance to enter frenzy +", row.FrenzyChancePct);
+        AddPct(parts, "chance to enter frenzy when being hit +", row.FrenzyChancePct);
         AddPct(parts, "regen while standing still +", row.StationaryRegenPct);
         AddPct(parts, "chance to dodge +", row.DodgePct);
 
