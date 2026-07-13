@@ -6,9 +6,11 @@ In-game commands for exercising the rarity, loot-bag, and slot-set systems. All 
 
 | Command | What it does | Source |
 |---|---|---|
-| `[Legendary <id\|name>` | Target an item → mint it as that legendary (rarity, root, name, hue, effects). Accepts registry id or exact name, case-insensitive. Does NOT enforce global uniqueness — admin mints can duplicate. | `Commands/RarityCommands.cs` |
+| `[Legendary <id\|name>` | Target an item → mint it as that legendary (rarity, root, name, hue, effects). Accepts registry id or exact name, case-insensitive. Does NOT enforce global uniqueness — admin mints can duplicate. | `Commands/RarityTestCommands.cs` |
+| `[GenLegendaryFamily <family\|weaponType> [piece]` | Fills your backpack with EVERY legendary in the given family. Weapons: a family name (swords/axes/fencing) → all legendaries for that family; a weapon type (dagger/katana) → only that base type. Armor (plate/bone/leather/etc.) → one sub-bag per piece type with every legendary on that piece (e.g. 5 plate legendaries × 6 pieces = 30 items). Armor + piece (gorget/helm/chest/arms/gloves/legs) → all legendaries on that one piece. | `Commands/RarityTestCommands.cs` |
 | `[GenVariant <root> <rarity>` | Target an item → apply a root drop-variant at a rarity. Example: `[GenVariant Tritonian Epic`. | `Commands/RarityTestCommands.cs` |
 | `[ClearVariant` | Target an item → revert to plain (no root, Common, no hue/name). Re-roll friendly. | `Commands/RarityTestCommands.cs` |
+| `[GenVariantFamily <family\|weaponType> <rarity> [piece]` | Like GenLegendaryFamily but applies a root variant at the given rarity instead of a named legendary. Armor material (plate/bone) → sub-bags per piece type with every root variant at that rarity. Armor + piece → all roots on that one piece. Examples: `[GenVariantFamily plate epic`, `[GenVariantFamily bone gloves rare`, `[GenVariantFamily fencing uncommon`. | `Commands/RarityTestCommands.cs` |
 | `[GenArmorSet <material> [rarity=Epic] [root]` | Fill your backpack with a full armor set of that material. No root → the material's 5 thematic roots dealt round-robin (like real mixed drops; exercises §9.4 stacking + P5 dedupe). Explicit root → uniform set. Epic+ completes the slot-set capstone. | `Commands/RarityTestCommands.cs` |
 | `[GrantIchor [amount=100]` | Adds a stack of ichor (altar salvage/upgrade currency). Salvage/upgrade run through the altar — see the **Pantheon** section below. (Rates: salvage yields 2/4/8 ichor for Uncommon/Rare/Epic — **halved for a weapon/armor below half durability**; upgrade costs 20/80 to raise a themed item one tier, Epic cap.) | `Commands/RarityTestCommands.cs` |
 
@@ -22,6 +24,12 @@ Wrong base shape on `[Legendary`? The validation message tells you what it needs
 [GenArmorSet plate           ← Epic mixed-root plate set → capstone "Siege-Shock" on equip
 [GenArmorSet chainmail legendary phylax   ← uniform Legendary Phylax chain set
 [GenVariant Naias Epic       ← target a LEATHER piece (material-locked root)
+[GenLegendaryFamily fencing    ← all 30 fencing legendaries (family-wide)
+[GenLegendaryFamily dagger     ← only the 5 Dagger legendaries (by weapon type)
+[GenLegendaryFamily swords     ← all 48 swords legendaries (family-wide)
+[GenLegendaryFamily katana     ← only the 6 Katana legendaries (by weapon type)
+[GenLegendaryFamily plate      ← 5 plate legendaries × 6 piece types = 30 items in sub-bags
+[GenLegendaryFamily plate gorget ← same 5 legendaries, all on PlateGorget
 ```
 
 ## Pantheon (altar, devotion, FX)

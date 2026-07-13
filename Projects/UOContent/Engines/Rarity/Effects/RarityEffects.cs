@@ -69,6 +69,33 @@ public static partial class RarityEffects
 
         var clamped = RaritySystem.Clamp(rarity, ((IRarity)item).MaxRarity);
 
+        // Legendary rarity → resolve the matching named legendary entry.
+        // Without this, ApplyVariant at Legendary creates a generic "Kaminos Platemail Gorget
+        // [Legendary]" with root effects but no unique legendary clause or proper name.
+        if (clamped == ItemRarity.Legendary)
+        {
+            foreach (var candidate in LegendaryRegistry.Entries)
+            {
+                if (candidate.Root != root)
+                {
+                    continue;
+                }
+
+                try
+                {
+                    ValidateFamilyForItem(candidate, item);
+                    // Found a compatible legendary — delegate entirely.
+                    ApplyLegendary(item, candidate.Id);
+                    return;
+                }
+                catch (ArgumentException)
+                {
+                    // Item type doesn't match this entry; keep scanning.
+                }
+            }
+            // No matching legendary entry found — fall through to generic variant below.
+        }
+
         // A re-applied theme must not inherit the previous themed name — BuildRootName seeds
         // from item.Name, so "Zephyr Katana" would become "Zephyr Zephyr Katana". Reset to the
         // stock name (LabelNumber) whenever the item was already themed (variant re-roll, tier
