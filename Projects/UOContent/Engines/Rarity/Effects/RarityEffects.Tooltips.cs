@@ -46,8 +46,7 @@ public static partial class RarityEffects
             var (root, rarity) = ResolveRootRarity(variant, ((IRarity)item).Rarity);
             var row = ArmorEffectTable.Get(root, rarity, isShield);
 
-            list.Add(ArmorStatsLine(armor));
-            AddEffectsLines(list, root, row.IsEmpty ? null : CollectArmorEffects(row));
+            list.Add(ArmorStatsLine(armor, item, root));
 
             // Option A milestone: armor (not shields) at Epic+ shows the (material x slot)
             // signature instead of the per-root one. Shields/sub-Epic keep the row's signature.
@@ -140,9 +139,7 @@ public static partial class RarityEffects
             var (root, rarity) = ResolveRootRarity(variant, ((IRarity)item).Rarity);
             var row = ArmorEffectTable.Get(root, rarity, isShield);
 
-            AddLine(lines, ArmorStatsLine(armor));
-            AddLine(lines, DurabilityLine(armor, rarity));
-            AddLine(lines, EffectsLine(root, row.IsEmpty ? null : BuildArmorSummary(row)));
+            AddLine(lines, ArmorStatsLine(armor, item, root));
 
             // Option A milestone: same slot-table redirect as AddVariantProperties above.
             var (signature, s1, s2, s3) = !isShield && rarity >= ItemRarity.Epic
@@ -236,6 +233,7 @@ public static partial class RarityEffects
         }
     }
 
+
     // Mark-family clauses read a "+N% damage taken" value that lives on the weapon row (MarkBonusPct),
     // not in the clause params. Inject it into the clause's free p-slot before Describe runs so the
     // tooltip states the number instead of a value-less "for bonus damage". Only fills a slot the
@@ -316,13 +314,6 @@ public static partial class RarityEffects
         return baseSeconds * 100.0 / (100 + swingSpeedPct);
     }
 
-    // Armor/shield effective (scaled) rating to the player's total armor pool. Uses
-    // ArmorRatingScaled (which includes the body-position scalar, variant bonus AR from
-    // RarityEffects.GetBonusArmorRating, and durability scaling) so the tooltip matches
-    // the value that feeds PlayerMobile.ArmorRating. The raw ArmorRating is only relevant
-    // for per-hit-location absorption in the pre-AOS OnHit formula and would overstate the
-    // piece's contribution by 1x/ArmorScalar (e.g. 34 vs 12 for a bone chest).
-    private static string ArmorStatsLine(BaseArmor armor) => $"Armor: {(int)Math.Round(armor.ArmorRatingScaled)}";
 
     // The theme's short myth tag (framework §3) as the OPL effects-block header ("Ares:").
     // Tags are stored lowercase where they are concepts ("unbreakable") — capitalize uniformly so
@@ -330,6 +321,13 @@ public static partial class RarityEffects
     private static string MythTagHeader(VariantRoot root) => $"{CapFirst(VariantRootInfo.GetMythTag(root))}:";
 
     // Click-path summaries: the same parts the OPL bullets, comma-joined to fit the 5-line cap.
+    private static string ArmorStatsLine(BaseArmor armor, Item item, VariantRoot root) {
+        var set = SetLine(item, root);
+        var line = $"Armor: {(int)Math.Round(armor.ArmorRatingScaled)}";
+        if (set != null)
+            line = $"{line}, {set}";
+        return line;
+    }
     private static string BuildArmorSummary(in ArmorEffectRow row) => JoinParts(CollectArmorEffects(row));
 
     private static string BuildAccessorySummary(in AccessoryEffectRow row, Item source) =>
@@ -452,7 +450,11 @@ public static partial class RarityEffects
         }
 
         AddPct(parts, "chance to enter frenzy when being hit +", row.FrenzyChancePct);
-        AddPct(parts, "regen while standing still +", row.StationaryRegenPct);
+        if (row.StationaryRegenPct > 0)
+        {
+            var kind = row.StationaryAppliesMana ? "HP & mana regen" : "HP regen";
+            parts.Add($"{kind} while standing still +{row.StationaryRegenPct}%");
+        }
         AddPct(parts, "chance to dodge +", row.DodgePct);
 
         if (row.NightSight)
@@ -582,4 +584,66 @@ public static partial class RarityEffects
 
         return parts;
     }
-}
+
+    // ---- Set tracking (how many pieces of this root are worn) -----------------------------
+
+    // Returns a "Set (worn/total)" line for body armor whose wearer has matching pieces equipped.
+    // Null when the item is not worn or the material has no family definition.
+    private static string SetLine(Item item, VariantRoot root)
+    {
+        if (item is not BaseArmor armor || armor is BaseShield)
+        {
+            return null;
+        }
+
+        if (item.RootParent is not Mobile wearer)
+        {
+            return null;
+        }
+
+        var material = armor.MaterialType;
+
+        if (!FamilyRegistry.ArmorFamilyByMaterial.TryGetValue(material, out var family))
+        {
+            return null;
+        }
+
+        var total = family.SlotFactories.Length;
+
+        if (total <= 0)
+        {
+            return null;
+        }
+
+        var count = 0;
+        var wornItems = wearer.Items;
+
+        for (var i = 0; i < wornItems.Count; i++)
+        {
+            if (wornItems[i] is not BaseArmor wornArmor || wornArmor is BaseShield)
+            {
+                continue;
+            }
+
+            if (wornArmor.MaterialType != material)
+            {
+                continue;
+            }
+
+            if (wornArmor is not IVariantItem wornVariant)
+            {
+                continue;
+            }
+
+            var (wornRoot, _) = ResolveRootRarity(wornVariant, ((IRarity)wornArmor).Rarity);
+
+            if (wornRoot == root)
+            {
+                count++;
+            }
+        }
+
+        var rootName = VariantRootInfo.GetDisplayName(root).Capitalize();
+        return $"Set ({count}/{total} {rootName})";
+    }
+ }
