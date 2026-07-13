@@ -141,8 +141,8 @@ on top of the Epic package.
 
 A legendary is one proper noun per **material × theme** (3 materials × 5 roots = 15), not per piece
 — it drops as a random slot piece of its material (AR from §1's Legendary column for whichever slot
-it lands on). Single-click shows the proper noun (`Talos [legendary]`); base shape/slot appears in
-the OPL subtitle. Each legendary = all Epic effects of its (new) root (§2) + the unique clause below.
+it lands on). The name embeds the slot piece (`Talos Platemail Gorget [legendary]`, framework §6
+revised 2026-07-13). Each legendary = all Epic effects of its (new) root (§2) + the unique clause below.
 
 **2026-07-07 re-theme.** All 15 names and ids are **frozen** (registry is code truth,
 `LegendaryRegistry.cs` ids 186–200). Only each line's **root** moved, via the fixed per-material

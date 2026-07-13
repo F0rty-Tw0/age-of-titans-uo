@@ -17,13 +17,18 @@ public static class BuffHelper
     // duration == default => indefinite icon (removed explicitly via Remove). Otherwise the icon
     // auto-expires client- and server-side on its own timer, which is what we want for effects
     // whose game-state expires lazily (no per-effect timer to hang a RemoveBuff on).
+    //
+    // Secondary cliloc is 0 on purpose: the client renders the secondary with the SAME args as
+    // the title when no secondary args are sent (ClassicUO BuffDebuff handler), so a passthrough
+    // secondary duplicated the whole label as a second tooltip line. 0 skips that line — the
+    // tooltip stays a single "Name: benefits" line.
     public static void AddCustomBuff(
         Mobile m, BuffIcon icon, string label, TimeSpan duration = default, bool retainThroughDeath = false
     )
     {
         if (m is PlayerMobile pm)
         {
-            pm.AddBuff(new BuffInfo(icon, PassthroughCliloc, PassthroughCliloc, duration, label, retainThroughDeath));
+            pm.AddBuff(new BuffInfo(icon, PassthroughCliloc, 0, duration, label, retainThroughDeath));
         }
     }
 

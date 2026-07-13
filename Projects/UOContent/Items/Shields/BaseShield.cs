@@ -17,10 +17,12 @@ public partial class BaseShield : BaseArmor
     {
         get
         {
-            var m = Parent as Mobile;
             var ar = base.ArmorRating;
 
-            if (m != null)
+            // RootParent (not Parent) so a backpacked shield previews the same parry-scaled
+            // rating it will have when equipped — otherwise the bag tooltip shows the raw
+            // base AR and the value "collapses" the moment the shield is armed.
+            if (RootParent is Mobile m)
             {
                 return m.Skills.Parry.Value * ar / 200.0 + 1.0;
             }

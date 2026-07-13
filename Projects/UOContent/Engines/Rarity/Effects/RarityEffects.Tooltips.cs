@@ -13,8 +13,9 @@ public static partial class RarityEffects
 {
     // ---- Object property list -----------------------------------------------------------
 
-    // Adds variant OPL lines: for legendaries the base-shape subtitle (framework §6), and a
-    // compact effect summary for weapon variants. Called after RaritySystem.AddRarityProperty.
+    // Adds variant OPL lines below the item name. No base-shape subtitle: legendary names embed
+    // the base shape since BuildLegendaryName ("Labrys Double Axe"), so a LabelNumber subtitle
+    // would repeat it. Called after RaritySystem.AddRarityProperty.
     public static void AddVariantProperties(IPropertyList list, Item item)
     {
         if (item is not IVariantItem variant || variant.VariantRoot == VariantRoot.None && variant.LegendaryId == 0)
@@ -22,14 +23,8 @@ public static partial class RarityEffects
             return;
         }
 
-        if (variant.LegendaryId != 0)
-        {
-            list.Add(item.LabelNumber); // base shape subtitle, e.g. "a double axe" (framework §6)
-        }
-
         // Approved layout (2026-07-11): [stats] -> [<myth tag>: effects] -> [lane/slot signature]
-        // -> [legendary unique clause]. The OPL has no line cap, so the shape subtitle above stays
-        // its own line; the single-click mirror (LabelVariantDetails) merges it to fit the 5-line cap.
+        // -> [legendary unique clause].
         if (item is BaseWeapon weapon)
         {
             var (root, rarity) = ResolveRootRarity(variant, ((IRarity)item).Rarity);
@@ -46,7 +41,16 @@ public static partial class RarityEffects
             var (root, rarity) = ResolveRootRarity(variant, ((IRarity)item).Rarity);
             var row = ArmorEffectTable.Get(root, rarity, isShield);
 
-            list.Add(ArmorStatsLine(armor, item, root));
+            list.Add(ArmorStatsLine(armor, row));
+
+            // Set progress gets its own row on BOTH tooltip paths (user directive 2026-07-13);
+            // the single-click armor budget still holds at exactly 5 (name+stats+set+signature+legendary).
+            var set = SetLine(item);
+
+            if (set != null)
+            {
+                list.Add(set);
+            }
 
             // Option A milestone: armor (not shields) at Epic+ shows the (material x slot)
             // signature instead of the per-root one. Shields/sub-Epic keep the row's signature.
@@ -97,9 +101,9 @@ public static partial class RarityEffects
     // T2A/pre-UOTD clients never see the OPL tooltip built by AddVariantProperties — only
     // single-click overhead text, capped at 5 lines per item by the classic client (oldest dropped
     // first, which would otherwise push the item's own name off the label). Mirrors the OPL content
-    // via LabelTo instead of list.Add, but the legendary base-shape shares the effects line (rather
-    // than taking its own) so the worst case — name + stats + effects + signature clause + legendary
-    // clause — lands at exactly 5. Called from each BaseWeapon/BaseArmor/BaseJewel/BaseClothing
+    // via LabelTo instead of list.Add; the worst cases — weapon: name + stats + effects + signature
+    // + legendary clause, armor: name + stats + set + signature + legendary clause — land at
+    // exactly 5. Called from each BaseWeapon/BaseArmor/BaseJewel/BaseClothing
     // OnSingleClickPreUOTD after their existing label output.
     public static void LabelVariantDetails(Mobile from, Item item)
     {
@@ -139,7 +143,8 @@ public static partial class RarityEffects
             var (root, rarity) = ResolveRootRarity(variant, ((IRarity)item).Rarity);
             var row = ArmorEffectTable.Get(root, rarity, isShield);
 
-            AddLine(lines, ArmorStatsLine(armor, item, root));
+            AddLine(lines, ArmorStatsLine(armor, row));
+            AddLine(lines, SetLine(item)); // own line (user directive 2026-07-13); worst case is exactly 5 with name+stats+signature+legendary
 
             // Option A milestone: same slot-table redirect as AddVariantProperties above.
             var (signature, s1, s2, s3) = !isShield && rarity >= ItemRarity.Epic
@@ -320,13 +325,15 @@ public static partial class RarityEffects
     // god names and concept tags read the same way at line start ("Ares:", "Unbreakable:").
     private static string MythTagHeader(VariantRoot root) => $"{CapFirst(VariantRootInfo.GetMythTag(root))}:";
 
-    // Click-path summaries: the same parts the OPL bullets, comma-joined to fit the 5-line cap.
-    private static string ArmorStatsLine(BaseArmor armor, Item item, VariantRoot root) {
-        var set = SetLine(item, root);
-        var line = $"Armor: {(int)Math.Round(armor.ArmorRatingScaled)}";
-        if (set != null)
-            line = $"{line}, {set}";
-        return line;
+    // Stats line carries ALL lane effects, comma-joined (user directive 2026-07-13):
+    // "12 Armor, Spell damage taken -8%, +5 Magic Resistance". Set progress is a separate
+    // line on both tooltip paths.
+    private static string ArmorStatsLine(BaseArmor armor, in ArmorEffectRow row)
+    {
+        var line = $"{(int)Math.Round(armor.ArmorRatingScaled)} Armor";
+        var effects = BuildArmorSummary(row);
+
+        return effects != null ? $"{line}, {effects}" : line;
     }
     private static string BuildArmorSummary(in ArmorEffectRow row) => JoinParts(CollectArmorEffects(row));
 
@@ -339,12 +346,9 @@ public static partial class RarityEffects
     {
         var parts = new List<string>();
 
-        // Bonus AR is a flat armor value (folded into the "Armor N" stats line), not a percent — so
-        // it uses a flat "+N" form, unlike the "%" effects below.
-        if (row.BonusAr > 0)
-        {
-            parts.Add($"armor +{row.BonusAr}");
-        }
+        // Bonus AR is NOT listed here: BaseArmor.ArmorRating already folds GetBonusArmorRating
+        // in, so the "Armor: N" number the effects ride on displays it — a separate "armor +N"
+        // part would double-report it.
 
         AddPct(parts, "damage reduction +", row.DrPct);
 
@@ -361,6 +365,12 @@ public static partial class RarityEffects
         AddPct(parts, "healing received +", row.HealsReceivedPct);
         AddPct(parts, "spell damage taken -", row.SpellDrPct);
         AddPct(parts, "chance to resist paralyze +", row.ParaResistPct);
+
+        // Flat skill points (Herkos/Tritonian ward lanes at Epic+), not a percent.
+        if (row.ResistSkillBonus > 0)
+        {
+            parts.Add($"+{row.ResistSkillBonus} Magic Resistance");
+        }
         // WeightReductionPct now models a carry-capacity boost folded into the wearer's MaxWeight
         // (user directive 2026-07-12), not a reduction of the piece's own weight.
         AddPct(parts, "carry capacity +", row.WeightReductionPct);
@@ -587,9 +597,12 @@ public static partial class RarityEffects
 
     // ---- Set tracking (how many pieces of this root are worn) -----------------------------
 
-    // Returns a "Set (worn/total)" line for body armor whose wearer has matching pieces equipped.
-    // Null when the item is not worn or the material has no family definition.
-    private static string SetLine(Item item, VariantRoot root)
+    // Returns a "Set (worn/threshold)" line for body armor, mirroring the P4 capstone gate in
+    // WornEffectState.Rebuild exactly: Epic+ non-shield variant pieces of this MATERIAL (roots can
+    // mix), threshold = the family's CapstoneThreshold (min(4, slots): chainmail 3, rest 4).
+    // Null when the item is not worn, sub-Epic (it wouldn't count toward the set), or the
+    // material has no capstone.
+    private static string SetLine(Item item)
     {
         if (item is not BaseArmor armor || armor is BaseShield)
         {
@@ -601,16 +614,16 @@ public static partial class RarityEffects
             return null;
         }
 
-        var material = armor.MaterialType;
-
-        if (!FamilyRegistry.ArmorFamilyByMaterial.TryGetValue(material, out var family))
+        if (item is not IVariantItem variant ||
+            ResolveRootRarity(variant, ((IRarity)armor).Rarity).rarity < ItemRarity.Epic)
         {
             return null;
         }
 
-        var total = family.SlotFactories.Length;
+        var material = armor.MaterialType;
 
-        if (total <= 0)
+        if (!FamilyRegistry.ArmorFamilyByMaterial.TryGetValue(material, out var family) ||
+            family.CapstoneThreshold <= 0)
         {
             return null;
         }
@@ -620,30 +633,23 @@ public static partial class RarityEffects
 
         for (var i = 0; i < wornItems.Count; i++)
         {
-            if (wornItems[i] is not BaseArmor wornArmor || wornArmor is BaseShield)
+            if (wornItems[i] is not BaseArmor wornArmor || wornArmor is BaseShield ||
+                wornArmor.MaterialType != material || wornArmor is not IVariantItem wornVariant)
             {
                 continue;
             }
 
-            if (wornArmor.MaterialType != material)
-            {
-                continue;
-            }
-
-            if (wornArmor is not IVariantItem wornVariant)
-            {
-                continue;
-            }
-
-            var (wornRoot, _) = ResolveRootRarity(wornVariant, ((IRarity)wornArmor).Rarity);
-
-            if (wornRoot == root)
+            if (ResolveRootRarity(wornVariant, ((IRarity)wornArmor).Rarity).rarity >= ItemRarity.Epic)
             {
                 count++;
             }
         }
 
-        var rootName = VariantRootInfo.GetDisplayName(root).Capitalize();
-        return $"Set ({count}/{total} {rootName})";
+        // Wearing more pieces than the capstone needs (e.g. 5 plate on a 4-threshold) reads as
+        // "5/4" — clamp so a complete set always shows exactly full.
+        var shown = Math.Min(count, family.CapstoneThreshold);
+
+        // "Grave-Chill (2/4): your hits heal-block the target" (user directive 2026-07-13).
+        return $"{family.CapstoneName} ({shown}/{family.CapstoneThreshold}): {WornEffectState.CapstoneEffectText(material)}";
     }
  }

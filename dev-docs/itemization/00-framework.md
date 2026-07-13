@@ -344,8 +344,9 @@ kill (P23); "immune to disarm" → dropped (no disarm special in T2A).
 
 - Single-click: `[root] [base name] [rarity-suffix]` → `phobos battle axe [rare]`
   (suffix comes from `RarityConfig.GetSuffix`, do not bake it into `Name`).
-- Legendary single-click: `[ProperNoun] [rarity-suffix]` → `Labrys [legendary]`. Base shape shows
-  in OPL subtitle line (`a double axe`).
+- Legendary: `[ProperNoun] [BaseName] [rarity-suffix]` → `Labrys Double Axe [legendary]`
+  (BuildLegendaryName embeds the base shape in the name — revised 2026-07-13, was
+  `Labrys [legendary]` + OPL subtitle; no separate subtitle line anymore).
 - OPL order: name → rarity line (engine) → theme effects → unique clause (legendary).
 - Commons keep stock names, no root, no hue.
 

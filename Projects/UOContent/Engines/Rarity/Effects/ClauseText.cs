@@ -172,7 +172,8 @@ public static class ClauseText
         // "to", not "by" — the engine takes Math.Max(current, P1), it does not add.
         ClauseType.ParaResistBoostsSpellDr => $"resisting a paralyze reduces spell damage taken by {p1}% for {SecsOr(p2)}",
         ClauseType.ParaResistStunsAttacker => "a resisted paralyze or stun briefly stuns the attacker instead",
-        // The engine SETS the skill-mod value to P1 (BoostResistSkill), it does not add.
+        // These add their P1 on top of the base ResistSkillBonus (fully stacking, duplicates included).
+        // Active at/below P2% health, drops at P2+1% and re-applies on the next crossing.
         ClauseType.ResistSkillDoubleLowHp => $"increases Magic Resistance by {p1} while under {p2}% health",
         ClauseType.ResistSkillBoostLowHp => $"+{p1} Magic Resistance while under {p2}% health",
         ClauseType.FirstParaAutoFails => "once per fight, completely resists the first paralyze or stun",
@@ -254,7 +255,7 @@ public static class ClauseText
 
         // Hat-bound clothing relics (displacing-cloth cycle)
         ClauseType.HealsReceivedBonusPct => $"+{p1}% to all healing received while worn",
-        ClauseType.StationaryRegenFaster => $"the hearth-calm settles after {SecsOr(p1)} of standing still instead of 10 seconds",
+        ClauseType.StationaryRegenFaster => $"regen while standing still kicks in after {SecsOr(p1)} instead of 10s",
 
         // ---- P2 (re-theme 2026-07-07): per-family Epic signature clauses ---------------------
         ClauseType.RampMaxStacksSplash => $"once your consecutive-hit damage ramp is fully stacked, the hit also splashes {p1}% damage to {p2} nearby targets",

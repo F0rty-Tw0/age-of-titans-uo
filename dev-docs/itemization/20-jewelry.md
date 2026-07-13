@@ -42,8 +42,8 @@ rarity.
 ## 3. Legendaries (unique per slot × theme)
 
 Every legendary = **all Epic effects of its root** (bumped to the Legendary numbers in §2) + the
-unique clause below. Single-click shows the proper noun (`Hyperion [legendary]`); the slot shape
-appears in the OPL subtitle (`a ring`). Per framework instruction for this family, clauses stay in
+unique clause below. The name embeds the slot shape (`Hyperion Ring [legendary]`, framework §6
+revised 2026-07-13). Per framework instruction for this family, clauses stay in
 the **utility / resource-economy** lane (stamina, mana, regen, durability, resist windows) — raw
 extra damage belongs to the weapon families, not jewelry.
 

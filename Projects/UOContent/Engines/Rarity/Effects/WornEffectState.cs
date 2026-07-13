@@ -190,9 +190,22 @@ public static class WornEffectState
 
         var wornItems = wearer.Items;
 
+        // §9.4 tie-break stability: wearer.Items is equip-ordered and reorders on every
+        // unequip/re-equip, which silently moved the full-weight slot between tied same-rarity
+        // pieces (same suit, different totals after re-equipping one piece). Walk a
+        // serial-sorted copy so the fold is equip-order-independent.
+        using var sortedWorn = PooledRefList<Item>.Create();
+
         for (var i = 0; i < wornItems.Count; i++)
         {
-            var worn = wornItems[i];
+            sortedWorn.Add(wornItems[i]);
+        }
+
+        sortedWorn.Sort(static (a, b) => a.Serial.CompareTo(b.Serial));
+
+        for (var i = 0; i < sortedWorn.Count; i++)
+        {
+            var worn = sortedWorn[i];
 
             if (worn is BaseArmor armor && armor is IVariantItem armorVariant &&
                 (armorVariant.VariantRoot != VariantRoot.None || armorVariant.LegendaryId != 0))
@@ -649,7 +662,10 @@ public static class WornEffectState
             _legendaries.Remove(wearer);
         }
 
-        SyncResistSkillMod(wearer, resistSkill);
+        // Resist skill is written ONCE here, base + conditional together — a base-only write
+        // followed by a conditional re-add made the skill visibly dip and recover on every
+        // equip change while a low-HP boost was active.
+        RefreshResistSkill(wearer);
         SyncSkillMod(wearer, _hidingSkillMods, SkillName.Hiding, "RarityHiding", hidingBonus);
         SyncSkillMod(wearer, _stealthSkillMods, SkillName.Stealth, "RarityStealth", stealthBonus);
         SyncAnimalTamingSkillMod(wearer, legendaries);
@@ -706,8 +722,8 @@ public static class WornEffectState
     }
 
     // One-line description of what a completed set's capstone does (RarityEffects.WeaponHit/.Defense
-    // apply these; §P4). Feeds the capstone buff-bar readout alongside its themed name.
-    private static string CapstoneEffectText(ArmorMaterialType material) => material switch
+    // apply these; §P4). Feeds the capstone buff-bar readout and the tooltip set line.
+    internal static string CapstoneEffectText(ArmorMaterialType material) => material switch
     {
         ArmorMaterialType.Leather   => "+6% dodge",
         ArmorMaterialType.Studded   => "your hits poison the target",
@@ -756,9 +772,11 @@ public static class WornEffectState
                 // slot signatures (both Id 0, i.e. an Epic-only suit) dedupes silently, no echo.
                 var pairHasLegendary = legendaries[i].Id != 0 || legendaries[j].Id != 0;
 
-                // Source names captured BEFORE the swap collapses the pair (synthetics carry none).
-                var nameA = legendaries[i].Id != 0 ? legendaries[i].Name : null;
-                var nameB = legendaries[j].Id != 0 ? legendaries[j].Name : null;
+                // Source names captured BEFORE the swap collapses the pair. Synthetics have no
+                // item name, but the clash partner must still be visible (user directive
+                // 2026-07-13) — name them by their lane/slot root ("Talarian signature").
+                var nameA = SourceName(legendaries[i]);
+                var nameB = SourceName(legendaries[j]);
 
                 if (Beats(legendaries[j], legendaries[i]))
                 {
@@ -792,6 +810,11 @@ public static class WornEffectState
         return (offense, defense, utility);
     }
 
+    // Display name for one side of a resonating pair: the legendary's own name, or the root's
+    // display name for a synthetic lane/slot signature entry (Id 0).
+    private static string SourceName(in LegendaryEntry entry) =>
+        entry.Id != 0 ? entry.Name : $"{VariantRootInfo.GetDisplayName(entry.Root).Capitalize()} signature";
+
     // Resonance category from the clause's declared dispatch triggers (ClauseTraits — no second
     // per-clause table to drift). Offense wins over defense wins over utility for mixed clauses.
     private const ClauseTrigger OffensiveTriggers =
@@ -815,10 +838,12 @@ public static class WornEffectState
         return (triggers & DefensiveTriggers) != 0 ? 1 : 2;
     }
 
-    // Builds the full Divine Resonance buff text with per-item source names, or null when nothing
-    // resonates. B5: naming the sources ("+4% damage (Klytios + Skiron)") both explains the echo
-    // and — because SyncResonanceBuff keys on this whole string — fixes the equip bug where a
-    // same-count source swap left the old text on the bar. Cold path (equip only) — allocations fine.
+    // Builds the full Divine Resonance buff text, or null when nothing resonates. Buff-tooltip
+    // format (user directive 2026-07-13, same shape as the Patron buff): first line carries the
+    // buff name, then one line per category — "Divine Resonance, Klytios + Skiron: (+4% damage)"
+    // then "\nAlkathous + Ilion signature: (+2% damage reduction)" — so every clashing pair is
+    // named. SyncResonanceBuff keys on this whole string, so a same-count source swap still
+    // refreshes the bar. Cold path (equip only) — allocations fine.
     private static string BuildResonanceText(
         int offense, int defense, int utility, List<(int Category, string A, string B)> echoes
     )
@@ -828,31 +853,32 @@ public static class WornEffectState
             return null;
         }
 
-        var text = "Divine Resonance:";
-        var parts = 0;
+        var text = "";
 
-        if (offense > 0)
-        {
-            text += $" +{offense * 4}% damage{ResonanceSources(echoes, 0)}";
-            parts++;
-        }
+        AppendResonanceLine(ref text, echoes, 0, offense > 0 ? $"+{offense * 4}% damage" : null);
+        AppendResonanceLine(ref text, echoes, 1, defense > 0 ? $"+{defense * 2}% damage reduction" : null);
+        AppendResonanceLine(ref text, echoes, 2, utility > 0 ? $"+{utility * 10}% regen" : null);
 
-        if (defense > 0)
-        {
-            text += $"{(parts > 0 ? "," : "")} +{defense * 2}% damage reduction{ResonanceSources(echoes, 1)}";
-            parts++;
-        }
-
-        if (utility > 0)
-        {
-            text += $"{(parts > 0 ? "," : "")} +{utility * 10}% regen{ResonanceSources(echoes, 2)}";
-        }
-
-        return text;
+        return text.Length > 0 ? text : null;
     }
 
-    // " (Klytios + Skiron)" for one category, or empty if no named sources were recorded. Multiple
-    // echoes in the same category comma-join their names.
+    private static void AppendResonanceLine(
+        ref string text, List<(int Category, string A, string B)> echoes, int category, string bonus
+    )
+    {
+        if (bonus == null)
+        {
+            return;
+        }
+
+        var sources = ResonanceSources(echoes, category);
+        var line = sources.Length > 0 ? $"{sources}: ({bonus})" : $"({bonus})";
+
+        text += text.Length > 0 ? $"\n{line}" : $"Divine Resonance, {line}";
+    }
+
+    // "Klytios + Skiron" for one category — each clashing pair joined with " + ", multiple pairs
+    // in the same category joined with ", ". Empty only if no echo of this category was recorded.
     private static string ResonanceSources(List<(int Category, string A, string B)> echoes, int category)
     {
         if (echoes == null)
@@ -860,7 +886,7 @@ public static class WornEffectState
             return "";
         }
 
-        var names = new List<string>();
+        var pairs = new List<string>();
 
         foreach (var (cat, a, b) in echoes)
         {
@@ -869,18 +895,20 @@ public static class WornEffectState
                 continue;
             }
 
-            if (!string.IsNullOrEmpty(a))
-            {
-                names.Add(a);
-            }
+            var hasA = !string.IsNullOrEmpty(a);
+            var hasB = !string.IsNullOrEmpty(b);
 
-            if (!string.IsNullOrEmpty(b))
+            if (hasA && hasB)
             {
-                names.Add(b);
+                pairs.Add($"{a} + {b}");
+            }
+            else if (hasA || hasB)
+            {
+                pairs.Add(hasA ? a : b);
             }
         }
 
-        return names.Count > 0 ? $" ({string.Join(" + ", names)})" : "";
+        return string.Join(", ", pairs);
     }
 
     // Keeps the indefinite Divine Resonance buff icon in step with the rebuilt aggregate — same
@@ -946,7 +974,11 @@ public static class WornEffectState
             var title = exarch ? "Exarch of " : "";
             var perk = ExarchPerkText(domain, exarch);
 
-            text += text.Length > 0 ? $", {title}{patron} ({perk})" : $"Patron: {title}{patron} ({perk})";
+            // Buff-tooltip format (user directive 2026-07-13): first line carries the buff name,
+            // every further pledged pantheon gets its own line — "Patron, Ares: (+8% damage)"
+            // then "\nHephaestus: (+20% regen)". The label is a cliloc passthrough, so '\n'
+            // reaches the client verbatim and renders as a tooltip line break.
+            text += text.Length > 0 ? $"\n{title}{patron}: ({perk})" : $"Patron, {title}{patron}: ({perk})";
 
             if (overhead.Length == 0)
             {
@@ -1107,26 +1139,63 @@ public static class WornEffectState
         }
     }
 
-    // Glaukos: overrides the synced Resisting Spells bonus with a conditional value (e.g. while
-    // below 50% HP), checked each HP-regen tick by RarityEffects.AdjustHitsRegenRate since there
-    // is no per-mobile "HP changed" event to react to instantly.
-    public static void BoostResistSkill(Mobile wearer, int value)
+    // Computes the effective Resisting Spells bonus from base aggregate + conditional clauses
+    // and writes it as ONE skill-mod update (the single writer for _resistSkillMods besides
+    // Evict). All active clauses stack additively on top of the base, including duplicates of
+    // the same type across items. Low-HP clauses hold at/below their threshold % (e.g. on at
+    // <=50%, off at >=51%) and re-apply every time HP crosses back down — no once-only latch.
+    // Called from OnHitsChange, the regen tick, and the end of Rebuild.
+    internal static void RefreshResistSkill(Mobile wearer, in WornAggregate agg, IReadOnlyList<LegendaryEntry> legendaries)
     {
         if (wearer == null)
         {
             return;
         }
 
-        if (_resistSkillMods.TryGetValue(wearer, out var mod))
+        var conditional = 0;
+        var count = legendaries?.Count ?? 0;
+
+        for (var i = 0; i < count; i++)
         {
-            mod.Value = value;
+            var entry = legendaries[i];
+
+            switch (entry.Clause)
+            {
+                case ClauseType.ResistSkillDoubleLowHp: // Glaukos
+                case ClauseType.ResistSkillBoostLowHp:  // Ilion
+                {
+                    var threshold = entry.P2 > 0 ? entry.P2 : 50;
+
+                    if (wearer.HitsMax > 0 && wearer.Hits * 100 <= wearer.HitsMax * threshold)
+                    {
+                        var fallback = entry.Clause == ClauseType.ResistSkillDoubleLowHp ? 10 : 5;
+                        conditional += entry.P1 > 0 ? entry.P1 : fallback;
+                    }
+
+                    break;
+                }
+                case ClauseType.ParaResistBoostsResistSkill when IsClauseBurstActive(wearer, entry.Clause):
+                {
+                    conditional += entry.P1 > 0 ? entry.P1 : 10; // Alkathous
+                    break;
+                }
+            }
         }
-        else if (value > 0)
+
+        SyncResistSkillMod(wearer, agg.ResistSkillBonus + conditional);
+    }
+
+    // Public convenience wrapper that fetches aggregate and legendaries from the cache.
+    public static void RefreshResistSkill(Mobile wearer)
+    {
+        if (wearer == null)
         {
-            mod = new DefaultSkillMod(SkillName.MagicResist, "RarityResistingSpells", true, value);
-            wearer.AddSkillMod(mod);
-            _resistSkillMods[wearer] = mod;
+            return;
         }
+
+        var agg = GetAggregate(wearer);
+        var legendaries = GetLegendaries(wearer);
+        RefreshResistSkill(wearer, agg, legendaries);
     }
 
     public static void ArmClauseBurst(Mobile wearer, ClauseType clause, TimeSpan duration)

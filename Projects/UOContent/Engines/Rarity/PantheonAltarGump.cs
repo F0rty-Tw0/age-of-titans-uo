@@ -46,7 +46,7 @@ public class PantheonAltarGump : StaticGump<PantheonAltarGump>
 
         builder.AddButton(25, 62, 4005, 4007, ButtonOffering);
         builder.AddHtml(65, 60, 335, 22, "<BASEFONT color=#FFFFFF>Legendary Offering</BASEFONT>");
-        builder.AddHtml(65, 80, 335, 22, "<BASEFONT size=4 color=#CCCCCC>Trade two relics of one god for another of that domain.</BASEFONT>");
+        builder.AddHtml(65, 80, 335, 22, "<BASEFONT size=4 color=#CCCCCC>Trade two relics for another of the offered families.</BASEFONT>");
 
         builder.AddButton(25, 117, 4005, 4007, ButtonSalvage);
         builder.AddHtml(65, 115, 335, 22, "<BASEFONT color=#FFFFFF>Salvage</BASEFONT>");
