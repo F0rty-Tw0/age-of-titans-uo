@@ -713,7 +713,7 @@ public static class WornEffectState
         ArmorMaterialType.Studded   => "your hits poison the target",
         ArmorMaterialType.Bone      => "your hits heal-block the target",
         ArmorMaterialType.Ringmail  => "+8% reflect while struck",
-        ArmorMaterialType.Chainmail => "damage reduction rises to its maximum for 5s after you take a crit",
+        ArmorMaterialType.Chainmail => "damage reduction is increased to its maximum for 5s after you take a crit",
         ArmorMaterialType.Plate     => "your hits briefly stun the target",
         _                           => "full set bonus"
     };
