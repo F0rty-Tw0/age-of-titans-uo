@@ -148,7 +148,7 @@ public static partial class RarityEffects
         }
 
         item.Hue = entry.Hue != 0 ? entry.Hue : VariantRootInfo.GetBodyHue(entry.Root, ItemRarity.Legendary);
-        item.Name = entry.Name;
+        item.Name = BuildLegendaryName(item, entry.Name);
         ResetArmorWeight(item);
         item.InvalidateProperties();
     }
@@ -295,6 +295,13 @@ public static partial class RarityEffects
         var rootName = VariantRootInfo.GetDisplayName(root).Capitalize();
 
         return string.IsNullOrEmpty(baseName) ? rootName : $"{rootName} {baseName}";
+    }
+
+    private static string BuildLegendaryName(Item item, string legendaryName)
+    {
+        var baseName = Localization.GetText(item.LabelNumber)?.ToLowerInvariant().Capitalize();
+
+        return string.IsNullOrEmpty(baseName) ? legendaryName : $"{legendaryName} {baseName}";
     }
 
     // Set immediately before AbsorbDamage runs (BaseWeapon.OnHit) so the armor/shield absorb
