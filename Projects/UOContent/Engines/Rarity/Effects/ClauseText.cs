@@ -173,7 +173,7 @@ public static class ClauseText
         ClauseType.ParaResistBoostsSpellDr => $"resisting a paralyze reduces spell damage taken by {p1}% for {SecsOr(p2)}",
         ClauseType.ParaResistStunsAttacker => "a resisted paralyze or stun briefly stuns the attacker instead",
         // The engine SETS the skill-mod value to P1 (BoostResistSkill), it does not add.
-        ClauseType.ResistSkillDoubleLowHp => $"Magic Resistance rises to +{p1} while under {p2}% health",
+        ClauseType.ResistSkillDoubleLowHp => $"increases Magic Resistance by {p1} while under {p2}% health",
         ClauseType.ResistSkillBoostLowHp => $"+{p1} Magic Resistance while under {p2}% health",
         ClauseType.FirstParaAutoFails => "once per fight, completely resists the first paralyze or stun",
         ClauseType.SpellDrVsPoisonDot => "your spell damage reduction also applies to poison damage over time",
