@@ -34,9 +34,11 @@ public static class LootRoller
     // ---- Rarity weight table (framework §8, proposal — tune live) ------------------------
     // Index = bag level 0..10, columns = Common/Uncommon/Rare/Epic/Legendary. The ceiling is
     // re-applied via RarityConfig.MaxRarityForBagLevel after the roll as a defensive second gate.
-    // User directive 2026-07-08: no Commons from bags; floors — L0-4 Uncommon, L5-9 Rare, L10
-    // Epic. Ceilings (RarityConfig.MaxRarityForBagLevel) are ≥ the floor at every level, so the
-    // defensive ceiling clamp can never push a roll below its floor.
+    // User directive 2026-07-08: no Commons from bags; floors — L0-4 Uncommon, L5-8 Rare, L9
+    // Epic, L10 Legendary. Ceilings (RarityConfig.MaxRarityForBagLevel) are ≥ the floor at every
+    // level, so the defensive ceiling clamp can never push a roll below its floor.
+    // User directive 2026-07-14: bag 10 = GUARANTEED Legendary (L10 mobs are brutal; dupes are
+    // fine — Divine Resonance echoes them); bag 9 takes bag 10's old 90/10 Epic/Legendary split.
     private static readonly int[][] _rarityWeights =
     {
         new[] { 0, 100, 0, 0, 0 },
@@ -48,8 +50,8 @@ public static class LootRoller
         new[] { 0, 0, 75, 25, 0 },
         new[] { 0, 0, 66, 30, 4 },
         new[] { 0, 0, 55, 39, 6 },
-        new[] { 0, 0, 40, 52, 8 },
-        new[] { 0, 0, 0, 90, 10 }
+        new[] { 0, 0, 0, 90, 10 },
+        new[] { 0, 0, 0, 0, 100 }
     };
 
     // ---- Category weights (tunable placeholder, not framework-fixed) ----------------------

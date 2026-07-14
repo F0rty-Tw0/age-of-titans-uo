@@ -10,7 +10,8 @@ public class LevelConfigTests
 {
     [Theory]
     [InlineData(0, 0)]
-    [InlineData(1, 1)] // TESTING: L1 at FirstLevelXP = 1
+    [InlineData(3749, 0)]
+    [InlineData(3750, 1)] // real curve: FirstLevelXP knob deleted 2026-07-14, L1 costs 3750
     [InlineData(13749, 1)]
     [InlineData(13750, 2)]
     [InlineData(36249, 2)]
@@ -26,7 +27,7 @@ public class LevelConfigTests
     }
 
     [Theory]
-    [InlineData(1, 1)] // TESTING: FirstLevelXP knob, production 3750
+    [InlineData(1, 3750)] // real curve: FirstLevelXP knob deleted 2026-07-14
     [InlineData(2, 13750)]
     [InlineData(3, 36250)]
     [InlineData(5, 138750)]

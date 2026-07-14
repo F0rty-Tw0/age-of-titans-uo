@@ -15,6 +15,7 @@ public static class LevelTestCommands
         CommandSystem.Register("SetLevel", AccessLevel.GameMaster, SetLevel_OnCommand);
         CommandSystem.Register("GiveXP", AccessLevel.GameMaster, GiveXP_OnCommand);
         CommandSystem.Register("NewbieBarrow", AccessLevel.GameMaster, NewbieBarrow_OnCommand);
+        CommandSystem.Register("GoDungeon", AccessLevel.GameMaster, GoDungeon_OnCommand);
     }
 
     [Usage("SetLevel <0-10>")]
@@ -89,5 +90,36 @@ public static class LevelTestCommands
         }
 
         from.SendMessage("No newbie dungeon region with a GoLocation found.");
+    }
+
+    [Usage("GoDungeon <name>")]
+    [Description(
+        "Teleports you to a ladder dungeon's GoLocation by partial region name, e.g. " +
+        "[GoDungeon tholos, [GoDungeon stygian (dev-docs/dungeon-ladder.md)."
+    )]
+    private static void GoDungeon_OnCommand(CommandEventArgs e)
+    {
+        var from = e.Mobile;
+
+        if (e.Length != 1)
+        {
+            from.SendMessage("Usage: [GoDungeon <name> — e.g. tholos, cinder, wildwood, aerie, stygian");
+            return;
+        }
+
+        var query = e.GetString(0);
+
+        foreach (var region in Region.Regions)
+        {
+            if (region is ThemedDungeonRegion && region.GoLocation != Point3D.Zero &&
+                region.Name?.InsensitiveContains(query) == true)
+            {
+                from.MoveToWorld(region.GoLocation, region.Map);
+                from.SendMessage($"Teleported to {region.Name}.");
+                return;
+            }
+        }
+
+        from.SendMessage($"No themed dungeon region matching '{query}' with a GoLocation found.");
     }
 }
