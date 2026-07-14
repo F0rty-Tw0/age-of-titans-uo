@@ -3038,11 +3038,23 @@ namespace Server.Mobiles
 
                     if (Utility.RandomDouble() < Engines.LootBags.LootBagConfig.ChanceForMobLevel(bagLevel))
                     {
-                        var lootBag = new LootBag(bagLevel);
-
                         // Announce happens when the bag is opened (LootBag.OnDoubleClick), so
-                        // the roll no longer needs the killer.
-                        lootBag.DropItem(Engines.LootBags.LootRoller.Roll(bagLevel));
+                        // the roll no longer needs the killer. Themed families drop their god's
+                        // bag (contents god-locked) 70% of the time — 30-pantheon-bags.md §2.
+                        LootBag lootBag;
+
+                        if (Engines.LootBags.PantheonLootMap.TryGetDomain(this, out var domain) &&
+                            Utility.RandomDouble() < Engines.LootBags.LootBagConfig.ThemedBagChance)
+                        {
+                            lootBag = new LootBag(bagLevel, domain);
+                            lootBag.DropItem(Engines.LootBags.LootRoller.Roll(bagLevel, domain));
+                        }
+                        else
+                        {
+                            lootBag = new LootBag(bagLevel);
+                            lootBag.DropItem(Engines.LootBags.LootRoller.Roll(bagLevel));
+                        }
+
                         PackItem(lootBag);
                     }
                 }

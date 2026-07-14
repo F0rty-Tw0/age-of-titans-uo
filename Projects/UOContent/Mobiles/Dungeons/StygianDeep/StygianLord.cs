@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ModernUO.Serialization;
+using Server.Engines.Rarity;
 using Server.Items;
 
 namespace Server.Mobiles;
@@ -85,8 +86,8 @@ public partial class StygianLord : DungeonElite
     {
         base.OnDeath(c); // guaranteed bag 10 + telegraph via DungeonElite
 
-        var bag = new LootBag(9);
-        bag.DropItem(Engines.LootBags.LootRoller.Roll(9));
+        var bag = new LootBag(9, PantheonDomain.Underworld);
+        bag.DropItem(Engines.LootBags.LootRoller.Roll(9, PantheonDomain.Underworld));
         c.DropItem(bag);
     }
 

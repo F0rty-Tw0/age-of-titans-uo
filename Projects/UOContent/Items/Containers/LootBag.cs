@@ -4,7 +4,7 @@ using Server.Engines.Rarity;
 
 namespace Server.Items;
 
-[SerializationGenerator(0)]
+[SerializationGenerator(1)]
 public partial class LootBag : BaseContainer
 {
     // Index = level 0..10. Placeholder hues, tune later.
@@ -16,13 +16,33 @@ public partial class LootBag : BaseContainer
     [SerializableField(0)]
     private int _level;
 
+    // -1 = generic bag (no pantheon mark); otherwise a cast PantheonDomain value.
+    [SerializableField(1)]
+    private sbyte _domainRaw = -1;
+
     [Constructible]
-    public LootBag(int level = 0) : base(0xE76)
+    public LootBag(int level = 0) : this(level, null)
+    {
+    }
+
+    public LootBag(int level, PantheonDomain? domain) : base(0xE76)
     {
         _level = Math.Clamp(level, 0, 10);
-        Name = "a loot bag";
-        Hue = _hues[_level];
+        _domainRaw = domain.HasValue ? (sbyte)domain.Value : (sbyte)-1;
+
+        if (domain.HasValue)
+        {
+            Name = $"a loot bag of {PantheonFx.GetPatronName(domain.Value)}";
+            Hue = PantheonFx.SampleHue(domain.Value);
+        }
+        else
+        {
+            Name = "a loot bag";
+            Hue = _hues[_level];
+        }
     }
+
+    public PantheonDomain? Domain => _domainRaw < 0 ? null : (PantheonDomain)_domainRaw;
 
     public override double DefaultWeight => 2.0;
 
@@ -73,5 +93,16 @@ public partial class LootBag : BaseContainer
     {
         base.GetProperties(list);
         list.Add(1060658, $"{"level"}\t{_level}"); // ~1_val~: ~2_val~ — literal must be a hole
+
+        if (Domain is { } domain)
+        {
+            list.Add(1060659, $"{"pantheon"}\t{PantheonFx.GetPatronName(domain)}");
+        }
+    }
+
+    private void MigrateFrom(V0Content content)
+    {
+        _level = content.Level;
+        _domainRaw = -1;
     }
 }

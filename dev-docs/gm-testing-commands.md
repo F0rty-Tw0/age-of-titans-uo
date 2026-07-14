@@ -47,6 +47,7 @@ Wrong base shape on `[Legendary`? The validation message tells you what it needs
 | Command | What it does | Source |
 |---|---|---|
 | `[LootTest <level 0-10> [count≤100]` | Creates loot bags of the given level, each filled by `LootRoller.Roll` (the production drop path). | `Commands/LootTest.cs` |
+| `[LootBag <level 0-10> [god\|domain] [count≤100]` | Creates pantheon-themed bags (god name + hue, contents 100% god-locked), e.g. `[LootBag 7 Poseidon 5`. Accepts god (`Poseidon`) or domain (`Sea`); omit for a generic bag. | `Commands/LootTest.cs` |
 
 Bag level drives the rarity weight table (level 0 ≈ Common-heavy … level 9 = 90/10 Epic/Legendary … level 10 = guaranteed Legendary) — see `Engines/LootBags/LootRoller.cs` and `RarityConfig.MaxRarityForBagLevel`. Per-dungeon drop sources: `dev-docs/loot-and-drops.md`.
 
@@ -89,9 +90,6 @@ Bag level drives the rarity weight table (level 0 ≈ Common-heavy … level 9 =
 
 **GM smoke script — newbie dungeon**
 
-1. `[NewbieBarrow` — teleport to the entrance.
-2. `[SetLevel 0` — confirm the entry gate lets you through at level 0.
-3. Single-click each mob type — verify `[lvl N]` tag hues match the level gap (yellow for L1/L2 mobs vs. a level-0 character, red inside the elite depth).
 4. Kill a few trash mobs — confirm XP gain messages and watch for the loot-bag sparkle telegraph (not guaranteed at trash level).
 5. `[SetLevel 3` — enter the elite chamber and kill one elite — confirm the guaranteed bag-2 drop + corpse sparkle/sound telegraph fire every time.
 6. `[GiveXP <amount>` repeatedly to cross level 4 — confirm the bolt effect, the Ferryman's Coin grant (once only — re-run and confirm no duplicate), and that re-entering the dungeon at level 4+ ejects you back to the entrance with the "outgrown it" message.

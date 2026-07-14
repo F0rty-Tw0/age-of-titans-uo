@@ -1,6 +1,8 @@
 # Pantheon Loot Bags — Targeted Farming (Spec)
 
-Status: **approved design 2026-07-14** — implementation pending.
+Status: **bag system IMPLEMENTED 2026-07-15** (§2 drop rules, §3 map → `PantheonLootMap`, §4 bag
+identity → `LootBag` v1, §5 roll → `LootRoller.Roll(bagLevel, domain)`, §7 wiring, §9 `[LootBag`
+GM command; tests green). **§6 god sanctums NOT yet built** — content expansion pending.
 Consumer of: `LootBag`, `LootRoller`, `PantheonFx.GetDomain`, `LegendaryRegistry`, the bestiary
 family prefixes (`dev-docs/beast-reference.md`). Owns one new map (creature family → domain) and
 the **god-sanctum content expansion** (§6). Framework (`00-framework.md`) stays law; this doc adds
