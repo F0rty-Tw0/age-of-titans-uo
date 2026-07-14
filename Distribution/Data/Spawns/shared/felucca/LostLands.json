@@ -12,10 +12,10 @@
     "homeRange": 40,
     "walkingRange": 75,
     "entries": [
-      { "name": "IceSerpent", "maxCount": 4, "probability": 100 },
-      { "name": "IceSnake", "maxCount": 8, "probability": 100 },
-      { "name": "FrostTroll", "maxCount": 4, "probability": 100 },
-      { "name": "SnowElemental", "maxCount": 4, "probability": 100 },
+      { "name": "RimeSerpent", "maxCount": 4, "probability": 100 },
+      { "name": "RimeSerpent", "maxCount": 8, "probability": 100 },
+      { "name": "RimeGiant", "maxCount": 4, "probability": 100 },
+      { "name": "RimeElemental", "maxCount": 4, "probability": 100 },
       { "name": "WhiteWolf", "maxCount": 5, "probability": 100 },
       { "name": "Walrus", "maxCount": 5, "probability": 100 }
     ]
@@ -33,11 +33,11 @@
     "homeRange": 5,
     "walkingRange": 25,
     "entries": [
-      { "name": "OphidianMatriarch", "maxCount": 1, "probability": 100 },
-      { "name": "OphidianArchmage", "maxCount": 1, "probability": 100 },
-      { "name": "OphidianMage", "maxCount": 1, "probability": 100 },
-      { "name": "OphidianKnight", "maxCount": 2, "probability": 100 },
-      { "name": "OphidianWarrior", "maxCount": 2, "probability": 100 }
+      { "name": "OphianArchpriest", "maxCount": 1, "probability": 100 },
+      { "name": "OphianArchpriest", "maxCount": 1, "probability": 100 },
+      { "name": "OphianPriest", "maxCount": 1, "probability": 100 },
+      { "name": "OphianKnight", "maxCount": 2, "probability": 100 },
+      { "name": "OphianReaver", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -54,8 +54,8 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Horse", "maxCount": 4, "probability": 100 },
-      { "name": "Orc", "maxCount": 8, "probability": 100 },
-      { "name": "OrcishLord", "maxCount": 4, "probability": 100 },
+      { "name": "LykaiWretch", "maxCount": 8, "probability": 100 },
+      { "name": "LykaiRaider", "maxCount": 4, "probability": 100 },
       { "name": "GreatHart", "maxCount": 4, "probability": 100 },
       { "name": "Hind", "maxCount": 16, "probability": 100 },
       { "name": "RidableLlama", "maxCount": 4, "probability": 100 }
@@ -91,9 +91,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -109,12 +109,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -130,12 +130,12 @@
     "homeRange": 65,
     "walkingRange": 75,
     "entries": [
-      { "name": "HellHound", "maxCount": 8, "probability": 100 },
-      { "name": "LavaLizard", "maxCount": 8, "probability": 100 },
-      { "name": "FireElemental", "maxCount": 10, "probability": 100 },
-      { "name": "Efreet", "maxCount": 4, "probability": 100 },
-      { "name": "HellCat", "maxCount": 6, "probability": 100 },
-      { "name": "LavaSerpent", "maxCount": 8, "probability": 100 }
+      { "name": "PyreHound", "maxCount": 8, "probability": 100 },
+      { "name": "PyreCrawler", "maxCount": 8, "probability": 100 },
+      { "name": "PyreEmberling", "maxCount": 10, "probability": 100 },
+      { "name": "PyreEfreet", "maxCount": 4, "probability": 100 },
+      { "name": "PyreCinderrat", "maxCount": 6, "probability": 100 },
+      { "name": "PyreSerpent", "maxCount": 8, "probability": 100 }
     ]
   },
   {
@@ -151,12 +151,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -190,12 +190,12 @@
     "homeRange": 80,
     "walkingRange": 80,
     "entries": [
-      { "name": "Imp", "maxCount": 3, "probability": 100 },
-      { "name": "Scorpion", "maxCount": 3, "probability": 100 },
+      { "name": "PyreCinderrat", "maxCount": 3, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 3, "probability": 100 },
       { "name": "DesertOstard", "maxCount": 1, "probability": 100 },
-      { "name": "Orc", "maxCount": 3, "probability": 100 },
-      { "name": "OrcishLord", "maxCount": 2, "probability": 100 },
-      { "name": "Wyvern", "maxCount": 1, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 3, "probability": 100 },
+      { "name": "LykaiRaider", "maxCount": 2, "probability": 100 },
+      { "name": "DrakonSerpentling", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -214,8 +214,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -232,10 +232,10 @@
     "homeRange": 25,
     "walkingRange": 30,
     "entries": [
-      { "name": "Wyvern", "maxCount": 2, "probability": 100 },
-      { "name": "Drake", "maxCount": 4, "probability": 100 },
-      { "name": "Imp", "maxCount": 1, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 2, "probability": 100 }
+      { "name": "DrakonSerpentling", "maxCount": 2, "probability": 100 },
+      { "name": "DrakonScaleHound", "maxCount": 4, "probability": 100 },
+      { "name": "PyreCinderrat", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -253,9 +253,9 @@
     "entries": [
       { "name": "Gorilla", "maxCount": 6, "probability": 100 },
       { "name": "Panther", "maxCount": 6, "probability": 100 },
-      { "name": "GiantSerpent", "maxCount": 6, "probability": 100 },
-      { "name": "SilverSerpent", "maxCount": 1, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 6, "probability": 100 }
+      { "name": "MireSerpentspawn", "maxCount": 6, "probability": 100 },
+      { "name": "MireSerpentspawn", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 6, "probability": 100 }
     ]
   },
   {
@@ -292,8 +292,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -335,12 +335,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -357,9 +357,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -378,8 +378,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -396,7 +396,7 @@
     "homeRange": 15,
     "walkingRange": 25,
     "entries": [
-      { "name": "Cyclops", "maxCount": 5, "probability": 100 },
+      { "name": "PeakCyclops", "maxCount": 5, "probability": 100 },
       { "name": "Titan", "maxCount": 3, "probability": 100 }
     ]
   },
@@ -413,12 +413,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -459,12 +459,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -505,12 +505,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -529,8 +529,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -550,8 +550,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -570,9 +570,9 @@
     "entries": [
       { "name": "Gorilla", "maxCount": 10, "probability": 100 },
       { "name": "Panther", "maxCount": 10, "probability": 100 },
-      { "name": "GiantSerpent", "maxCount": 10, "probability": 100 },
-      { "name": "SilverSerpent", "maxCount": 2, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 10, "probability": 100 }
+      { "name": "MireSerpentspawn", "maxCount": 10, "probability": 100 },
+      { "name": "MireSerpentspawn", "maxCount": 2, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 10, "probability": 100 }
     ]
   },
   {
@@ -589,8 +589,8 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Horse", "maxCount": 4, "probability": 100 },
-      { "name": "Orc", "maxCount": 8, "probability": 100 },
-      { "name": "OrcishLord", "maxCount": 4, "probability": 100 },
+      { "name": "LykaiWretch", "maxCount": 8, "probability": 100 },
+      { "name": "LykaiRaider", "maxCount": 4, "probability": 100 },
       { "name": "GreatHart", "maxCount": 4, "probability": 100 },
       { "name": "Hind", "maxCount": 16, "probability": 100 },
       { "name": "RidableLlama", "maxCount": 4, "probability": 100 }
@@ -609,7 +609,7 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Mongbat", "maxCount": 4, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 4, "probability": 100 },
       { "name": "GreatHart", "maxCount": 1, "probability": 100 }
     ]
   },
@@ -651,9 +651,9 @@
     "homeRange": 30,
     "walkingRange": 60,
     "entries": [
-      { "name": "IceSerpent", "maxCount": 6, "probability": 100 },
-      { "name": "IceSnake", "maxCount": 10, "probability": 100 },
-      { "name": "SnowElemental", "maxCount": 3, "probability": 100 },
+      { "name": "RimeSerpent", "maxCount": 6, "probability": 100 },
+      { "name": "RimeSerpent", "maxCount": 10, "probability": 100 },
+      { "name": "RimeElemental", "maxCount": 3, "probability": 100 },
       { "name": "WhiteWolf", "maxCount": 3, "probability": 100 },
       { "name": "Walrus", "maxCount": 3, "probability": 100 },
       { "name": "PolarBear", "maxCount": 3, "probability": 100 }
@@ -673,9 +673,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -692,9 +692,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -728,12 +728,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -749,12 +749,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -770,7 +770,7 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Mongbat", "maxCount": 4, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 4, "probability": 100 },
       { "name": "GreatHart", "maxCount": 1, "probability": 100 }
     ]
   },
@@ -809,12 +809,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -833,8 +833,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -851,12 +851,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -872,10 +872,10 @@
     "homeRange": 100,
     "walkingRange": 100,
     "entries": [
-      { "name": "StoneGargoyle", "maxCount": 3, "probability": 100 },
-      { "name": "Wyvern", "maxCount": 4, "probability": 100 },
-      { "name": "Mummy", "maxCount": 2, "probability": 100 },
-      { "name": "Ettin", "maxCount": 4, "probability": 100 }
+      { "name": "ArgusStoneEye", "maxCount": 3, "probability": 100 },
+      { "name": "DrakonSerpentling", "maxCount": 4, "probability": 100 },
+      { "name": "RestlessWight", "maxCount": 2, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 4, "probability": 100 }
     ]
   },
   {
@@ -941,12 +941,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -962,11 +962,11 @@
     "homeRange": 5,
     "walkingRange": 25,
     "entries": [
-      { "name": "OphidianMatriarch", "maxCount": 1, "probability": 100 },
-      { "name": "OphidianArchmage", "maxCount": 1, "probability": 100 },
-      { "name": "OphidianMage", "maxCount": 1, "probability": 100 },
-      { "name": "OphidianKnight", "maxCount": 2, "probability": 100 },
-      { "name": "OphidianWarrior", "maxCount": 2, "probability": 100 }
+      { "name": "OphianArchpriest", "maxCount": 1, "probability": 100 },
+      { "name": "OphianArchpriest", "maxCount": 1, "probability": 100 },
+      { "name": "OphianPriest", "maxCount": 1, "probability": 100 },
+      { "name": "OphianKnight", "maxCount": 2, "probability": 100 },
+      { "name": "OphianReaver", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -983,9 +983,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -1029,8 +1029,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -1064,9 +1064,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -1107,12 +1107,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -1128,9 +1128,9 @@
     "homeRange": 10,
     "walkingRange": 15,
     "entries": [
-      { "name": "SavageRider", "maxCount": 3, "probability": 100 },
-      { "name": "Savage", "maxCount": 9, "probability": 100 },
-      { "name": "SavageShaman", "maxCount": 3, "probability": 100 }
+      { "name": "LykaiRaider", "maxCount": 3, "probability": 100 },
+      { "name": "LykaiWretch", "maxCount": 9, "probability": 100 },
+      { "name": "LykaiShaman", "maxCount": 3, "probability": 100 }
     ]
   },
   {
@@ -1149,8 +1149,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -1168,8 +1168,8 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Horse", "maxCount": 4, "probability": 100 },
-      { "name": "Orc", "maxCount": 8, "probability": 100 },
-      { "name": "OrcishLord", "maxCount": 4, "probability": 100 },
+      { "name": "LykaiWretch", "maxCount": 8, "probability": 100 },
+      { "name": "LykaiRaider", "maxCount": 4, "probability": 100 },
       { "name": "GreatHart", "maxCount": 4, "probability": 100 },
       { "name": "Hind", "maxCount": 16, "probability": 100 },
       { "name": "RidableLlama", "maxCount": 4, "probability": 100 }
@@ -1216,8 +1216,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -1259,7 +1259,7 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Mongbat", "maxCount": 4, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 4, "probability": 100 },
       { "name": "GreatHart", "maxCount": 1, "probability": 100 }
     ]
   },
@@ -1277,9 +1277,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -1314,9 +1314,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -1351,7 +1351,7 @@
     "homeRange": 100,
     "walkingRange": 100,
     "entries": [
-      { "name": "SwampDragon", "maxCount": 7, "probability": 100 }
+      { "name": "DrakonWhelp", "maxCount": 7, "probability": 100 }
     ]
   },
   {
@@ -1367,12 +1367,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -1389,9 +1389,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -1458,9 +1458,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -1479,8 +1479,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -1500,8 +1500,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -1641,12 +1641,12 @@
     "homeRange": 60,
     "walkingRange": 70,
     "entries": [
-      { "name": "Imp", "maxCount": 8, "probability": 100 },
-      { "name": "Scorpion", "maxCount": 8, "probability": 100 },
+      { "name": "PyreCinderrat", "maxCount": 8, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 8, "probability": 100 },
       { "name": "DesertOstard", "maxCount": 3, "probability": 100 },
-      { "name": "Orc", "maxCount": 5, "probability": 100 },
-      { "name": "OrcishLord", "maxCount": 3, "probability": 100 },
-      { "name": "StoneHarpy", "maxCount": 3, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 5, "probability": 100 },
+      { "name": "LykaiRaider", "maxCount": 3, "probability": 100 },
+      { "name": "PeakThunderroc", "maxCount": 3, "probability": 100 }
     ]
   },
   {
@@ -1662,10 +1662,10 @@
     "homeRange": 40,
     "walkingRange": 75,
     "entries": [
-      { "name": "IceSerpent", "maxCount": 4, "probability": 100 },
-      { "name": "IceSnake", "maxCount": 7, "probability": 100 },
-      { "name": "FrostTroll", "maxCount": 4, "probability": 100 },
-      { "name": "SnowElemental", "maxCount": 4, "probability": 100 },
+      { "name": "RimeSerpent", "maxCount": 4, "probability": 100 },
+      { "name": "RimeSerpent", "maxCount": 7, "probability": 100 },
+      { "name": "RimeGiant", "maxCount": 4, "probability": 100 },
+      { "name": "RimeElemental", "maxCount": 4, "probability": 100 },
       { "name": "WhiteWolf", "maxCount": 5, "probability": 100 },
       { "name": "Walrus", "maxCount": 5, "probability": 100 }
     ]
@@ -1683,7 +1683,7 @@
     "homeRange": 25,
     "walkingRange": 25,
     "entries": [
-      { "name": "Wyvern", "maxCount": 6, "probability": 100 }
+      { "name": "DrakonSerpentling", "maxCount": 6, "probability": 100 }
     ]
   },
   {
@@ -1700,9 +1700,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -1746,8 +1746,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -1764,7 +1764,7 @@
     "homeRange": 65,
     "walkingRange": 75,
     "entries": [
-      { "name": "LavaSnake", "maxCount": 15, "probability": 100 }
+      { "name": "PyreAsp", "maxCount": 15, "probability": 100 }
     ]
   },
   {
@@ -1833,8 +1833,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -1851,10 +1851,10 @@
     "homeRange": 50,
     "walkingRange": 75,
     "entries": [
-      { "name": "IceSerpent", "maxCount": 6, "probability": 100 },
-      { "name": "IceSnake", "maxCount": 3, "probability": 100 },
-      { "name": "FrostTroll", "maxCount": 3, "probability": 100 },
-      { "name": "SnowElemental", "maxCount": 3, "probability": 100 },
+      { "name": "RimeSerpent", "maxCount": 6, "probability": 100 },
+      { "name": "RimeSerpent", "maxCount": 3, "probability": 100 },
+      { "name": "RimeGiant", "maxCount": 3, "probability": 100 },
+      { "name": "RimeElemental", "maxCount": 3, "probability": 100 },
       { "name": "WhiteWolf", "maxCount": 4, "probability": 100 },
       { "name": "Walrus", "maxCount": 4, "probability": 100 }
     ]
@@ -1895,9 +1895,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -1931,9 +1931,9 @@
     "entries": [
       { "name": "Gorilla", "maxCount": 5, "probability": 100 },
       { "name": "Panther", "maxCount": 5, "probability": 100 },
-      { "name": "GiantSerpent", "maxCount": 5, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 5, "probability": 100 },
-      { "name": "SilverSerpent", "maxCount": 1, "probability": 100 }
+      { "name": "MireSerpentspawn", "maxCount": 5, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 5, "probability": 100 },
+      { "name": "MireSerpentspawn", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -1949,12 +1949,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -1970,12 +1970,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -1992,9 +1992,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -2036,9 +2036,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -2054,10 +2054,10 @@
     "homeRange": 150,
     "walkingRange": 150,
     "entries": [
-      { "name": "StoneGargoyle", "maxCount": 3, "probability": 100 },
-      { "name": "Wyvern", "maxCount": 6, "probability": 100 },
-      { "name": "Mummy", "maxCount": 4, "probability": 100 },
-      { "name": "Ettin", "maxCount": 6, "probability": 100 }
+      { "name": "ArgusStoneEye", "maxCount": 3, "probability": 100 },
+      { "name": "DrakonSerpentling", "maxCount": 6, "probability": 100 },
+      { "name": "RestlessWight", "maxCount": 4, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 6, "probability": 100 }
     ]
   },
   {
@@ -2073,10 +2073,10 @@
     "homeRange": 30,
     "walkingRange": 50,
     "entries": [
-      { "name": "IceSerpent", "maxCount": 4, "probability": 100 },
-      { "name": "IceSnake", "maxCount": 10, "probability": 100 },
-      { "name": "FrostTroll", "maxCount": 4, "probability": 100 },
-      { "name": "SnowElemental", "maxCount": 4, "probability": 100 },
+      { "name": "RimeSerpent", "maxCount": 4, "probability": 100 },
+      { "name": "RimeSerpent", "maxCount": 10, "probability": 100 },
+      { "name": "RimeGiant", "maxCount": 4, "probability": 100 },
+      { "name": "RimeElemental", "maxCount": 4, "probability": 100 },
       { "name": "WhiteWolf", "maxCount": 3, "probability": 100 },
       { "name": "Walrus", "maxCount": 3, "probability": 100 }
     ]
@@ -2094,10 +2094,10 @@
     "homeRange": 25,
     "walkingRange": 25,
     "entries": [
-      { "name": "TerathanMatriarch", "maxCount": 2, "probability": 100 },
-      { "name": "TerathanAvenger", "maxCount": 4, "probability": 100 },
-      { "name": "TerathanDrone", "maxCount": 10, "probability": 100 },
-      { "name": "TerathanWarrior", "maxCount": 10, "probability": 100 }
+      { "name": "MyrmiBroodguard", "maxCount": 2, "probability": 100 },
+      { "name": "MyrmiAvenger", "maxCount": 4, "probability": 100 },
+      { "name": "MyrmiDrone", "maxCount": 10, "probability": 100 },
+      { "name": "MyrmiSoldier", "maxCount": 10, "probability": 100 }
     ]
   },
   {
@@ -2164,9 +2164,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -2207,12 +2207,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -2231,8 +2231,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -2249,12 +2249,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -2270,10 +2270,10 @@
     "homeRange": 50,
     "walkingRange": 75,
     "entries": [
-      { "name": "IceSerpent", "maxCount": 6, "probability": 100 },
-      { "name": "IceSnake", "maxCount": 4, "probability": 100 },
-      { "name": "FrostTroll", "maxCount": 4, "probability": 100 },
-      { "name": "SnowElemental", "maxCount": 4, "probability": 100 },
+      { "name": "RimeSerpent", "maxCount": 6, "probability": 100 },
+      { "name": "RimeSerpent", "maxCount": 4, "probability": 100 },
+      { "name": "RimeGiant", "maxCount": 4, "probability": 100 },
+      { "name": "RimeElemental", "maxCount": 4, "probability": 100 },
       { "name": "WhiteWolf", "maxCount": 4, "probability": 100 },
       { "name": "Walrus", "maxCount": 4, "probability": 100 }
     ]
@@ -2341,10 +2341,10 @@
     "homeRange": 80,
     "walkingRange": 90,
     "entries": [
-      { "name": "GiantToad", "maxCount": 8, "probability": 100 },
-      { "name": "SwampDragon", "maxCount": 5, "probability": 100 },
+      { "name": "MireToad", "maxCount": 8, "probability": 100 },
+      { "name": "DrakonWhelp", "maxCount": 5, "probability": 100 },
       { "name": "GiantRat", "maxCount": 12, "probability": 100 },
-      { "name": "Alligator", "maxCount": 12, "probability": 100 },
+      { "name": "MireAlligator", "maxCount": 12, "probability": 100 },
       { "name": "SewerRat", "maxCount": 11, "probability": 100 },
       { "name": "PlagueBeast", "maxCount": 2, "probability": 100 }
     ]
@@ -2363,9 +2363,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -2382,8 +2382,8 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Horse", "maxCount": 4, "probability": 100 },
-      { "name": "Orc", "maxCount": 8, "probability": 100 },
-      { "name": "OrcishLord", "maxCount": 4, "probability": 100 },
+      { "name": "LykaiWretch", "maxCount": 8, "probability": 100 },
+      { "name": "LykaiRaider", "maxCount": 4, "probability": 100 },
       { "name": "GreatHart", "maxCount": 4, "probability": 100 },
       { "name": "Hind", "maxCount": 16, "probability": 100 },
       { "name": "RidableLlama", "maxCount": 4, "probability": 100 }
@@ -2424,12 +2424,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -2448,8 +2448,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -2466,12 +2466,12 @@
     "homeRange": 20,
     "walkingRange": 25,
     "entries": [
-      { "name": "BoneKnight", "maxCount": 3, "probability": 100 },
-      { "name": "SkeletalKnight", "maxCount": 3, "probability": 100 },
-      { "name": "BoneMagi", "maxCount": 3, "probability": 100 },
-      { "name": "Skeleton", "maxCount": 6, "probability": 100 },
-      { "name": "Wraith", "maxCount": 4, "probability": 100 },
-      { "name": "Ghoul", "maxCount": 4, "probability": 100 }
+      { "name": "RestlessWight", "maxCount": 3, "probability": 100 },
+      { "name": "RestlessWight", "maxCount": 3, "probability": 100 },
+      { "name": "RestlessShade", "maxCount": 3, "probability": 100 },
+      { "name": "RestlessSkeleton", "maxCount": 6, "probability": 100 },
+      { "name": "RestlessWraith", "maxCount": 4, "probability": 100 },
+      { "name": "RestlessGhoul", "maxCount": 4, "probability": 100 }
     ]
   },
   {
@@ -2490,8 +2490,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -2508,7 +2508,7 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Mongbat", "maxCount": 4, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 4, "probability": 100 },
       { "name": "GreatHart", "maxCount": 1, "probability": 100 }
     ]
   },
@@ -2526,9 +2526,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -2545,9 +2545,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -2563,12 +2563,12 @@
     "homeRange": 40,
     "walkingRange": 40,
     "entries": [
-      { "name": "Corpser", "maxCount": 3, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 3, "probability": 100 },
-      { "name": "Troll", "maxCount": 3, "probability": 100 },
-      { "name": "Harpy", "maxCount": 6, "probability": 100 },
-      { "name": "Ettin", "maxCount": 3, "probability": 100 },
-      { "name": "Gazer", "maxCount": 3, "probability": 100 }
+      { "name": "MireBogthing", "maxCount": 3, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 3, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 3, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 6, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 3, "probability": 100 },
+      { "name": "ArgusEye", "maxCount": 3, "probability": 100 }
     ]
   },
   {
@@ -2609,12 +2609,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -2631,9 +2631,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -2650,9 +2650,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -2671,8 +2671,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -2689,12 +2689,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -2713,8 +2713,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -2731,10 +2731,10 @@
     "homeRange": 80,
     "walkingRange": 90,
     "entries": [
-      { "name": "BullFrog", "maxCount": 15, "probability": 100 },
-      { "name": "SwampTentacle", "maxCount": 5, "probability": 100 },
-      { "name": "Bogling", "maxCount": 13, "probability": 100 },
-      { "name": "BogThing", "maxCount": 3, "probability": 100 }
+      { "name": "MireToad", "maxCount": 15, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 5, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 13, "probability": 100 },
+      { "name": "MireHydraspawn", "maxCount": 3, "probability": 100 }
     ]
   },
   {
@@ -2750,11 +2750,11 @@
     "homeRange": 15,
     "walkingRange": 15,
     "entries": [
-      { "name": "Gazer", "maxCount": 3, "probability": 100 },
-      { "name": "Reaper", "maxCount": 2, "probability": 100 },
-      { "name": "Scorpion", "maxCount": 3, "probability": 100 },
-      { "name": "GiantSerpent", "maxCount": 2, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 3, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 2, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 3, "probability": 100 },
+      { "name": "MireSerpentspawn", "maxCount": 2, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -2770,12 +2770,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -2791,10 +2791,10 @@
     "homeRange": 60,
     "walkingRange": 70,
     "entries": [
-      { "name": "StoneGargoyle", "maxCount": 3, "probability": 100 },
-      { "name": "Wyvern", "maxCount": 3, "probability": 100 },
-      { "name": "Mummy", "maxCount": 3, "probability": 100 },
-      { "name": "Ettin", "maxCount": 5, "probability": 100 }
+      { "name": "ArgusStoneEye", "maxCount": 3, "probability": 100 },
+      { "name": "DrakonSerpentling", "maxCount": 3, "probability": 100 },
+      { "name": "RestlessWight", "maxCount": 3, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 5, "probability": 100 }
     ]
   },
   {
@@ -2810,7 +2810,7 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Mongbat", "maxCount": 4, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 4, "probability": 100 },
       { "name": "GreatHart", "maxCount": 1, "probability": 100 }
     ]
   },
@@ -2829,9 +2829,9 @@
     "entries": [
       { "name": "Gorilla", "maxCount": 5, "probability": 100 },
       { "name": "Panther", "maxCount": 5, "probability": 100 },
-      { "name": "GiantSerpent", "maxCount": 5, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 5, "probability": 100 },
-      { "name": "SilverSerpent", "maxCount": 1, "probability": 100 }
+      { "name": "MireSerpentspawn", "maxCount": 5, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 5, "probability": 100 },
+      { "name": "MireSerpentspawn", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -2850,8 +2850,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -2868,11 +2868,11 @@
     "homeRange": 5,
     "walkingRange": 25,
     "entries": [
-      { "name": "OphidianMatriarch", "maxCount": 1, "probability": 100 },
-      { "name": "OphidianArchmage", "maxCount": 1, "probability": 100 },
-      { "name": "OphidianMage", "maxCount": 1, "probability": 100 },
-      { "name": "OphidianKnight", "maxCount": 2, "probability": 100 },
-      { "name": "OphidianWarrior", "maxCount": 2, "probability": 100 }
+      { "name": "OphianArchpriest", "maxCount": 1, "probability": 100 },
+      { "name": "OphianArchpriest", "maxCount": 1, "probability": 100 },
+      { "name": "OphianPriest", "maxCount": 1, "probability": 100 },
+      { "name": "OphianKnight", "maxCount": 2, "probability": 100 },
+      { "name": "OphianReaver", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -2909,8 +2909,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -2930,8 +2930,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -2989,11 +2989,11 @@
     "homeRange": 5,
     "walkingRange": 25,
     "entries": [
-      { "name": "OphidianMatriarch", "maxCount": 1, "probability": 100 },
-      { "name": "OphidianArchmage", "maxCount": 1, "probability": 100 },
-      { "name": "OphidianMage", "maxCount": 1, "probability": 100 },
-      { "name": "OphidianKnight", "maxCount": 2, "probability": 100 },
-      { "name": "OphidianWarrior", "maxCount": 2, "probability": 100 }
+      { "name": "OphianArchpriest", "maxCount": 1, "probability": 100 },
+      { "name": "OphianArchpriest", "maxCount": 1, "probability": 100 },
+      { "name": "OphianPriest", "maxCount": 1, "probability": 100 },
+      { "name": "OphianKnight", "maxCount": 2, "probability": 100 },
+      { "name": "OphianReaver", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -3009,12 +3009,12 @@
     "homeRange": 100,
     "walkingRange": 100,
     "entries": [
-      { "name": "Imp", "maxCount": 10, "probability": 100 },
-      { "name": "Scorpion", "maxCount": 10, "probability": 100 },
+      { "name": "PyreCinderrat", "maxCount": 10, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 10, "probability": 100 },
       { "name": "DesertOstard", "maxCount": 4, "probability": 100 },
-      { "name": "Orc", "maxCount": 6, "probability": 100 },
-      { "name": "OrcishLord", "maxCount": 4, "probability": 100 },
-      { "name": "StoneHarpy", "maxCount": 3, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 6, "probability": 100 },
+      { "name": "LykaiRaider", "maxCount": 4, "probability": 100 },
+      { "name": "PeakThunderroc", "maxCount": 3, "probability": 100 }
     ]
   },
   {
@@ -3052,8 +3052,8 @@
     "homeRange": 2,
     "walkingRange": 75,
     "entries": [
-      { "name": "Imp", "maxCount": 2, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 5, "probability": 100 }
+      { "name": "PyreCinderrat", "maxCount": 2, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 5, "probability": 100 }
     ]
   },
   {
@@ -3070,9 +3070,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -3091,8 +3091,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -3109,12 +3109,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -3130,12 +3130,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -3179,8 +3179,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -3198,9 +3198,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -3216,12 +3216,12 @@
     "homeRange": 2,
     "walkingRange": 75,
     "entries": [
-      { "name": "Imp", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Scorpion", "maxCount": 1, "probability": 100 },
-      { "name": "StoneHarpy", "maxCount": 1, "probability": 100 },
-      { "name": "Wyvern", "maxCount": 1, "probability": 100 }
+      { "name": "PyreCinderrat", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakThunderroc", "maxCount": 1, "probability": 100 },
+      { "name": "DrakonSerpentling", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -3237,12 +3237,12 @@
     "homeRange": 150,
     "walkingRange": 150,
     "entries": [
-      { "name": "Imp", "maxCount": 15, "probability": 100 },
-      { "name": "Scorpion", "maxCount": 15, "probability": 100 },
+      { "name": "PyreCinderrat", "maxCount": 15, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 15, "probability": 100 },
       { "name": "DesertOstard", "maxCount": 6, "probability": 100 },
-      { "name": "Orc", "maxCount": 9, "probability": 100 },
-      { "name": "OrcishLord", "maxCount": 6, "probability": 100 },
-      { "name": "StoneHarpy", "maxCount": 3, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 9, "probability": 100 },
+      { "name": "LykaiRaider", "maxCount": 6, "probability": 100 },
+      { "name": "PeakThunderroc", "maxCount": 3, "probability": 100 }
     ]
   },
   {
@@ -3258,11 +3258,11 @@
     "homeRange": 5,
     "walkingRange": 25,
     "entries": [
-      { "name": "OphidianMatriarch", "maxCount": 1, "probability": 100 },
-      { "name": "OphidianArchmage", "maxCount": 1, "probability": 100 },
-      { "name": "OphidianMage", "maxCount": 1, "probability": 100 },
-      { "name": "OphidianKnight", "maxCount": 2, "probability": 100 },
-      { "name": "OphidianWarrior", "maxCount": 2, "probability": 100 }
+      { "name": "OphianArchpriest", "maxCount": 1, "probability": 100 },
+      { "name": "OphianArchpriest", "maxCount": 1, "probability": 100 },
+      { "name": "OphianPriest", "maxCount": 1, "probability": 100 },
+      { "name": "OphianKnight", "maxCount": 2, "probability": 100 },
+      { "name": "OphianReaver", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -3281,8 +3281,8 @@
       { "name": "Hind", "maxCount": 1, "probability": 100 },
       { "name": "Llama", "maxCount": 1, "probability": 100 },
       { "name": "TimberWolf", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 1, "probability": 100 },
-      { "name": "Ettin", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeEttin", "maxCount": 1, "probability": 100 },
       { "name": "ForestOstard", "maxCount": 2, "probability": 100 }
     ]
   },
@@ -3299,7 +3299,7 @@
     "homeRange": 80,
     "walkingRange": 80,
     "entries": [
-      { "name": "Ettin", "maxCount": 2, "probability": 100 }
+      { "name": "PeakBronzeEttin", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -3331,12 +3331,12 @@
     "homeRange": 50,
     "walkingRange": 50,
     "entries": [
-      { "name": "Gazer", "maxCount": 1, "probability": 100 },
-      { "name": "GiantSpider", "maxCount": 1, "probability": 100 },
-      { "name": "Harpy", "maxCount": 1, "probability": 100 },
-      { "name": "HeadlessOne", "maxCount": 1, "probability": 100 },
-      { "name": "Lizardman", "maxCount": 3, "probability": 100 },
-      { "name": "Mongbat", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 1, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GaianSpartos", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -3377,11 +3377,11 @@
     "homeRange": 25,
     "walkingRange": 30,
     "entries": [
-      { "name": "OphidianArchmage", "maxCount": 3, "probability": 100 },
-      { "name": "OphidianMage", "maxCount": 6, "probability": 100 },
-      { "name": "OphidianMatriarch", "maxCount": 3, "probability": 100 },
-      { "name": "OphidianKnight", "maxCount": 4, "probability": 100 },
-      { "name": "OphidianWarrior", "maxCount": 10, "probability": 100 }
+      { "name": "OphianArchpriest", "maxCount": 3, "probability": 100 },
+      { "name": "OphianPriest", "maxCount": 6, "probability": 100 },
+      { "name": "OphianArchpriest", "maxCount": 3, "probability": 100 },
+      { "name": "OphianKnight", "maxCount": 4, "probability": 100 },
+      { "name": "OphianReaver", "maxCount": 10, "probability": 100 }
     ]
   },
   {
@@ -3423,9 +3423,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -3442,9 +3442,9 @@
     "walkingRange": 50,
     "entries": [
       { "name": "Rat", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "Reaper", "maxCount": 1, "probability": 100 },
-      { "name": "Troll", "maxCount": 2, "probability": 100 }
+      { "name": "LykaiWretch", "maxCount": 1, "probability": 100 },
+      { "name": "MireBogthing", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
     ]
   }
 ]

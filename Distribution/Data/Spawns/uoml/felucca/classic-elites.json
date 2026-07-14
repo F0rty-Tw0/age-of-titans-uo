@@ -1,0 +1,162 @@
+[
+  {
+    "$type": "Spawner",
+    "guid": "3a6f0c3e-1b3a-4d2e-9d8a-6a1f0b6c5e21",
+    "name": "Despise - Enkelados",
+    "location": [5558, 824, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:20:00",
+    "maxDelay": "00:20:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "Enkelados", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "7d2b8f4a-9c1e-4a3b-8f6d-2e5c7a9b1d43",
+    "name": "Despise - Gigas Adder Brood",
+    "location": [5573, 839, 0],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "GigasAdder", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1e4a7c2d-5b8f-4e6a-9d3c-8f1b6e4a2c75",
+    "name": "Deceit - Aiakos",
+    "location": [5314, 748, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:20:00",
+    "maxDelay": "00:20:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "Aiakos", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "9f3d6b1a-2c7e-4f5a-8b1d-4c9e6a2f7d38",
+    "name": "Deceit - Grave Asp Brood",
+    "location": [5329, 763, 0],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "GraveAsp", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5c8e1f4d-3a6b-4c9e-7d2f-1b5a8c3e6f92",
+    "name": "Shame - Thaumas",
+    "location": [5557, 222, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:25:00",
+    "maxDelay": "00:25:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "Thaumas", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "2a5d8f1c-6b3e-4a7d-9c1f-5e8b2a6d3f14",
+    "name": "Shame - Brine Serpent Brood",
+    "location": [5572, 237, 0],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "BrineSerpent", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "8d1f4a7c-9b2e-4d6a-8f3c-1a7d4b8e2c56",
+    "name": "Destard - Ladon",
+    "location": [5185, 1006, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:30:00",
+    "maxDelay": "00:30:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "Ladon", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "4b7e1a5d-8c2f-4b9e-7a1d-3c8f5b1e9a27",
+    "name": "Destard - Drakescale Python Brood",
+    "location": [5200, 1021, 0],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "DrakescalePython", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6f9c2e5a-1d8b-4f3e-9a6c-2e5b8f1d4c39",
+    "name": "Hythloth - Alastor",
+    "location": [6086, 178, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:30:00",
+    "maxDelay": "00:30:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "Alastor", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "3d6f9a2c-5e8b-4d1f-6a9c-8e2b5d8f1a63",
+    "name": "Hythloth - Ashen Basilisk Brood",
+    "location": [6101, 193, 0],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "AshenBasilisk", "maxCount": 2, "probability": 100 }
+    ]
+  }
+]

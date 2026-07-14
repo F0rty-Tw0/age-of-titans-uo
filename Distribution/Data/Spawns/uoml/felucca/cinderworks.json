@@ -1,0 +1,203 @@
+[
+  {
+    "$type": "Spawner",
+    "guid": "1f6a6a2e-6b7a-4b1a-9a2a-c1e2a7d4b001",
+    "name": "Cinderworks Entry Trash (PLACEHOLDER COORDS)",
+    "location": [6742, 1010, 0],
+    "map": "Felucca",
+    "count": 9,
+    "minDelay": "00:01:00",
+    "maxDelay": "00:02:00",
+    "team": 0,
+    "homeRange": 17,
+    "walkingRange": 10,
+    "entries": [
+      { "name": "CinderThrall", "maxCount": 5, "probability": 100 },
+      { "name": "CinderImp", "maxCount": 4, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1f6a6a2e-6b7a-4b1a-9a2a-c1e2a7d4b002",
+    "name": "Cinderworks Deep Trash (PLACEHOLDER COORDS)",
+    "location": [6782, 1020, 0],
+    "map": "Felucca",
+    "count": 7,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:02:00",
+    "team": 0,
+    "homeRange": 17,
+    "walkingRange": 10,
+    "entries": [
+      { "name": "CinderGargoyle", "maxCount": 4, "probability": 100 },
+      { "name": "CinderAutomaton", "maxCount": 3, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1f6a6a2e-6b7a-4b1a-9a2a-c1e2a7d4b003",
+    "name": "Cinderworks Sentinels (PLACEHOLDER COORDS)",
+    "location": [6810, 1030, 0],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "CinderSentinel", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1f6a6a2e-6b7a-4b1a-9a2a-c1e2a7d4b004",
+    "name": "Cinderworks Elite - Brontes (PLACEHOLDER COORDS)",
+    "location": [6825, 1040, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:15:00",
+    "maxDelay": "00:15:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "CinderCyclops", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1f6a6a2e-6b7a-4b1a-9a2a-c1e2a7d4b005",
+    "name": "Cinderworks Boss - Kelmion (PLACEHOLDER COORDS)",
+    "location": [6845, 1045, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:30:00",
+    "maxDelay": "00:45:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "CinderHeart", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1f6a6a2e-6b7a-4b1a-9a2a-c1e2a7d4b006",
+    "name": "Cinderworks Boss Custodians (PLACEHOLDER COORDS)",
+    "location": [6845, 1050, 0],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 10,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "CinderSentinel", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1f6a6a2e-6b7a-4b1a-9a2a-c1e2a7d4b007",
+    "name": "Cinderworks L5 Core (PLACEHOLDER COORDS)",
+    "location": [6720, 1015, 0],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:01:00",
+    "maxDelay": "00:02:00",
+    "team": 0,
+    "homeRange": 17,
+    "walkingRange": 10,
+    "entries": [
+      { "name": "CinderStoker", "maxCount": 1, "probability": 100 },
+      { "name": "CinderHauler", "maxCount": 1, "probability": 100 },
+      { "name": "CinderEmberling", "maxCount": 1, "probability": 100 },
+      { "name": "CinderSalamander", "maxCount": 1, "probability": 100 },
+      { "name": "CinderSlaghound", "maxCount": 1, "probability": 100 },
+      { "name": "CinderScorial", "maxCount": 1, "probability": 100 },
+      { "name": "CinderMoth", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1f6a6a2e-6b7a-4b1a-9a2a-c1e2a7d4b008",
+    "name": "Cinderworks L6 Core (PLACEHOLDER COORDS)",
+    "location": [6760, 1035, 0],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:02:00",
+    "team": 0,
+    "homeRange": 17,
+    "walkingRange": 10,
+    "entries": [
+      { "name": "CinderGrelt", "maxCount": 1, "probability": 100 },
+      { "name": "CinderForgewright", "maxCount": 1, "probability": 100 },
+      { "name": "CinderPyreling", "maxCount": 1, "probability": 100 },
+      { "name": "CinderMoltling", "maxCount": 1, "probability": 100 },
+      { "name": "CinderBronzeOgre", "maxCount": 1, "probability": 100 },
+      { "name": "CinderSlagDaemon", "maxCount": 1, "probability": 100 },
+      { "name": "CinderKindler", "maxCount": 1, "probability": 100 },
+      { "name": "CinderCrucible", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1f6a6a2e-6b7a-4b1a-9a2a-c1e2a7d4b009",
+    "name": "Cinderworks Kerykes (PLACEHOLDER COORDS)",
+    "location": [6800, 1015, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:02:00",
+    "team": 0,
+    "homeRange": 15,
+    "walkingRange": 10,
+    "entries": [
+      { "name": "CinderKeryx", "maxCount": 1, "probability": 100 },
+      { "name": "CinderKeryxCourier", "maxCount": 1, "probability": 100 },
+      { "name": "CinderKeryxHerald", "maxCount": 1, "probability": 100 },
+      { "name": "CinderKeryxSentry", "maxCount": 1, "probability": 100 },
+      { "name": "CinderKeryxBellows", "maxCount": 1, "probability": 100 },
+      { "name": "CinderKeryxSapper", "maxCount": 1, "probability": 100 },
+      { "name": "CinderKeryxWarden", "maxCount": 1, "probability": 100 },
+      { "name": "CinderKeryxSmith", "maxCount": 1, "probability": 100 },
+      { "name": "CinderKeryxForeman", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1f6a6a2e-6b7a-4b1a-9a2a-c1e2a7d4b010",
+    "name": "Cinderworks Ambient (PLACEHOLDER COORDS)",
+    "location": [6700, 1005, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:01:00",
+    "maxDelay": "00:01:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "CinderMothling", "maxCount": 2, "probability": 100 },
+      { "name": "CinderSlagling", "maxCount": 1, "probability": 100 },
+      { "name": "CinderEmberrat", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1f6a6a2e-6b7a-4b1a-9a2a-c1e2a7d4b011",
+    "name": "Cinderworks Mini-boss - Kedalion (PLACEHOLDER COORDS)",
+    "location": [6835, 1020, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:20:00",
+    "maxDelay": "00:30:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "CinderKedalion", "maxCount": 1, "probability": 100 }
+    ]
+  }
+]

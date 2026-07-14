@@ -1,0 +1,191 @@
+[
+  {
+    "$type": "Spawner",
+    "guid": "d1a634d5-bbba-4ef2-8df3-7f2bcc9454a0",
+    "name": "Barrow Entrance - Ferryman",
+    "location": [
+      6710,
+      712,
+      0
+    ],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:00:30",
+    "maxDelay": "00:01:00",
+    "team": 0,
+    "homeRange": 0,
+    "walkingRange": -1,
+    "entries": [
+      {
+        "name": "NewbieFerryman",
+        "maxCount": 1,
+        "probability": 100
+      }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "bfbdf7f5-07d0-4289-93ff-ddac4fea3dd5",
+    "name": "Barrow L1 - Trash",
+    "location": [
+      6742,
+      720,
+      0
+    ],
+    "map": "Felucca",
+    "count": 17,
+    "minDelay": "00:01:00",
+    "maxDelay": "00:02:00",
+    "team": 0,
+    "homeRange": 17,
+    "walkingRange": 10,
+    "entries": [
+      {
+        "name": "NewbieBoneShade",
+        "maxCount": 5,
+        "probability": 100
+      },
+      {
+        "name": "NewbieGraveRat",
+        "maxCount": 4,
+        "probability": 100
+      },
+      {
+        "name": "NewbieCorpseCrawler",
+        "maxCount": 4,
+        "probability": 100
+      },
+      {
+        "name": "NewbieBoneBowman",
+        "maxCount": 2,
+        "probability": 100
+      },
+      {
+        "name": "NewbieBarrowBat",
+        "maxCount": 2,
+        "probability": 100
+      }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "a1ad4922-1c25-4347-b0cc-9c3a407ad0ca",
+    "name": "Barrow L2 - Trash",
+    "location": [
+      6782,
+      720,
+      0
+    ],
+    "map": "Felucca",
+    "count": 13,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:02:00",
+    "team": 0,
+    "homeRange": 17,
+    "walkingRange": 10,
+    "entries": [
+      {
+        "name": "NewbieGraveMiasma",
+        "maxCount": 4,
+        "probability": 100
+      },
+      {
+        "name": "NewbieRestlessArcher",
+        "maxCount": 3,
+        "probability": 100
+      },
+      {
+        "name": "NewbieMourner",
+        "maxCount": 2,
+        "probability": 100
+      },
+      {
+        "name": "NewbieChanter",
+        "maxCount": 1,
+        "probability": 100
+      },
+      {
+        "name": "NewbieGraveArcher",
+        "maxCount": 2,
+        "probability": 100
+      },
+      {
+        "name": "NewbieWight",
+        "maxCount": 1,
+        "probability": 100
+      }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "d9b32d04-256b-4a39-8213-6c4e0e5005c8",
+    "name": "Barrow Elite - Charon",
+    "location": [
+      6815,
+      715,
+      0
+    ],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:15:00",
+    "maxDelay": "00:15:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      {
+        "name": "NewbieCharon",
+        "maxCount": 1,
+        "probability": 100
+      }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "8bb3fbf2-2501-41ca-a0f7-44571a461712",
+    "name": "Barrow Elite - Fallen Champion",
+    "location": [
+      6828,
+      725,
+      0
+    ],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:15:00",
+    "maxDelay": "00:15:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      {
+        "name": "NewbieFallenChampion",
+        "maxCount": 1,
+        "probability": 100
+      }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "d3b96c0d-8dc4-451a-9274-2bb620ba6db8",
+    "name": "Barrow Elite - Hollow Warden",
+    "location": [
+      6842,
+      740,
+      0
+    ],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:15:00",
+    "maxDelay": "00:15:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      {
+        "name": "NewbieHollowWarden",
+        "maxCount": 1,
+        "probability": 100
+      }
+    ]
+  }
+]

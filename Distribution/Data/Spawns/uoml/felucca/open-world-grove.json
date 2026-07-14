@@ -1,0 +1,167 @@
+[
+  {
+    "$type": "Spawner",
+    "guid": "1a2b3c4d-1e01-4e91-9a01-e00000000001",
+    "name": "Groves Expansion - Grazers & Boars - E of Yew",
+    "location": [846, 1071, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:06:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "GroveDoe", "maxCount": 1, "probability": 100 },
+      { "name": "GroveFawn", "maxCount": 1, "probability": 100 },
+      { "name": "GroveElk", "maxCount": 1, "probability": 100 },
+      { "name": "GroveWhitehart", "maxCount": 1, "probability": 100 },
+      { "name": "GroveRazorback", "maxCount": 1, "probability": 100 },
+      { "name": "GroveTusker", "maxCount": 1, "probability": 100 },
+      { "name": "GroveSowthing", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1a2b3c4d-1e02-4e91-9a02-e00000000002",
+    "name": "Groves Expansion - Predators - NW of Britain",
+    "location": [1666, 1290, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:07:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "GroveFangwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GroveHuntwolf", "maxCount": 1, "probability": 100 },
+      { "name": "GroveGreywood", "maxCount": 1, "probability": 100 },
+      { "name": "GrovePanther", "maxCount": 1, "probability": 100 },
+      { "name": "GroveLynx", "maxCount": 1, "probability": 100 },
+      { "name": "GroveMossbear", "maxCount": 1, "probability": 100 },
+      { "name": "GroveShaggybear", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1a2b3c4d-1e03-4e91-9a03-e00000000003",
+    "name": "Groves Expansion - Fey & Misc - North Woods",
+    "location": [1695, 809, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "GroveApe", "maxCount": 1, "probability": 100 },
+      { "name": "GroveSatyr", "maxCount": 1, "probability": 100 },
+      { "name": "GroveDryad", "maxCount": 1, "probability": 100 },
+      { "name": "GroveSprite", "maxCount": 1, "probability": 100 },
+      { "name": "GroveWisp", "maxCount": 1, "probability": 100 },
+      { "name": "GroveWillowisp", "maxCount": 1, "probability": 100 },
+      { "name": "GroveWebspinner", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1a2b3c4d-1e04-4e91-9a04-e00000000004",
+    "name": "Groves Expansion - Spiders, Serpents & Plants - E of Britain",
+    "location": [2512, 1066, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:06:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "GroveThornspider", "maxCount": 1, "probability": 100 },
+      { "name": "GroveStinger", "maxCount": 1, "probability": 100 },
+      { "name": "GroveViper", "maxCount": 1, "probability": 100 },
+      { "name": "GroveAdder", "maxCount": 1, "probability": 100 },
+      { "name": "GroveThornvine", "maxCount": 1, "probability": 100 },
+      { "name": "GroveSaplingreaper", "maxCount": 1, "probability": 100 },
+      { "name": "GroveForestrat", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1a2b3c4d-1e05-4e91-9a05-e00000000005",
+    "name": "Groves Expansion - Komos Revel - NW of Britain",
+    "location": [1666, 1290, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "GroveKomosFaun", "maxCount": 1, "probability": 100 },
+      { "name": "GroveKomosDancer", "maxCount": 1, "probability": 100 },
+      { "name": "GroveKomosBacchant", "maxCount": 1, "probability": 100 },
+      { "name": "GroveKomosGoatling", "maxCount": 1, "probability": 100 },
+      { "name": "GroveKomosReveler", "maxCount": 1, "probability": 100 },
+      { "name": "GroveKomosHornmaster", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1a2b3c4d-1e06-4e91-9a06-e00000000006",
+    "name": "Groves Expansion - Bramble Court - North Woods",
+    "location": [1695, 809, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "GroveBrambleNymph", "maxCount": 1, "probability": 100 },
+      { "name": "GroveBrambleThornling", "maxCount": 1, "probability": 100 },
+      { "name": "GroveBrambleHound", "maxCount": 1, "probability": 100 },
+      { "name": "GroveBrambleTreant", "maxCount": 1, "probability": 100 },
+      { "name": "GroveBrambleWarden", "maxCount": 1, "probability": 100 },
+      { "name": "GroveBrambleQueen", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1a2b3c4d-1e07-4e91-9a07-e00000000007",
+    "name": "Groves Expansion - Ambient - E of Yew",
+    "location": [846, 1071, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:06:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "GroveThrush", "maxCount": 1, "probability": 100 },
+      { "name": "GroveLunamoth", "maxCount": 1, "probability": 100 },
+      { "name": "GroveHare", "maxCount": 1, "probability": 100 },
+      { "name": "GroveFinch", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1a2b3c4d-1e08-4e91-9a08-e00000000008",
+    "name": "Groves Expansion - Silenos, the Reveler-King - Piping Glade",
+    "location": [1666, 1290, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:30:00",
+    "maxDelay": "01:00:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "GroveSilenos", "maxCount": 1, "probability": 100 }
+    ]
+  }
+]

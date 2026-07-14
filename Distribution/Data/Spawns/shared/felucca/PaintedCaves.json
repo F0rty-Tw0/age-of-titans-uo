@@ -33,10 +33,133 @@
     "homeRange": 30,
     "walkingRange": 30,
     "entries": [
-      { "name": "Troglodyte", "maxCount": 3, "probability": 100 },
-      { "name": "Grobu", "maxCount": 3, "probability": 100 },
-      { "name": "Lurg", "maxCount": 3, "probability": 100 },
-      { "name": "GiantRat", "maxCount": 3, "probability": 100 }
+      { "name": "PelasgForager", "maxCount": 1, "probability": 100 },
+      { "name": "PelasgHunter", "maxCount": 1, "probability": 100 },
+      { "name": "PelasgShaman", "maxCount": 1, "probability": 100 },
+      { "name": "PelasgForager", "maxCount": 3, "probability": 100 },
+      { "name": "PelasgHunter", "maxCount": 3, "probability": 100 },
+      { "name": "PelasgVermin", "maxCount": 3, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "a1b2c3d4-1000-4000-8000-000000000e09",
+    "name": "Spawner (214)",
+    "location": [6275, 879, -2],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:20:00",
+    "maxDelay": "00:30:00",
+    "team": 0,
+    "homeRange": 30,
+    "walkingRange": 30,
+    "entries": [
+      { "name": "PelasgPhoroneus", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "c8842ae6-0a47-49f0-8ff8-0ecae6660f71",
+    "name": "Spawner (214)",
+    "location": [6279, 879, -1],
+    "map": "Felucca",
+    "count": 10,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:10:00",
+    "team": 0,
+    "homeRange": 30,
+    "walkingRange": 30,
+    "entries": [
+      { "name": "PelasgGrubber", "maxCount": 2, "probability": 100 },
+      { "name": "PelasgCreeper", "maxCount": 2, "probability": 100 },
+      { "name": "PelasgWhelp", "maxCount": 2, "probability": 100 },
+      { "name": "PelasgKnapper", "maxCount": 2, "probability": 100 },
+      { "name": "PelasgSpearman", "maxCount": 1, "probability": 100 },
+      { "name": "PelasgSlinger", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "4039897a-fbd5-48f2-aec9-852bc1b72741",
+    "name": "Spawner (214)",
+    "location": [6275, 879, -2],
+    "map": "Felucca",
+    "count": 14,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:10:00",
+    "team": 0,
+    "homeRange": 30,
+    "walkingRange": 30,
+    "entries": [
+      { "name": "PelasgDaubed", "maxCount": 2, "probability": 100 },
+      { "name": "PelasgTorchbearer", "maxCount": 2, "probability": 100 },
+      { "name": "PelasgTrapper", "maxCount": 2, "probability": 100 },
+      { "name": "PelasgApeman", "maxCount": 1, "probability": 100 },
+      { "name": "PelasgToadherd", "maxCount": 1, "probability": 100 },
+      { "name": "PelasgCaveviper", "maxCount": 1, "probability": 100 },
+      { "name": "PelasgBrute", "maxCount": 1, "probability": 100 },
+      { "name": "PelasgWarhunter", "maxCount": 1, "probability": 100 },
+      { "name": "PelasgOchremage", "maxCount": 1, "probability": 100 },
+      { "name": "PelasgCavebear", "maxCount": 1, "probability": 100 },
+      { "name": "PelasgWarchief", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "523f3c78-78f9-4fcf-9b39-0ebfe6f30719",
+    "name": "Spawner (214)",
+    "location": [6279, 879, -1],
+    "map": "Felucca",
+    "count": 12,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:10:00",
+    "team": 0,
+    "homeRange": 30,
+    "walkingRange": 30,
+    "entries": [
+      { "name": "PelasgLelexForager", "maxCount": 2, "probability": 100 },
+      { "name": "PelasgLelexKnapper", "maxCount": 2, "probability": 100 },
+      { "name": "PelasgLelexHunter", "maxCount": 2, "probability": 100 },
+      { "name": "PelasgLelexToadherd", "maxCount": 1, "probability": 100 },
+      { "name": "PelasgLelexAper", "maxCount": 1, "probability": 100 },
+      { "name": "PelasgLelexBrute", "maxCount": 1, "probability": 100 },
+      { "name": "PelasgLelexAugur", "maxCount": 1, "probability": 100 },
+      { "name": "PelasgLelexTrapmaster", "maxCount": 1, "probability": 100 },
+      { "name": "PelasgLelexMother", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "a053f645-758f-445a-a96d-41161dac528e",
+    "name": "Spawner (214)",
+    "location": [6275, 879, -2],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:10:00",
+    "team": 0,
+    "homeRange": 30,
+    "walkingRange": 30,
+    "entries": [
+      { "name": "PelasgCavebat", "maxCount": 2, "probability": 100 },
+      { "name": "PelasgGrub", "maxCount": 2, "probability": 100 },
+      { "name": "PelasgToadling", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "cc0a466c-2b5f-41b4-b170-ff2cbae48863",
+    "name": "Spawner (214)",
+    "location": [6275, 879, -2],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:20:00",
+    "maxDelay": "00:30:00",
+    "team": 0,
+    "homeRange": 30,
+    "walkingRange": 30,
+    "entries": [
+      { "name": "PelasgPelasgos", "maxCount": 1, "probability": 100 }
     ]
   }
 ]

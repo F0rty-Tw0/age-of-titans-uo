@@ -1,0 +1,203 @@
+[
+  {
+    "$type": "Spawner",
+    "guid": "1d2e3f4a-5b6c-4d7e-8f9a-0b1c2d3e4f01",
+    "name": "Stormcrown Aerie - Entry Trash (PLACEHOLDER COORDS)",
+    "location": [6720, 1210, 0],
+    "map": "Felucca",
+    "count": 9,
+    "minDelay": "00:01:00",
+    "maxDelay": "00:02:00",
+    "team": 0,
+    "homeRange": 17,
+    "walkingRange": 10,
+    "entries": [
+      { "name": "StormHarpy", "maxCount": 5, "probability": 100 },
+      { "name": "StormWisp", "maxCount": 4, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1d2e3f4a-5b6c-4d7e-8f9a-0b1c2d3e4f02",
+    "name": "Stormcrown Aerie - Deep Trash (PLACEHOLDER COORDS)",
+    "location": [6760, 1215, 0],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:03:00",
+    "team": 0,
+    "homeRange": 17,
+    "walkingRange": 10,
+    "entries": [
+      { "name": "StormTitan", "maxCount": 3, "probability": 100 },
+      { "name": "StormDrake", "maxCount": 3, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1d2e3f4a-5b6c-4d7e-8f9a-0b1c2d3e4f03",
+    "name": "Stormcrown Aerie - Sentinels (PLACEHOLDER COORDS)",
+    "location": [6800, 1220, 0],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "StormSentinel", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1d2e3f4a-5b6c-4d7e-8f9a-0b1c2d3e4f04",
+    "name": "Stormcrown Aerie Elite - Chainbreaker (PLACEHOLDER COORDS)",
+    "location": [6730, 1240, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:15:00",
+    "maxDelay": "00:15:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "StormChained", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1d2e3f4a-5b6c-4d7e-8f9a-0b1c2d3e4f05",
+    "name": "Stormcrown Aerie Boss - Typhon (PLACEHOLDER COORDS)",
+    "location": [6840, 1235, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:45:00",
+    "maxDelay": "01:00:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "StormFather", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1d2e3f4a-5b6c-4d7e-8f9a-0b1c2d3e4f06",
+    "name": "Stormcrown Aerie Boss Guard - Sentinels (PLACEHOLDER COORDS)",
+    "location": [6835, 1230, 0],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 6,
+    "walkingRange": 4,
+    "entries": [
+      { "name": "StormSentinel", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1d2e3f4a-5b6c-4d7e-8f9a-0b1c2d3e4f07",
+    "name": "Stormcrown Aerie - Core Guard L8 (PLACEHOLDER COORDS)",
+    "location": [6710, 1225, 0],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:01:00",
+    "maxDelay": "00:02:00",
+    "team": 0,
+    "homeRange": 17,
+    "walkingRange": 10,
+    "entries": [
+      { "name": "StormRoc", "maxCount": 2, "probability": 100 },
+      { "name": "StormGale", "maxCount": 2, "probability": 100 },
+      { "name": "StormSprite", "maxCount": 2, "probability": 100 },
+      { "name": "StormGazer", "maxCount": 2, "probability": 100 },
+      { "name": "StormThunderharpy", "maxCount": 2, "probability": 100 },
+      { "name": "StormChainling", "maxCount": 2, "probability": 100 },
+      { "name": "StormEfreet", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1d2e3f4a-5b6c-4d7e-8f9a-0b1c2d3e4f08",
+    "name": "Stormcrown Aerie - Core Guard L9 (PLACEHOLDER COORDS)",
+    "location": [6790, 1210, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:03:00",
+    "team": 0,
+    "homeRange": 17,
+    "walkingRange": 10,
+    "entries": [
+      { "name": "StormColossus", "maxCount": 2, "probability": 100 },
+      { "name": "StormTitanling", "maxCount": 2, "probability": 100 },
+      { "name": "StormWyrm", "maxCount": 2, "probability": 100 },
+      { "name": "StormElemental", "maxCount": 2, "probability": 100 },
+      { "name": "StormGargoyle", "maxCount": 2, "probability": 100 },
+      { "name": "StormEye", "maxCount": 2, "probability": 100 },
+      { "name": "StormThunderdrake", "maxCount": 2, "probability": 100 },
+      { "name": "StormOgreKing", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1d2e3f4a-5b6c-4d7e-8f9a-0b1c2d3e4f09",
+    "name": "Stormcrown Aerie - Anemoi Wind-Spirits (PLACEHOLDER COORDS)",
+    "location": [6770, 1245, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:03:00",
+    "team": 0,
+    "homeRange": 15,
+    "walkingRange": 10,
+    "entries": [
+      { "name": "StormAnemoiDrift", "maxCount": 2, "probability": 100 },
+      { "name": "StormAnemoiBreeze", "maxCount": 2, "probability": 100 },
+      { "name": "StormAnemoiNorthwind", "maxCount": 2, "probability": 100 },
+      { "name": "StormAnemoiSquall", "maxCount": 2, "probability": 100 },
+      { "name": "StormAnemoiHerald", "maxCount": 2, "probability": 100 },
+      { "name": "StormAnemoiTempest", "maxCount": 1, "probability": 100 },
+      { "name": "StormAnemoiOutrider", "maxCount": 2, "probability": 100 },
+      { "name": "StormAnemoiVortex", "maxCount": 2, "probability": 100 },
+      { "name": "StormAnemoiGale", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1d2e3f4a-5b6c-4d7e-8f9a-0b1c2d3e4f10",
+    "name": "Stormcrown Aerie - Ambient Flyers (PLACEHOLDER COORDS)",
+    "location": [6700, 1200, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:01:00",
+    "maxDelay": "00:01:00",
+    "team": 0,
+    "homeRange": 20,
+    "walkingRange": 15,
+    "entries": [
+      { "name": "StormMoth", "maxCount": 2, "probability": 100 },
+      { "name": "StormSparrow", "maxCount": 2, "probability": 100 },
+      { "name": "StormPuff", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1d2e3f4a-5b6c-4d7e-8f9a-0b1c2d3e4f11",
+    "name": "Stormcrown Aerie Mini-Boss - Ephialtes (PLACEHOLDER COORDS)",
+    "location": [6850, 1250, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:20:00",
+    "maxDelay": "00:30:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "StormEphialtes", "maxCount": 1, "probability": 100 }
+    ]
+  }
+]

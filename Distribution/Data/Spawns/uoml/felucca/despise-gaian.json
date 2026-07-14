@@ -1,0 +1,185 @@
+[
+  {
+    "$type": "Spawner",
+    "guid": "a1c3e5f7-1234-4a6b-8c9d-0e1f2a3b4c5d",
+    "name": "Despise - Gaian Spartoi (Lizardman grounds)",
+    "location": [5460, 526, 60],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "GaianSpartos", "maxCount": 2, "probability": 100 },
+      { "name": "GaianSpearborn", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "b2d4f608-2345-4b7c-9d0e-1f2a3b4c5d6e",
+    "name": "Despise - Gaian Earthborn (Ogre grounds)",
+    "location": [5528, 902, 30],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "GaianClayborn", "maxCount": 2, "probability": 100 },
+      { "name": "GaianEarthbloodChampion", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "c3e5a719-3456-4c8d-0e1f-2a3b4c5d6e7f",
+    "name": "Despise - Gaian Phalanx (Ettin grounds)",
+    "location": [5391, 905, 30],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 15,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "GaianPhalangite", "maxCount": 2, "probability": 100 },
+      { "name": "GaianTitanWard", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "d4f6b82a-4567-4d9e-1f2a-3b4c5d6e7f80",
+    "name": "Despise - Gaian Seedbed (Troll grounds)",
+    "location": [5470, 860, 45],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "GaianSownSeed", "maxCount": 2, "probability": 100 },
+      { "name": "GaianClayServitor", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "e5a7c93b-5678-4e0f-2a3b-4c5d6e7f8091",
+    "name": "Despise - Chthonios",
+    "location": [5563, 829, 45],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:20:00",
+    "maxDelay": "00:20:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "Chthonios", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "f6b8da4c-6789-4f10-8b4c-5d6e7f809102",
+    "name": "Despise - Gaian Warrens (entrance filler)",
+    "location": [5460, 526, 60],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "GaianClodling", "maxCount": 2, "probability": 100 },
+      { "name": "GaianFurrowborn", "maxCount": 2, "probability": 100 },
+      { "name": "GaianRootcrawler", "maxCount": 2, "probability": 100 },
+      { "name": "GaianRubblecrawler", "maxCount": 2, "probability": 100 },
+      { "name": "GaianDustadder", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "07c9eb5d-6790-4021-8c5d-6e7f80910213",
+    "name": "Despise - Gaian Deep Works (Ogre grounds)",
+    "location": [5528, 902, 30],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "GaianSlinger", "maxCount": 1, "probability": 100 },
+      { "name": "GaianDelver", "maxCount": 1, "probability": 100 },
+      { "name": "GaianQuarrybrute", "maxCount": 1, "probability": 100 },
+      { "name": "GaianBoulderback", "maxCount": 1, "probability": 100 },
+      { "name": "GaianClaymason", "maxCount": 1, "probability": 100 },
+      { "name": "GaianEarthwyrm", "maxCount": 1, "probability": 100 },
+      { "name": "GaianStoneshaper", "maxCount": 1, "probability": 100 },
+      { "name": "GaianGraniteAdder", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "18daec6e-6791-4132-8d6e-7f8091021324",
+    "name": "Despise - Gaian Old Stone (Ettin grounds)",
+    "location": [5391, 905, 30],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:06:00",
+    "team": 0,
+    "homeRange": 15,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "GaianStonewarden", "maxCount": 1, "probability": 100 },
+      { "name": "GaianClayColossus", "maxCount": 1, "probability": 100 },
+      { "name": "GaianMountainborn", "maxCount": 1, "probability": 100 },
+      { "name": "GaianTerraGorger", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "29ebfd7f-6792-4243-8e7f-809102132435",
+    "name": "Despise - the Gegenes (Troll grounds)",
+    "location": [5470, 860, 45],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:06:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "GaianGegenesThrall", "maxCount": 1, "probability": 100 },
+      { "name": "GaianGegenesDigger", "maxCount": 1, "probability": 100 },
+      { "name": "GaianGegenesHurler", "maxCount": 1, "probability": 100 },
+      { "name": "GaianGegenesShaker", "maxCount": 1, "probability": 100 },
+      { "name": "GaianGegenesWarden", "maxCount": 1, "probability": 100 },
+      { "name": "GaianGegenesElder", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "3afc0e80-6793-4354-8f80-910213243546",
+    "name": "Despise - Peloreus",
+    "location": [5563, 829, 45],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:20:00",
+    "maxDelay": "00:30:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "GaianPeloreus", "maxCount": 1, "probability": 100 }
+    ]
+  }
+]

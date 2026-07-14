@@ -12,12 +12,11 @@
     "homeRange": 15,
     "walkingRange": 20,
     "entries": [
-      { "name": "FrostOoze", "maxCount": 1, "probability": 100 },
-      { "name": "FrostSpider", "maxCount": 1, "probability": 100 },
-      { "name": "IceElemental", "maxCount": 1, "probability": 100 },
-      { "name": "SnowElemental", "maxCount": 1, "probability": 100 },
-      { "name": "IceSnake", "maxCount": 1, "probability": 100 },
-      { "name": "FrostTroll", "maxCount": 1, "probability": 100 }
+      { "name": "RimeOoze", "maxCount": 1, "probability": 100 },
+      { "name": "RimeSpider", "maxCount": 1, "probability": 100 },
+      { "name": "RimeElemental", "maxCount": 2, "probability": 100 },
+      { "name": "RimeStalker", "maxCount": 1, "probability": 100 },
+      { "name": "RimeGiant", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -33,12 +32,11 @@
     "homeRange": 18,
     "walkingRange": 20,
     "entries": [
-      { "name": "FrostOoze", "maxCount": 1, "probability": 100 },
-      { "name": "FrostSpider", "maxCount": 1, "probability": 100 },
-      { "name": "IceElemental", "maxCount": 1, "probability": 100 },
-      { "name": "SnowElemental", "maxCount": 1, "probability": 100 },
-      { "name": "IceSnake", "maxCount": 1, "probability": 100 },
-      { "name": "FrostTroll", "maxCount": 1, "probability": 100 }
+      { "name": "RimeOoze", "maxCount": 1, "probability": 100 },
+      { "name": "RimeSpider", "maxCount": 1, "probability": 100 },
+      { "name": "RimeElemental", "maxCount": 2, "probability": 100 },
+      { "name": "RimeStalker", "maxCount": 1, "probability": 100 },
+      { "name": "RimeGiant", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -102,11 +100,11 @@
     "homeRange": 10,
     "walkingRange": 25,
     "entries": [
-      { "name": "IceSerpent", "maxCount": 2, "probability": 100 },
-      { "name": "SnowElemental", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "FrostTroll", "maxCount": 1, "probability": 100 },
-      { "name": "FrostSpider", "maxCount": 1, "probability": 100 }
+      { "name": "RimeSerpent", "maxCount": 2, "probability": 100 },
+      { "name": "RimeElemental", "maxCount": 1, "probability": 100 },
+      { "name": "RimeThrall", "maxCount": 1, "probability": 100 },
+      { "name": "RimeGiant", "maxCount": 1, "probability": 100 },
+      { "name": "RimeSpider", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -138,9 +136,8 @@
     "homeRange": 25,
     "walkingRange": 35,
     "entries": [
-      { "name": "IceSerpent", "maxCount": 9, "probability": 100 },
-      { "name": "SnowElemental", "maxCount": 9, "probability": 100 },
-      { "name": "IceElemental", "maxCount": 9, "probability": 100 }
+      { "name": "RimeSerpent", "maxCount": 9, "probability": 100 },
+      { "name": "RimeElemental", "maxCount": 18, "probability": 100 }
     ]
   },
   {
@@ -172,7 +169,7 @@
     "homeRange": 10,
     "walkingRange": 20,
     "entries": [
-      { "name": "IceFiend", "maxCount": 1, "probability": 100 }
+      { "name": "RimeFiend", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -204,7 +201,7 @@
     "homeRange": 10,
     "walkingRange": 20,
     "entries": [
-      { "name": "ArcticOgreLord", "maxCount": 1, "probability": 100 }
+      { "name": "RimeWarlord", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -220,11 +217,10 @@
     "homeRange": 15,
     "walkingRange": 20,
     "entries": [
-      { "name": "IceSerpent", "maxCount": 3, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 },
-      { "name": "SnowElemental", "maxCount": 4, "probability": 100 },
-      { "name": "IceElemental", "maxCount": 4, "probability": 100 },
-      { "name": "FrostTroll", "maxCount": 2, "probability": 100 }
+      { "name": "RimeSerpent", "maxCount": 3, "probability": 100 },
+      { "name": "RimeThrall", "maxCount": 1, "probability": 100 },
+      { "name": "RimeElemental", "maxCount": 8, "probability": 100 },
+      { "name": "RimeGiant", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -256,7 +252,7 @@
     "homeRange": 10,
     "walkingRange": 20,
     "entries": [
-      { "name": "IceFiend", "maxCount": 1, "probability": 100 }
+      { "name": "RimeFiend", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -288,9 +284,9 @@
     "homeRange": 15,
     "walkingRange": 25,
     "entries": [
-      { "name": "Ratman", "maxCount": 12, "probability": 100 },
-      { "name": "RatmanArcher", "maxCount": 7, "probability": 100 },
-      { "name": "RatmanMage", "maxCount": 5, "probability": 100 }
+      { "name": "RimeThrall", "maxCount": 12, "probability": 100 },
+      { "name": "RimeArcher", "maxCount": 7, "probability": 100 },
+      { "name": "RimeShaman", "maxCount": 5, "probability": 100 }
     ]
   },
   {
@@ -338,9 +334,9 @@
     "homeRange": 15,
     "walkingRange": 25,
     "entries": [
-      { "name": "FrostSpider", "maxCount": 1, "probability": 100 },
-      { "name": "FrostOoze", "maxCount": 2, "probability": 100 },
-      { "name": "IceSnake", "maxCount": 1, "probability": 100 }
+      { "name": "RimeSpider", "maxCount": 1, "probability": 100 },
+      { "name": "RimeOoze", "maxCount": 2, "probability": 100 },
+      { "name": "RimeStalker", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -420,7 +416,7 @@
     "homeRange": 10,
     "walkingRange": 20,
     "entries": [
-      { "name": "RatmanMage", "maxCount": 1, "probability": 100 }
+      { "name": "RimeShaman", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -446,13 +442,13 @@
     "location": [5752, 144, 9],
     "map": "Felucca",
     "count": 1,
-    "minDelay": "00:05:00",
-    "maxDelay": "00:10:00",
+    "minDelay": "00:20:00",
+    "maxDelay": "00:30:00",
     "team": 0,
     "homeRange": 10,
     "walkingRange": 10,
     "entries": [
-      { "name": "WhiteWyrm", "maxCount": 1, "probability": 100 }
+      { "name": "RimeAbaris", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -468,11 +464,10 @@
     "homeRange": 15,
     "walkingRange": 20,
     "entries": [
-      { "name": "IceSerpent", "maxCount": 3, "probability": 100 },
-      { "name": "SnowElemental", "maxCount": 4, "probability": 100 },
-      { "name": "IceElemental", "maxCount": 4, "probability": 100 },
-      { "name": "FrostTroll", "maxCount": 1, "probability": 100 },
-      { "name": "Ratman", "maxCount": 1, "probability": 100 }
+      { "name": "RimeSerpent", "maxCount": 3, "probability": 100 },
+      { "name": "RimeElemental", "maxCount": 8, "probability": 100 },
+      { "name": "RimeGiant", "maxCount": 1, "probability": 100 },
+      { "name": "RimeThrall", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -488,7 +483,7 @@
     "homeRange": 15,
     "walkingRange": 15,
     "entries": [
-      { "name": "ArcticOgreLord", "maxCount": 1, "probability": 100 }
+      { "name": "RimeWarlord", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -569,6 +564,119 @@
     "walkingRange": 1,
     "entries": [
       { "name": "TreasureChestLevel3", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "0a2d9b1b-6f2a-4c0e-9e3a-1a0c5f8e2b11",
+    "name": "Spawner (210)",
+    "location": [5841, 161, 0],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:10:00",
+    "team": 0,
+    "homeRange": 15,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "RimeCrone", "maxCount": 1, "probability": 100 },
+      { "name": "RimeHowler", "maxCount": 2, "probability": 100 },
+      { "name": "RimeGrub", "maxCount": 1, "probability": 100 },
+      { "name": "RimeBoar", "maxCount": 1, "probability": 100 },
+      { "name": "RimeSparrow", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1b3ea2c2-7f3b-4d1f-af4b-2b1d6a9f3c22",
+    "name": "Spawner (210)",
+    "location": [5801, 190, -6],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:10:00",
+    "team": 0,
+    "homeRange": 10,
+    "walkingRange": 25,
+    "entries": [
+      { "name": "RimeReaver", "maxCount": 1, "probability": 100 },
+      { "name": "RimeWight", "maxCount": 1, "probability": 100 },
+      { "name": "RimeGolem", "maxCount": 1, "probability": 100 },
+      { "name": "RimeMauler", "maxCount": 1, "probability": 100 },
+      { "name": "RimeSeer", "maxCount": 1, "probability": 100 },
+      { "name": "RimeColossus", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "2c4fb3d3-8a4c-4e2a-b05c-3c2e7bafc433",
+    "name": "Spawner (210)",
+    "location": [5865, 216, -4],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:10:00",
+    "team": 0,
+    "homeRange": 15,
+    "walkingRange": 25,
+    "entries": [
+      { "name": "RimeBoreadScout", "maxCount": 2, "probability": 100 },
+      { "name": "RimeBoreadArcher", "maxCount": 1, "probability": 100 },
+      { "name": "RimeBoreadRider", "maxCount": 1, "probability": 100 },
+      { "name": "RimeBoreadHoundmaster", "maxCount": 1, "probability": 100 },
+      { "name": "RimeVole", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "3d5ac4e4-9b5d-4f3b-c16d-4d3f8cbfd544",
+    "name": "Spawner (210)",
+    "location": [5759, 215, -7],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:10:00",
+    "team": 0,
+    "homeRange": 15,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "RimeBoreadLancer", "maxCount": 1, "probability": 100 },
+      { "name": "RimeBoreadShaman", "maxCount": 1, "probability": 100 },
+      { "name": "RimeBoreadOutrider", "maxCount": 1, "probability": 100 },
+      { "name": "RimeBoreadGale", "maxCount": 1, "probability": 100 },
+      { "name": "RimeMoth", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "4e6bd5f5-ac6e-4054-d27e-5e4a9dc0e655",
+    "name": "Spawner (210)",
+    "location": [5816, 239, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:10:00",
+    "team": 0,
+    "homeRange": 15,
+    "walkingRange": 15,
+    "entries": [
+      { "name": "RimeBoreadHerald", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5f7ce606-bd7f-4165-e38f-6f5bae1d1766",
+    "name": "Spawner (210)",
+    "location": [5748, 140, 9],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:20:00",
+    "maxDelay": "00:30:00",
+    "team": 0,
+    "homeRange": 10,
+    "walkingRange": 10,
+    "entries": [
+      { "name": "RimeCheimon", "maxCount": 1, "probability": 100 }
     ]
   }
 ]

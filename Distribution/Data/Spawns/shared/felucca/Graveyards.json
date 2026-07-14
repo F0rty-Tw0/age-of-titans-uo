@@ -15,11 +15,11 @@
     },
     "walkingRange": 20,
     "entries": [
-      { "name": "Spectre", "maxCount": 1, "probability": 100 },
-      { "name": "Shade", "maxCount": 1, "probability": 100 },
-      { "name": "Wraith", "maxCount": 1, "probability": 100 },
-      { "name": "Skeleton", "maxCount": 1, "probability": 100 },
-      { "name": "Zombie", "maxCount": 2, "probability": 100 }
+      { "name": "RestlessShade", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessShade", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessWraith", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessSkeleton", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessZombie", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -38,10 +38,10 @@
     },
     "walkingRange": 20,
     "entries": [
-      { "name": "Spectre", "maxCount": 2, "probability": 100 },
-      { "name": "Wraith", "maxCount": 2, "probability": 100 },
-      { "name": "Skeleton", "maxCount": 3, "probability": 100 },
-      { "name": "Zombie", "maxCount": 4, "probability": 100 }
+      { "name": "RestlessShade", "maxCount": 2, "probability": 100 },
+      { "name": "RestlessWraith", "maxCount": 2, "probability": 100 },
+      { "name": "RestlessSkeleton", "maxCount": 3, "probability": 100 },
+      { "name": "RestlessZombie", "maxCount": 4, "probability": 100 }
     ]
   },
   {
@@ -57,7 +57,7 @@
     "homeRange": 20,
     "walkingRange": 20,
     "entries": [
-      { "name": "Skeleton", "maxCount": 10, "probability": 100 }
+      { "name": "RestlessSkeleton", "maxCount": 10, "probability": 100 }
     ]
   },
   {
@@ -95,12 +95,12 @@
     },
     "walkingRange": 20,
     "entries": [
-      { "name": "Spectre", "maxCount": 1, "probability": 100 },
-      { "name": "Shade", "maxCount": 1, "probability": 100 },
-      { "name": "Wraith", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessShade", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessShade", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessWraith", "maxCount": 1, "probability": 100 },
       { "name": "Lich", "maxCount": 1, "probability": 100 },
-      { "name": "Skeleton", "maxCount": 1, "probability": 100 },
-      { "name": "Zombie", "maxCount": 1, "probability": 100 }
+      { "name": "RestlessSkeleton", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessZombie", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -116,10 +116,10 @@
     "homeRange": 20,
     "walkingRange": 30,
     "entries": [
-      { "name": "Spectre", "maxCount": 2, "probability": 100 },
-      { "name": "Wraith", "maxCount": 2, "probability": 100 },
-      { "name": "Skeleton", "maxCount": 3, "probability": 100 },
-      { "name": "Zombie", "maxCount": 4, "probability": 100 }
+      { "name": "RestlessShade", "maxCount": 2, "probability": 100 },
+      { "name": "RestlessWraith", "maxCount": 2, "probability": 100 },
+      { "name": "RestlessSkeleton", "maxCount": 3, "probability": 100 },
+      { "name": "RestlessZombie", "maxCount": 4, "probability": 100 }
     ]
   },
   {
@@ -135,8 +135,8 @@
     "homeRange": 10,
     "walkingRange": 15,
     "entries": [
-      { "name": "Zombie", "maxCount": 4, "probability": 100 },
-      { "name": "Skeleton", "maxCount": 4, "probability": 100 }
+      { "name": "RestlessZombie", "maxCount": 4, "probability": 100 },
+      { "name": "RestlessSkeleton", "maxCount": 4, "probability": 100 }
     ]
   },
   {
@@ -155,11 +155,11 @@
     },
     "walkingRange": 15,
     "entries": [
-      { "name": "Spectre", "maxCount": 2, "probability": 100 },
-      { "name": "Wraith", "maxCount": 2, "probability": 100 },
-      { "name": "Shade", "maxCount": 2, "probability": 100 },
-      { "name": "Skeleton", "maxCount": 3, "probability": 100 },
-      { "name": "Zombie", "maxCount": 4, "probability": 100 }
+      { "name": "RestlessShade", "maxCount": 2, "probability": 100 },
+      { "name": "RestlessWraith", "maxCount": 2, "probability": 100 },
+      { "name": "RestlessShade", "maxCount": 2, "probability": 100 },
+      { "name": "RestlessSkeleton", "maxCount": 3, "probability": 100 },
+      { "name": "RestlessZombie", "maxCount": 4, "probability": 100 }
     ]
   }
 ]

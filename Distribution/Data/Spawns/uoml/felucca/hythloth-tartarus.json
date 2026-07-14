@@ -1,0 +1,200 @@
+[
+  {
+    "$type": "Spawner",
+    "guid": "f6a8c04d-6789-4f0a-3b4c-5d6e7f809102",
+    "name": "Hythloth - Tartarus Imp Swarm (Imp/Daemon grounds)",
+    "location": [5918, 235, 44],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:04:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "TartarusImp", "maxCount": 2, "probability": 100 },
+      { "name": "TartarusFiend", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "07b9d15e-789a-4a1b-4c5d-6e7f80910213",
+    "name": "Hythloth - Tartarus Torment Grounds (Ice Fiend/Enforcer grounds)",
+    "location": [6058, 153, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "TartarusTormentFiend", "maxCount": 2, "probability": 100 },
+      { "name": "TartarusEnforcer", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "18cae26f-89ab-4b2c-5d6e-7f8091021324",
+    "name": "Hythloth - Tartarus Gargoyle Roost (Gargoyle/Stone Gargoyle grounds)",
+    "location": [6119, 219, 22],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:04:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "TartarusGargoyle", "maxCount": 2, "probability": 100 },
+      { "name": "TartarusStonewrath", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "29dbf370-9abc-4c3d-6e7f-809102132435",
+    "name": "Hythloth - Tartarus Hellbrand Camp (Gore Fiend/Chaos Daemon grounds)",
+    "location": [5992, 146, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "TartarusSoulgorger", "maxCount": 2, "probability": 100 },
+      { "name": "TartarusHellbrand", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "3aeca481-abcd-4d4e-7f80-910213243546",
+    "name": "Hythloth - Eurynomos",
+    "location": [6094, 154, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:20:00",
+    "maxDelay": "00:20:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "Eurynomos", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "7eeaea38-08f4-494f-9afb-806015141723",
+    "name": "Hythloth - Tartarus Pit Brood (Imp/Gargoyle grounds)",
+    "location": [5921, 232, 44],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:04:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "TartarusImpling", "maxCount": 1, "probability": 100 },
+      { "name": "TartarusEmberwing", "maxCount": 1, "probability": 100 },
+      { "name": "TartarusGargoyleLord", "maxCount": 1, "probability": 100 },
+      { "name": "TartarusCinderImp", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "36b32b3b-563d-4918-bdbd-7f0f1ef62214",
+    "name": "Hythloth - Tartarus Ember Camp (Hell Hound/Chaos Daemon grounds)",
+    "location": [5989, 149, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:04:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "TartarusPyrehound", "maxCount": 1, "probability": 100 },
+      { "name": "TartarusChaosbrand", "maxCount": 1, "probability": 100 },
+      { "name": "TartarusGoreling", "maxCount": 1, "probability": 100 },
+      { "name": "TartarusAshhound", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6b8251e5-682b-482b-831b-aebe00d2a4ab",
+    "name": "Hythloth - Tartarus Deep Warrens (Daemon/Ice Fiend/Arcane Daemon grounds)",
+    "location": [6061, 150, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "TartarusDaemonspawn", "maxCount": 1, "probability": 100 },
+      { "name": "TartarusRimefiend", "maxCount": 1, "probability": 100 },
+      { "name": "TartarusHexfiend", "maxCount": 1, "probability": 100 },
+      { "name": "TartarusBrimstone", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "713a3391-fc78-443d-b5d0-31a721745919",
+    "name": "Hythloth - Tartarus Stone Wardens (Gargoyle Enforcer/Stone Gargoyle/Efreet/Succubus grounds)",
+    "location": [6116, 222, 22],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "TartarusScourgewing", "maxCount": 1, "probability": 100 },
+      { "name": "TartarusSlatewarden", "maxCount": 1, "probability": 100 },
+      { "name": "TartarusSoulflayer", "maxCount": 1, "probability": 100 },
+      { "name": "TartarusEfreet", "maxCount": 1, "probability": 100 },
+      { "name": "TartarusSuccubus", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "9c49708b-8624-4c61-81cb-b5249686b273",
+    "name": "Hythloth - Chained Titans' Hold (Cyclops/Ogre Lord/Ettin/Titan grounds)",
+    "location": [6100, 160, 0],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "TartarusTitanThrall", "maxCount": 1, "probability": 100 },
+      { "name": "TartarusTitanShackled", "maxCount": 1, "probability": 100 },
+      { "name": "TartarusTitanWarden", "maxCount": 1, "probability": 100 },
+      { "name": "TartarusTitanColossus", "maxCount": 1, "probability": 100 },
+      { "name": "TartarusTitanJailer", "maxCount": 1, "probability": 100 },
+      { "name": "TartarusTitanBreaker", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6acd4c06-f98a-4696-8f7d-41ab7b119d78",
+    "name": "Hythloth - Menoetius",
+    "location": [6104, 163, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:20:00",
+    "maxDelay": "00:30:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "TartarusMenoetius", "maxCount": 1, "probability": 100 }
+    ]
+  }
+]

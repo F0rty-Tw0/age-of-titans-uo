@@ -1,0 +1,203 @@
+[
+  {
+    "$type": "Spawner",
+    "guid": "3a7f9e4c-1b2d-4a6f-9c3e-5d8b6a2f0e11",
+    "name": "Wildwood Entry Trash (PLACEHOLDER COORDS)",
+    "location": [6710, 1110, 0],
+    "map": "Felucca",
+    "count": 9,
+    "minDelay": "00:01:00",
+    "maxDelay": "00:02:00",
+    "team": 0,
+    "homeRange": 17,
+    "walkingRange": 10,
+    "entries": [
+      { "name": "WyldHound", "maxCount": 5, "probability": 100 },
+      { "name": "WyldStalker", "maxCount": 4, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6c2d8b1a-4e7f-4c9d-8a1b-2f6e9d3c5b22",
+    "name": "Wildwood Deep Trash (PLACEHOLDER COORDS)",
+    "location": [6750, 1120, 0],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:02:00",
+    "team": 0,
+    "homeRange": 17,
+    "walkingRange": 10,
+    "entries": [
+      { "name": "WyldPanther", "maxCount": 3, "probability": 100 },
+      { "name": "WyldPython", "maxCount": 3, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "9d5e1c3f-7a2b-4f6d-8c4e-1a3b5d7f9e33",
+    "name": "Wildwood Sentinels (PLACEHOLDER COORDS)",
+    "location": [6790, 1130, 0],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 14,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "WyldSentinel", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "2f8a4d6c-9e1b-4a3f-8d2c-6b4e8f1a3c44",
+    "name": "Wildwood Elite - Atalanta (PLACEHOLDER COORDS)",
+    "location": [6815, 1135, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:15:00",
+    "maxDelay": "00:15:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "WyldMatriarch", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5b1e7d3a-2c9f-4e6b-9a4d-8c2f6e9d1b55",
+    "name": "Wildwood Boss - Elaphos (PLACEHOLDER COORDS)",
+    "location": [6840, 1140, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:45:00",
+    "maxDelay": "01:00:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "WyldStag", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "8e4c2a6f-5d1b-4c8e-9f3a-1d5b8e2c4f66",
+    "name": "Wildwood Boss Custodians (PLACEHOLDER COORDS)",
+    "location": [6845, 1145, 0],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "WyldHound", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1a3c5e7f-2b4d-4a6c-8e1f-3b5d7a9c1e01",
+    "name": "Wildwood Moon-Marked Pack L6 (PLACEHOLDER COORDS)",
+    "location": [6705, 1105, 0],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:01:00",
+    "maxDelay": "00:02:00",
+    "team": 0,
+    "homeRange": 17,
+    "walkingRange": 10,
+    "entries": [
+      { "name": "WyldWolf", "maxCount": 2, "probability": 100 },
+      { "name": "WyldLynx", "maxCount": 1, "probability": 100 },
+      { "name": "WyldBoar", "maxCount": 1, "probability": 100 },
+      { "name": "WyldViper", "maxCount": 1, "probability": 100 },
+      { "name": "WyldStinger", "maxCount": 1, "probability": 100 },
+      { "name": "WyldHarrier", "maxCount": 1, "probability": 100 },
+      { "name": "WyldHart", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "2b4d6f8a-3c5e-4b7d-9f2a-4c6e8b1d3f02",
+    "name": "Wildwood Moon-Marked Pack L7 (PLACEHOLDER COORDS)",
+    "location": [6730, 1110, 0],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:02:00",
+    "team": 0,
+    "homeRange": 17,
+    "walkingRange": 10,
+    "entries": [
+      { "name": "WyldGrizzly", "maxCount": 1, "probability": 100 },
+      { "name": "WyldDirewolf", "maxCount": 1, "probability": 100 },
+      { "name": "WyldPuma", "maxCount": 1, "probability": 100 },
+      { "name": "WyldConstrictor", "maxCount": 1, "probability": 100 },
+      { "name": "WyldTreant", "maxCount": 1, "probability": 100 },
+      { "name": "WyldCorpser", "maxCount": 1, "probability": 100 },
+      { "name": "WyldSpider", "maxCount": 1, "probability": 100 },
+      { "name": "WyldNemean", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "3c5e7f9b-4d6f-4c8e-8a3b-5d7f9c2e4a03",
+    "name": "Wildwood Thiasos Huntresses (PLACEHOLDER COORDS)",
+    "location": [6755, 1115, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:02:00",
+    "team": 0,
+    "homeRange": 15,
+    "walkingRange": 9,
+    "entries": [
+      { "name": "WyldThiasosHuntress", "maxCount": 1, "probability": 100 },
+      { "name": "WyldThiasosArcher", "maxCount": 1, "probability": 100 },
+      { "name": "WyldThiasosWitch", "maxCount": 1, "probability": 100 },
+      { "name": "WyldThiasosPriestess", "maxCount": 1, "probability": 100 },
+      { "name": "WyldThiasosHound", "maxCount": 1, "probability": 100 },
+      { "name": "WyldThiasosPanther", "maxCount": 1, "probability": 100 },
+      { "name": "WyldThiasosStalker", "maxCount": 1, "probability": 100 },
+      { "name": "WyldThiasosHoundmaster", "maxCount": 1, "probability": 100 },
+      { "name": "WyldThiasosMatron", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "4d6f8a1c-5e7f-4d9a-9b4c-6e8a1d3f5b04",
+    "name": "Wildwood Grove Ambient (PLACEHOLDER COORDS)",
+    "location": [6775, 1120, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:01:00",
+    "maxDelay": "00:01:00",
+    "team": 0,
+    "homeRange": 17,
+    "walkingRange": 10,
+    "entries": [
+      { "name": "WyldFawn", "maxCount": 2, "probability": 100 },
+      { "name": "WyldSpiderling", "maxCount": 1, "probability": 100 },
+      { "name": "WyldSprite", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e7f9b2d-6f8a-4e1b-8c5d-7f9b2e4a6c05",
+    "name": "Wildwood Mini-Boss - Prokris (PLACEHOLDER COORDS)",
+    "location": [6800, 1125, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:20:00",
+    "maxDelay": "00:30:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "WyldProkris", "maxCount": 1, "probability": 100 }
+    ]
+  }
+]

@@ -1,0 +1,203 @@
+[
+  {
+    "$type": "Spawner",
+    "guid": "5e4f1e2a-6a3d-4b0a-9b7a-1c2d3e4f5a6b",
+    "name": "Drowned Tholos - Entry Trash (PLACEHOLDER COORDS)",
+    "location": [6715, 915, 0],
+    "map": "Felucca",
+    "count": 9,
+    "minDelay": "00:01:00",
+    "maxDelay": "00:02:00",
+    "team": 0,
+    "homeRange": 17,
+    "walkingRange": 10,
+    "entries": [
+      { "name": "TideDrudge", "maxCount": 5, "probability": 100 },
+      { "name": "TideBrinescale", "maxCount": 4, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6f5a2f3b-7b4e-4c1b-8c8b-2d3e4f5a6b7c",
+    "name": "Drowned Tholos - Deep Trash (PLACEHOLDER COORDS)",
+    "location": [6750, 930, 0],
+    "map": "Felucca",
+    "count": 7,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:02:00",
+    "team": 0,
+    "homeRange": 17,
+    "walkingRange": 10,
+    "entries": [
+      { "name": "TideHoplite", "maxCount": 4, "probability": 100 },
+      { "name": "TideMaw", "maxCount": 3, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "7a6b3c4d-8c5f-4d2c-9d9c-3e4f5a6b7c8d",
+    "name": "Drowned Tholos - Sentinels (PLACEHOLDER COORDS)",
+    "location": [6780, 920, 0],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "TideSentinel", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "8b7c4d5e-9d6a-4e3d-ae0d-4f5a6b7c8d9e",
+    "name": "Drowned Tholos - Elite Warden (PLACEHOLDER COORDS)",
+    "location": [6800, 935, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:15:00",
+    "maxDelay": "00:15:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "TideWarden", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "9c8d5e6f-ae7b-4f4e-bf1e-5a6b7c8d9e0f",
+    "name": "Drowned Tholos - Boss Aigaion (PLACEHOLDER COORDS)",
+    "location": [6840, 945, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:30:00",
+    "maxDelay": "00:45:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "TideHerald", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "ad9e6f7a-bf8c-4a5f-c02f-6b7c8d9e0f1a",
+    "name": "Drowned Tholos - Boss Room Custodians (PLACEHOLDER COORDS)",
+    "location": [6835, 940, 0],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 6,
+    "walkingRange": 4,
+    "entries": [
+      { "name": "TideSentinel", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5025ae4f-0934-445b-a1f5-33b29da48b69",
+    "name": "Drowned Tholos - Garrison Trash L4 (PLACEHOLDER COORDS)",
+    "location": [6705, 905, 0],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:01:00",
+    "maxDelay": "00:02:00",
+    "team": 0,
+    "homeRange": 17,
+    "walkingRange": 10,
+    "entries": [
+      { "name": "TideConscript", "maxCount": 2, "probability": 100 },
+      { "name": "TideDiver", "maxCount": 1, "probability": 100 },
+      { "name": "TideRower", "maxCount": 1, "probability": 100 },
+      { "name": "TideLeech", "maxCount": 1, "probability": 100 },
+      { "name": "TideEel", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "e9f3df92-3600-469f-9499-d548df8fef30",
+    "name": "Drowned Tholos - Garrison Trash L5 (PLACEHOLDER COORDS)",
+    "location": [6760, 905, 0],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:02:00",
+    "team": 0,
+    "homeRange": 17,
+    "walkingRange": 10,
+    "entries": [
+      { "name": "TideMarine", "maxCount": 1, "probability": 100 },
+      { "name": "TidePikeman", "maxCount": 1, "probability": 100 },
+      { "name": "TideVotary", "maxCount": 1, "probability": 100 },
+      { "name": "TideHexer", "maxCount": 1, "probability": 100 },
+      { "name": "TideCoralguard", "maxCount": 1, "probability": 100 },
+      { "name": "TideAbyssEel", "maxCount": 1, "probability": 100 },
+      { "name": "TideReefserpent", "maxCount": 1, "probability": 100 },
+      { "name": "TideSpinecrab", "maxCount": 1, "probability": 100 },
+      { "name": "TideBloated", "maxCount": 1, "probability": 100 },
+      { "name": "TideWraith", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "a086e4fe-f73a-4da6-a453-cfa6a786dcf4",
+    "name": "Drowned Tholos - Pelagos Crew (PLACEHOLDER COORDS)",
+    "location": [6820, 910, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:03:00",
+    "team": 0,
+    "homeRange": 15,
+    "walkingRange": 10,
+    "entries": [
+      { "name": "TidePelagosDeckhand", "maxCount": 1, "probability": 100 },
+      { "name": "TidePelagosLookout", "maxCount": 1, "probability": 100 },
+      { "name": "TidePelagosHarpooner", "maxCount": 1, "probability": 100 },
+      { "name": "TidePelagosDrummer", "maxCount": 1, "probability": 100 },
+      { "name": "TidePelagosNavigator", "maxCount": 1, "probability": 100 },
+      { "name": "TidePelagosOarmaster", "maxCount": 1, "probability": 100 },
+      { "name": "TidePelagosBosun", "maxCount": 1, "probability": 100 },
+      { "name": "TidePelagosBrineshade", "maxCount": 1, "probability": 100 },
+      { "name": "TidePelagosCaptain", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "cfc59c9b-c631-47c5-9e25-4eb7f90b74f7",
+    "name": "Drowned Tholos - Reef Vermin (PLACEHOLDER COORDS)",
+    "location": [6700, 945, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:01:00",
+    "maxDelay": "00:01:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "TideJelly", "maxCount": 2, "probability": 100 },
+      { "name": "TideCrabling", "maxCount": 1, "probability": 100 },
+      { "name": "TideGull", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "019bb142-c3a5-421d-b5fd-78950e3f6ad5",
+    "name": "Drowned Tholos - Mini-Boss Nauplios (PLACEHOLDER COORDS)",
+    "location": [6790, 900, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:20:00",
+    "maxDelay": "00:30:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "TideNavarch", "maxCount": 1, "probability": 100 }
+    ]
+  }
+]

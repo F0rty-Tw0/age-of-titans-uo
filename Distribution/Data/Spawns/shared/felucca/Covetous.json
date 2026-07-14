@@ -29,7 +29,7 @@
     "homeRange": 10,
     "walkingRange": 25,
     "entries": [
-      { "name": "Slime", "maxCount": 5, "probability": 100 }
+      { "name": "ArgusOoze", "maxCount": 5, "probability": 100 }
     ]
   },
   {
@@ -47,7 +47,7 @@
     "entries": [
       { "name": "TreasureChestLevel2", "maxCount": 1, "probability": 100 },
       { "name": "TreasureChestLevel3", "maxCount": 2, "probability": 100 },
-      { "name": "Corpser", "maxCount": 6, "probability": 100 }
+      { "name": "ArgusSnare", "maxCount": 6, "probability": 100 }
     ]
   },
   {
@@ -63,7 +63,7 @@
     "homeRange": 5,
     "walkingRange": 5,
     "entries": [
-      { "name": "Corpser", "maxCount": 3, "probability": 100 }
+      { "name": "ArgusSnare", "maxCount": 3, "probability": 100 }
     ]
   },
   {
@@ -79,7 +79,7 @@
     "homeRange": 10,
     "walkingRange": 25,
     "entries": [
-      { "name": "Skeleton", "maxCount": 4, "probability": 100 }
+      { "name": "ArgusDeadhunter", "maxCount": 4, "probability": 100 }
     ]
   },
   {
@@ -95,7 +95,7 @@
     "homeRange": 5,
     "walkingRange": 5,
     "entries": [
-      { "name": "Gazer", "maxCount": 2, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -111,7 +111,7 @@
     "homeRange": 10,
     "walkingRange": 20,
     "entries": [
-      { "name": "HeadlessOne", "maxCount": 2, "probability": 100 }
+      { "name": "ArgusThrall", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -127,13 +127,13 @@
     "homeRange": 15,
     "walkingRange": 25,
     "entries": [
-      { "name": "Mummy", "maxCount": 1, "probability": 100 },
-      { "name": "Shade", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 },
       { "name": "SkeletalKnight", "maxCount": 1, "probability": 100 },
-      { "name": "Skeleton", "maxCount": 2, "probability": 100 },
-      { "name": "Zombie", "maxCount": 2, "probability": 100 },
-      { "name": "Spectre", "maxCount": 1, "probability": 100 },
-      { "name": "Wraith", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusDeadhunter", "maxCount": 2, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 2, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -149,7 +149,7 @@
     "homeRange": 5,
     "walkingRange": 5,
     "entries": [
-      { "name": "Corpser", "maxCount": 3, "probability": 100 }
+      { "name": "ArgusSnare", "maxCount": 3, "probability": 100 }
     ]
   },
   {
@@ -165,8 +165,8 @@
     "homeRange": 15,
     "walkingRange": 25,
     "entries": [
-      { "name": "Gazer", "maxCount": 2, "probability": 100 },
-      { "name": "GazerLarva", "maxCount": 2, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 2, "probability": 100 },
+      { "name": "ArgusMote", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -182,8 +182,8 @@
     "homeRange": 15,
     "walkingRange": 30,
     "entries": [
-      { "name": "Harpy", "maxCount": 8, "probability": 100 },
-      { "name": "StoneHarpy", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusHarpy", "maxCount": 8, "probability": 100 },
+      { "name": "ArgusStoneEye", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -199,7 +199,7 @@
     "homeRange": 10,
     "walkingRange": 20,
     "entries": [
-      { "name": "HeadlessOne", "maxCount": 2, "probability": 100 }
+      { "name": "ArgusThrall", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -232,9 +232,9 @@
     "homeRange": 15,
     "walkingRange": 25,
     "entries": [
-      { "name": "Gazer", "maxCount": 4, "probability": 100 },
-      { "name": "GazerLarva", "maxCount": 2, "probability": 100 },
-      { "name": "ElderGazer", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 4, "probability": 100 },
+      { "name": "ArgusMote", "maxCount": 2, "probability": 100 },
+      { "name": "ArgusOverseer", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -250,8 +250,8 @@
     "homeRange": 10,
     "walkingRange": 25,
     "entries": [
-      { "name": "GiantSpider", "maxCount": 2, "probability": 100 },
-      { "name": "DreadSpider", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusVaultspider", "maxCount": 2, "probability": 100 },
+      { "name": "ArgusVaultspider", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -317,9 +317,9 @@
     "homeRange": 11,
     "walkingRange": 25,
     "entries": [
-      { "name": "Lich", "maxCount": 7, "probability": 100 },
-      { "name": "Spectre", "maxCount": 3, "probability": 100 },
-      { "name": "Skeleton", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusHoardmage", "maxCount": 7, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 3, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -336,9 +336,9 @@
     "walkingRange": 25,
     "entries": [
       { "name": "BoneKnight", "maxCount": 3, "probability": 100 },
-      { "name": "Skeleton", "maxCount": 1, "probability": 100 },
-      { "name": "Zombie", "maxCount": 1, "probability": 100 },
-      { "name": "Shade", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 },
       { "name": "TreasureChestLevel3", "maxCount": 1, "probability": 100 },
       { "name": "TreasureChestLevel4", "maxCount": 2, "probability": 100 }
     ]
@@ -356,7 +356,7 @@
     "homeRange": 5,
     "walkingRange": 25,
     "entries": [
-      { "name": "HeadlessOne", "maxCount": 4, "probability": 100 }
+      { "name": "ArgusThrall", "maxCount": 4, "probability": 100 }
     ]
   },
   {
@@ -372,7 +372,7 @@
     "homeRange": 5,
     "walkingRange": 5,
     "entries": [
-      { "name": "Corpser", "maxCount": 2, "probability": 100 }
+      { "name": "ArgusSnare", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -389,7 +389,7 @@
     "walkingRange": 10,
     "entries": [
       { "name": "TreasureChestLevel2", "maxCount": 1, "probability": 100 },
-      { "name": "Corpser", "maxCount": 7, "probability": 100 }
+      { "name": "ArgusSnare", "maxCount": 7, "probability": 100 }
     ]
   },
   {
@@ -422,7 +422,7 @@
     "homeRange": 10,
     "walkingRange": 25,
     "entries": [
-      { "name": "Harpy", "maxCount": 6, "probability": 100 }
+      { "name": "ArgusHarpy", "maxCount": 6, "probability": 100 }
     ]
   },
   {
@@ -438,7 +438,7 @@
     "homeRange": 5,
     "walkingRange": 5,
     "entries": [
-      { "name": "Corpser", "maxCount": 3, "probability": 100 }
+      { "name": "ArgusSnare", "maxCount": 3, "probability": 100 }
     ]
   },
   {
@@ -454,7 +454,7 @@
     "homeRange": 10,
     "walkingRange": 25,
     "entries": [
-      { "name": "Skeleton", "maxCount": 4, "probability": 100 }
+      { "name": "ArgusDeadhunter", "maxCount": 4, "probability": 100 }
     ]
   },
   {
@@ -470,7 +470,7 @@
     "homeRange": 7,
     "walkingRange": 30,
     "entries": [
-      { "name": "StoneHarpy", "maxCount": 2, "probability": 100 }
+      { "name": "ArgusStoneEye", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -486,7 +486,7 @@
     "homeRange": 10,
     "walkingRange": 25,
     "entries": [
-      { "name": "Skeleton", "maxCount": 4, "probability": 100 }
+      { "name": "ArgusDeadhunter", "maxCount": 4, "probability": 100 }
     ]
   },
   {
@@ -502,7 +502,7 @@
     "homeRange": 3,
     "walkingRange": 12,
     "entries": [
-      { "name": "RottingCorpse", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 },
       { "name": "TreasureChestLevel3", "maxCount": 1, "probability": 100 },
       { "name": "TreasureChestLevel4", "maxCount": 2, "probability": 100 }
     ]
@@ -520,7 +520,7 @@
     "homeRange": 10,
     "walkingRange": 20,
     "entries": [
-      { "name": "HeadlessOne", "maxCount": 2, "probability": 100 }
+      { "name": "ArgusThrall", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -537,9 +537,9 @@
     "walkingRange": 25,
     "entries": [
       { "name": "BoneKnight", "maxCount": 3, "probability": 100 },
-      { "name": "Skeleton", "maxCount": 1, "probability": 100 },
-      { "name": "Zombie", "maxCount": 1, "probability": 100 },
-      { "name": "Shade", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -555,13 +555,13 @@
     "homeRange": 15,
     "walkingRange": 25,
     "entries": [
-      { "name": "Mummy", "maxCount": 1, "probability": 100 },
-      { "name": "Shade", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 },
       { "name": "SkeletalKnight", "maxCount": 1, "probability": 100 },
-      { "name": "Skeleton", "maxCount": 2, "probability": 100 },
-      { "name": "Zombie", "maxCount": 2, "probability": 100 },
-      { "name": "Spectre", "maxCount": 1, "probability": 100 },
-      { "name": "Wraith", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusDeadhunter", "maxCount": 2, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 2, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -577,13 +577,13 @@
     "homeRange": 15,
     "walkingRange": 40,
     "entries": [
-      { "name": "Mummy", "maxCount": 1, "probability": 100 },
-      { "name": "Shade", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 },
       { "name": "SkeletalKnight", "maxCount": 1, "probability": 100 },
-      { "name": "Skeleton", "maxCount": 2, "probability": 100 },
-      { "name": "Zombie", "maxCount": 2, "probability": 100 },
-      { "name": "Spectre", "maxCount": 1, "probability": 100 },
-      { "name": "Wraith", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusDeadhunter", "maxCount": 2, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 2, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -599,8 +599,8 @@
     "homeRange": 15,
     "walkingRange": 25,
     "entries": [
-      { "name": "GiantSpider", "maxCount": 2, "probability": 100 },
-      { "name": "DreadSpider", "maxCount": 2, "probability": 100 }
+      { "name": "ArgusVaultspider", "maxCount": 2, "probability": 100 },
+      { "name": "ArgusVaultspider", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -633,8 +633,8 @@
     "homeRange": 10,
     "walkingRange": 20,
     "entries": [
-      { "name": "Gazer", "maxCount": 2, "probability": 100 },
-      { "name": "GazerLarva", "maxCount": 2, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 2, "probability": 100 },
+      { "name": "ArgusMote", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -650,13 +650,13 @@
     "homeRange": 15,
     "walkingRange": 25,
     "entries": [
-      { "name": "Mummy", "maxCount": 1, "probability": 100 },
-      { "name": "Shade", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 },
       { "name": "SkeletalKnight", "maxCount": 1, "probability": 100 },
-      { "name": "Skeleton", "maxCount": 2, "probability": 100 },
-      { "name": "Zombie", "maxCount": 2, "probability": 100 },
-      { "name": "Spectre", "maxCount": 1, "probability": 100 },
-      { "name": "Wraith", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusDeadhunter", "maxCount": 2, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 2, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -672,13 +672,13 @@
     "homeRange": 15,
     "walkingRange": 30,
     "entries": [
-      { "name": "Mummy", "maxCount": 1, "probability": 100 },
-      { "name": "Shade", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 },
       { "name": "SkeletalKnight", "maxCount": 1, "probability": 100 },
-      { "name": "Skeleton", "maxCount": 3, "probability": 100 },
-      { "name": "Zombie", "maxCount": 3, "probability": 100 },
-      { "name": "Spectre", "maxCount": 1, "probability": 100 },
-      { "name": "Wraith", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusDeadhunter", "maxCount": 3, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 3, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -694,7 +694,7 @@
     "homeRange": 5,
     "walkingRange": 5,
     "entries": [
-      { "name": "Corpser", "maxCount": 3, "probability": 100 }
+      { "name": "ArgusSnare", "maxCount": 3, "probability": 100 }
     ]
   },
   {
@@ -710,8 +710,8 @@
     "homeRange": 9,
     "walkingRange": 25,
     "entries": [
-      { "name": "GiantSpider", "maxCount": 2, "probability": 100 },
-      { "name": "DreadSpider", "maxCount": 2, "probability": 100 }
+      { "name": "ArgusVaultspider", "maxCount": 2, "probability": 100 },
+      { "name": "ArgusVaultspider", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -727,8 +727,8 @@
     "homeRange": 10,
     "walkingRange": 30,
     "entries": [
-      { "name": "Gazer", "maxCount": 4, "probability": 100 },
-      { "name": "GazerLarva", "maxCount": 2, "probability": 100 }
+      { "name": "ArgusEye", "maxCount": 4, "probability": 100 },
+      { "name": "ArgusMote", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -744,7 +744,7 @@
     "homeRange": 10,
     "walkingRange": 25,
     "entries": [
-      { "name": "Skeleton", "maxCount": 4, "probability": 100 }
+      { "name": "ArgusDeadhunter", "maxCount": 4, "probability": 100 }
     ]
   },
   {
@@ -778,9 +778,9 @@
     "walkingRange": 25,
     "entries": [
       { "name": "BoneKnight", "maxCount": 3, "probability": 100 },
-      { "name": "Skeleton", "maxCount": 1, "probability": 100 },
-      { "name": "Zombie", "maxCount": 1, "probability": 100 },
-      { "name": "Shade", "maxCount": 1, "probability": 100 }
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusDeadhunter", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -796,8 +796,122 @@
     "homeRange": 20,
     "walkingRange": 30,
     "entries": [
-      { "name": "Dragon", "maxCount": 1, "probability": 100 },
-      { "name": "Drake", "maxCount": 2, "probability": 100 }
+      { "name": "ArgusHoardmage", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusVaultspider", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "a1b2c3d4-1000-4000-8000-000000000e07",
+    "name": "Spawner (203)",
+    "location": [5452, 1799, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:20:00",
+    "maxDelay": "00:30:00",
+    "team": 0,
+    "homeRange": 20,
+    "walkingRange": 30,
+    "entries": [
+      { "name": "ArgusErysichthon", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "a1b2c3d4-1000-4000-8000-000000000e08",
+    "name": "Spawner (203)",
+    "location": [5465, 2023, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:10:00",
+    "team": 0,
+    "homeRange": 10,
+    "walkingRange": 25,
+    "entries": [
+      { "name": "ArgusMoteling", "maxCount": 2, "probability": 100 },
+      { "name": "ArgusGoldrat", "maxCount": 2, "probability": 100 },
+      { "name": "ArgusVaultmoth", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "a1b2c3d4-1000-4000-8000-000000000e09",
+    "name": "Spawner (203)",
+    "location": [5450, 1965, 0],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:10:00",
+    "team": 0,
+    "homeRange": 15,
+    "walkingRange": 25,
+    "entries": [
+      { "name": "ArgusGilded", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusScryeye", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusCoinwraith", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusVaultguard", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusGildedhound", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "a1b2c3d4-1000-4000-8000-000000000e0a",
+    "name": "Spawner (203)",
+    "location": [5585, 1865, 0],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:10:00",
+    "team": 0,
+    "homeRange": 15,
+    "walkingRange": 25,
+    "entries": [
+      { "name": "ArgusWatcher", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusHoardknight", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusGildspider", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusGoldwyrm", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusEyetyrant", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "a1b2c3d4-1000-4000-8000-000000000e0b",
+    "name": "Spawner (203)",
+    "location": [5445, 1805, 0],
+    "map": "Felucca",
+    "count": 7,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:10:00",
+    "team": 0,
+    "homeRange": 20,
+    "walkingRange": 30,
+    "entries": [
+      { "name": "ArgusTelchineApprentice", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusTelchineSmith", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusTelchineWarden", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusTelchineSeer", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusTelchineHexer", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusTelchineGuard", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusTelchineBlight", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusTelchineGildmage", "maxCount": 1, "probability": 100 },
+      { "name": "ArgusTelchineOverwarden", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "a1b2c3d4-1000-4000-8000-000000000e0c",
+    "name": "Spawner (203)",
+    "location": [5480, 1815, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:20:00",
+    "maxDelay": "00:30:00",
+    "team": 0,
+    "homeRange": 20,
+    "walkingRange": 30,
+    "entries": [
+      { "name": "ArgusMidas", "maxCount": 1, "probability": 100 }
     ]
   }
 ]

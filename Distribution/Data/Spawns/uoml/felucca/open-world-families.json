@@ -1,0 +1,342 @@
+[
+  {
+    "$type": "Spawner",
+    "guid": "1a2b3c4d-1001-4e11-9a01-100000000001",
+    "name": "Groves - E of Yew",
+    "location": [846, 1071, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:06:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "GroveStag", "maxCount": 3, "probability": 100 },
+      { "name": "GroveThornwolf", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1a2b3c4d-1002-4e11-9a01-100000000002",
+    "name": "Groves - NW of Britain",
+    "location": [1666, 1290, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:07:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "GroveBriarboar", "maxCount": 2, "probability": 100 },
+      { "name": "GroveNettleback", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1a2b3c4d-1003-4e11-9a01-100000000003",
+    "name": "Groves - North Woods",
+    "location": [1695, 809, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "GroveFaun", "maxCount": 2, "probability": 100 },
+      { "name": "GrovePiper", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1a2b3c4d-1004-4e11-9a01-100000000004",
+    "name": "Groves - E of Britain",
+    "location": [2512, 1066, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:06:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "GroveThornwolf", "maxCount": 2, "probability": 100 },
+      { "name": "GroveBriarboar", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "2b3c4d5e-2001-4e22-9a02-200000000001",
+    "name": "Peaks - W of Britain Mountains",
+    "location": [1055, 1442, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:07:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "PeakBronzeEttin", "maxCount": 2, "probability": 100 },
+      { "name": "PeakTur", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "2b3c4d5e-2002-4e22-9a02-200000000002",
+    "name": "Peaks - SW Peaks",
+    "location": [741, 1838, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "PeakRoc", "maxCount": 2, "probability": 100 },
+      { "name": "PeakCragOgre", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "2b3c4d5e-2003-4e22-9a02-200000000003",
+    "name": "Peaks - Central Crags",
+    "location": [1474, 1297, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "PeakCyclops", "maxCount": 2, "probability": 100 },
+      { "name": "PeakThunderroc", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "2b3c4d5e-2004-4e22-9a02-200000000004",
+    "name": "Peaks - North Peaks",
+    "location": [1749, 474, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:07:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "PeakTur", "maxCount": 2, "probability": 100 },
+      { "name": "PeakRoc", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "3c4d5e6f-3001-4e33-9a03-300000000001",
+    "name": "Mire - Swamp S of Britain",
+    "location": [1915, 2385, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "MireAlligator", "maxCount": 2, "probability": 100 },
+      { "name": "MireSkulker", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "3c4d5e6f-3002-4e33-9a03-300000000002",
+    "name": "Mire - Bog near Britain",
+    "location": [2079, 1018, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "MireToad", "maxCount": 2, "probability": 100 },
+      { "name": "MireSerpentspawn", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "3c4d5e6f-3003-4e33-9a03-300000000003",
+    "name": "Mire - Southern Fen",
+    "location": [2963, 3617, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:06:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "MireBogthing", "maxCount": 2, "probability": 100 },
+      { "name": "MireHydraspawn", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "3c4d5e6f-3004-4e33-9a03-300000000004",
+    "name": "Mire - Trinsic-area Swamp",
+    "location": [2354, 3503, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "MireAlligator", "maxCount": 2, "probability": 100 },
+      { "name": "MireToad", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "4d5e6f70-4001-4e44-9a04-400000000001",
+    "name": "Restless - Vesper/Minoc Graveyard",
+    "location": [2758, 867, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:06:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "RestlessSkeleton", "maxCount": 3, "probability": 100 },
+      { "name": "RestlessZombie", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "4d5e6f70-4002-4e44-9a04-400000000002",
+    "name": "Restless - Britain Graveyard",
+    "location": [1369, 1475, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:07:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "RestlessGhoul", "maxCount": 2, "probability": 100 },
+      { "name": "RestlessWight", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "4d5e6f70-4003-4e44-9a04-400000000003",
+    "name": "Restless - Cove Graveyard",
+    "location": [2438, 1100, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "RestlessShade", "maxCount": 2, "probability": 100 },
+      { "name": "RestlessWraith", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "4d5e6f70-4004-4e44-9a04-400000000004",
+    "name": "Restless - Trinsic Graveyard",
+    "location": [1285, 3731, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:06:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "RestlessSkeleton", "maxCount": 2, "probability": 100 },
+      { "name": "RestlessGhoul", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "4d5e6f70-4005-4e44-9a04-400000000005",
+    "name": "Restless - Unmarked Ground",
+    "location": [3407, 2652, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:07:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "RestlessZombie", "maxCount": 2, "probability": 100 },
+      { "name": "RestlessWight", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-5001-4e55-9a05-500000000001",
+    "name": "Shore - Trinsic Coast (APPROX COORDS — verify sand tiles in-game)",
+    "location": [1310, 3745, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:07:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreCrab", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreTideeel", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-5002-4e55-9a05-500000000002",
+    "name": "Shore - Britain Harbor Edge (APPROX COORDS — verify sand tiles in-game)",
+    "location": [1550, 1650, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreReefserpent", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreSiren", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-5003-4e55-9a05-500000000003",
+    "name": "Shore - Vesper Waterline (APPROX COORDS — verify sand tiles in-game)",
+    "location": [2900, 700, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreBrineling", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreLuresiren", "maxCount": 1, "probability": 100 }
+    ]
+  }
+]

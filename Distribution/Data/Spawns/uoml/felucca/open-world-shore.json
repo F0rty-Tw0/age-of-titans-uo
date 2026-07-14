@@ -1,0 +1,392 @@
+[
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-6001-4e55-9a05-600000000001",
+    "name": "Shore Expansion - Trinsic Coast A (APPROX COORDS — verify sand tiles in-game)",
+    "location": [1300, 3760, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreRockcrab", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreKingcrab", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-6002-4e55-9a05-600000000002",
+    "name": "Shore Expansion - Trinsic Coast B (APPROX COORDS — verify sand tiles in-game)",
+    "location": [1270, 3700, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreSpinecrab", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreSandcrawler", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-6003-4e55-9a05-600000000003",
+    "name": "Shore Expansion - Trinsic Coast C (APPROX COORDS — verify sand tiles in-game)",
+    "location": [1330, 3720, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreHermit", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreBarnacleback", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-6004-4e55-9a05-600000000004",
+    "name": "Shore Expansion - Trinsic Wreck-Camp A (APPROX COORDS — verify sand tiles in-game)",
+    "location": [1290, 3770, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreWrecker", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreDrownedSailor", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-6005-4e55-9a05-600000000005",
+    "name": "Shore Expansion - Trinsic Wreck-Camp B (APPROX COORDS — verify sand tiles in-game)",
+    "location": [1310, 3700, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreReaver", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreLampbearer", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-6006-4e55-9a05-600000000006",
+    "name": "Shore Expansion - Trinsic Wreck-Camp C (APPROX COORDS — verify sand tiles in-game)",
+    "location": [1260, 3760, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreWreckWitch", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreWreckLord", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-6007-4e55-9a05-600000000007",
+    "name": "Shore Expansion - North Harbor A (APPROX COORDS — verify sand tiles in-game)",
+    "location": [1700, 820, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreMoray", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreReefviper", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-6008-4e55-9a05-600000000008",
+    "name": "Shore Expansion - North Harbor B (APPROX COORDS — verify sand tiles in-game)",
+    "location": [1680, 800, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreSpineeel", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreSeaSerpent", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-6009-4e55-9a05-600000000009",
+    "name": "Shore Expansion - North Harbor C (APPROX COORDS — verify sand tiles in-game)",
+    "location": [1710, 830, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreBrineserpent", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreHarpy", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-600a-4e55-9a05-60000000000a",
+    "name": "Shore Expansion - North Harbor D (APPROX COORDS — verify sand tiles in-game)",
+    "location": [1690, 790, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreShrieker", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreSeaharpy", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-600b-4e55-9a05-60000000000b",
+    "name": "Shore Expansion - North Harbor E (APPROX COORDS — verify sand tiles in-game)",
+    "location": [1720, 810, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreBrinespawn", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreTidal", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-600c-4e55-9a05-60000000000c",
+    "name": "Shore Expansion - Britain Harbor A (APPROX COORDS — verify sand tiles in-game)",
+    "location": [1560, 1660, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreCoralthing", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreSeaslime", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-600d-4e55-9a05-60000000000d",
+    "name": "Shore Expansion - Britain Harbor B (APPROX COORDS — verify sand tiles in-game)",
+    "location": [1540, 1630, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreUrchin", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreReefstalker", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-600e-4e55-9a05-60000000000e",
+    "name": "Shore Expansion - Britain Harbor C (APPROX COORDS — verify sand tiles in-game)",
+    "location": [1570, 1670, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreDeepone", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreReefspear", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-600f-4e55-9a05-60000000000f",
+    "name": "Shore Expansion - Britain Harbor D (APPROX COORDS — verify sand tiles in-game)",
+    "location": [1530, 1660, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreSeal", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreSeacow", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-6010-4e55-9a05-600000000010",
+    "name": "Shore Expansion - Britain Harbor E (APPROX COORDS — verify sand tiles in-game)",
+    "location": [1580, 1640, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreGull", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreShorerat", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-6011-4e55-9a05-600000000011",
+    "name": "Shore Expansion - Britain Harbor / Deep Court Envoy (APPROX COORDS — verify sand tiles in-game)",
+    "location": [1550, 1680, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreSeahag", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreTidewitch", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-6012-4e55-9a05-600000000012",
+    "name": "Shore Expansion - Vesper Waterline A (APPROX COORDS — verify sand tiles in-game)",
+    "location": [2910, 710, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreDeepNereid", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreDeepGuard", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-6013-4e55-9a05-600000000013",
+    "name": "Shore Expansion - Vesper Waterline B (APPROX COORDS — verify sand tiles in-game)",
+    "location": [2890, 690, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreDeepOracle", "maxCount": 1, "probability": 100 },
+      { "name": "ShoreDeepTideguard", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-6014-4e55-9a05-600000000014",
+    "name": "Shore Expansion - Vesper Waterline C (APPROX COORDS — verify sand tiles in-game)",
+    "location": [2920, 720, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreDeepHound", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreDeepPrince", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-6015-4e55-9a05-600000000015",
+    "name": "Shore Expansion - Vesper Waterline D (APPROX COORDS — verify sand tiles in-game)",
+    "location": [2880, 680, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreSandpiper", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreCormorant", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-6016-4e55-9a05-600000000016",
+    "name": "Shore Expansion - Vesper Waterline E (APPROX COORDS — verify sand tiles in-game)",
+    "location": [2900, 730, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "ShoreSandflea", "maxCount": 2, "probability": 100 },
+      { "name": "ShoreFiddler", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5e6f7081-6017-4e55-9a05-600000000017",
+    "name": "Shore Expansion - the Karkinos, Trinsic Coast Reef (APPROX COORDS — verify sand tiles in-game)",
+    "location": [1285, 3731, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:30:00",
+    "maxDelay": "01:00:00",
+    "team": 0,
+    "homeRange": 10,
+    "walkingRange": 6,
+    "entries": [
+      { "name": "ShoreKarkinos", "maxCount": 1, "probability": 100 }
+    ]
+  }
+]

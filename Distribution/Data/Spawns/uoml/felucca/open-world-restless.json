@@ -1,0 +1,167 @@
+[
+  {
+    "$type": "Spawner",
+    "guid": "6f708192-6001-4e66-9a06-600000000001",
+    "name": "Restless Expansion - Vesper/Minoc Graveyard",
+    "location": [2758, 867, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:07:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "RestlessBones", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessRattler", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessRotling", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessHusk", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessGraverat", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessBonerat", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6f708192-6002-4e66-9a06-600000000002",
+    "name": "Restless Expansion - Britain Graveyard",
+    "location": [1369, 1475, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "RestlessLegionnaire", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessBonewalker", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessGnawer", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessGhast", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessFeaster", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessHeadless", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6f708192-6003-4e66-9a06-600000000003",
+    "name": "Restless Expansion - Cove Graveyard",
+    "location": [2438, 1100, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:07:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "RestlessSpecter", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessPhantom", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessBogle", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessGloom", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessWailer", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessBanshee", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6f708192-6004-4e66-9a06-600000000004",
+    "name": "Restless Expansion - Trinsic Graveyard",
+    "location": [1285, 3731, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "RestlessBoneguard", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessBonearcher", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessBonemage", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessGravebound", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessMummy", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessBoundone", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6f708192-6005-4e66-9a06-600000000005",
+    "name": "Restless Expansion - Unmarked Ground",
+    "location": [3407, 2652, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "RestlessCadaver", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessGravedigger", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessCarrionbat", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessVampirebat", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessCrow", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessGravemoth", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessCryptbat", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessBonefinch", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6f708192-6006-4e66-9a06-600000000006",
+    "name": "Restless Expansion - Eastern Graveyard (Mourner's Cortège)",
+    "location": [4545, 1317, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "RestlessMourner", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessPallbearer", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessKeener", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessBellringer", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessSexton", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessPsychopomp", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6f708192-6007-4e66-9a06-600000000007",
+    "name": "Restless Expansion - Western Graveyard (Barrow Legion)",
+    "location": [722, 1119, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "RestlessLegionSoldier", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessLegionKnight", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessLegionPikeman", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessLegionArcher", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessLegionStandard", "maxCount": 1, "probability": 100 },
+      { "name": "RestlessLegionMarshal", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6f708192-6008-4e66-9a06-600000000008",
+    "name": "Restless Expansion - the Barrow-King (Cove barrow-ground)",
+    "location": [2438, 1100, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:30:00",
+    "maxDelay": "01:00:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "RestlessBarrowking", "maxCount": 1, "probability": 100 }
+    ]
+  }
+]

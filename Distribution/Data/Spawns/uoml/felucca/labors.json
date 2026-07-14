@@ -1,0 +1,98 @@
+[
+  {
+    "$type": "Spawner",
+    "guid": "a1c3e5f7-2b4d-4a6c-8e1f-3d5b7a9c1e21",
+    "name": "The Labors - Ceryneian Hind",
+    "location": [4552, 1447, 10],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "01:00:00",
+    "maxDelay": "01:00:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "LaborCeryneianHind", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "b2d4f608-3c5e-4b7d-9f2a-4e6c8b1d2f32",
+    "name": "The Labors - Calydonian Boar",
+    "location": [846, 1071, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "01:00:00",
+    "maxDelay": "01:00:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "LaborCalydonianBoar", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "c3e5a719-4d6f-4c8e-8a3b-5f7d9c2e3a43",
+    "name": "The Labors - Nemean Lion",
+    "location": [1055, 1442, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "01:30:00",
+    "maxDelay": "01:30:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "LaborNemeanLion", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "d4f6b82a-5e7a-4d9f-9b4c-6a8e1d3f4b54",
+    "name": "The Labors - Stymphalian Matriarch",
+    "location": [1915, 2385, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "01:30:00",
+    "maxDelay": "01:30:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "LaborStymphalianHarpy", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "e5a7c93b-6f8b-4ea1-8c5d-7b9f2e4a5c65",
+    "name": "The Labors - Erymanthian Boar",
+    "location": [1749, 474, 6],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "01:30:00",
+    "maxDelay": "01:30:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "LaborErymanthianBoar", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "f6b8da4c-7a9c-4fb2-9d6e-8c1a3f5b6d76",
+    "name": "The Labors - Cretan Bull",
+    "location": [2512, 1066, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "02:00:00",
+    "maxDelay": "02:00:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "LaborCretanBull", "maxCount": 1, "probability": 100 }
+    ]
+  }
+]
