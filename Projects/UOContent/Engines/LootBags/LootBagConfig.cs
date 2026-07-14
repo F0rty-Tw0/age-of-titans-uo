@@ -17,4 +17,8 @@ public static class LootBagConfig
     };
 
     public static double ChanceForMobLevel(int level) => _chanceByLevel[Math.Clamp(level, 0, MaxLevel)];
+
+    // Themed families speak their god: this share of their bag drops carries the pantheon mark
+    // (contents 100% god-locked); the rest fall back to generic bags. 30-pantheon-bags.md §2.
+    public const double ThemedBagChance = 0.70;
 }

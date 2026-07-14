@@ -40,10 +40,14 @@ public abstract partial class DungeonElite : BaseCreature
             return;
         }
 
+        // Elites are their god's champions: always the themed bag when the family maps
+        // (no 70/30 — 30-pantheon-bags.md §2). Contents are god-locked at every tier.
+        var themed = PantheonLootMap.TryGetDomain(this, out var domain);
+
         for (var i = 0; i < EliteBagCount; i++)
         {
-            var bag = new LootBag(EliteBagLevel);
-            bag.DropItem(LootRoller.Roll(EliteBagLevel));
+            var bag = themed ? new LootBag(EliteBagLevel, domain) : new LootBag(EliteBagLevel);
+            bag.DropItem(themed ? LootRoller.Roll(EliteBagLevel, domain) : LootRoller.Roll(EliteBagLevel));
             c.DropItem(bag);
         }
 

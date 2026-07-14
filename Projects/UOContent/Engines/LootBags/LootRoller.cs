@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Server.Engines.Rarity;
 
 namespace Server.Engines.LootBags;
@@ -87,6 +88,23 @@ public static class LootRoller
     private static readonly VariantRoot[] _clothingThemes;
     private static readonly Func<Item>[] _clothingFactories;
 
+    // ---- Per-domain candidate tables (pantheon-bags §5) -----------------------------------
+    // Filtered views of the tables above: for each of the 11 PantheonDomain values, only the
+    // families/materials/themes whose PantheonFx.GetDomain matches. Compact (empty families or
+    // materials are dropped, not kept as empty placeholders) so a uniform pick over "available"
+    // never lands on a slot the domain doesn't own. Indexed by (int)domain.
+    private static readonly int[][] _domainWeaponFamilyIndices;
+    private static readonly VariantRoot[][][] _domainWeaponThemesByFamily;
+
+    private static readonly int[][] _domainMetalMaterialIndices;
+    private static readonly VariantRoot[][][] _domainMetalMaterialThemes;
+    private static readonly int[][] _domainLightMaterialIndices;
+    private static readonly VariantRoot[][][] _domainLightMaterialThemes;
+
+    private static readonly VariantRoot[][] _domainShieldThemes;
+    private static readonly VariantRoot[][] _domainJewelryThemes;
+    private static readonly VariantRoot[][] _domainClothingThemes;
+
     static LootRoller()
     {
         var weaponFamilies = FamilyRegistry.WeaponFamilies; // family-id order (0=axes..6=archery)
@@ -129,6 +147,72 @@ public static class LootRoller
         _jewelryFactories = FamilyRegistry.JewelryFamilyDef.Factories;
         _clothingThemes = FamilyRegistry.LaneRoots(FamilyRegistry.ClothingFamilyDef.Lanes);
         _clothingFactories = FamilyRegistry.ClothingFamilyDef.Factories;
+
+        var domainCount = Enum.GetValues<PantheonDomain>().Length;
+        _domainWeaponFamilyIndices = new int[domainCount][];
+        _domainWeaponThemesByFamily = new VariantRoot[domainCount][][];
+        _domainMetalMaterialIndices = new int[domainCount][];
+        _domainMetalMaterialThemes = new VariantRoot[domainCount][][];
+        _domainLightMaterialIndices = new int[domainCount][];
+        _domainLightMaterialThemes = new VariantRoot[domainCount][][];
+        _domainShieldThemes = new VariantRoot[domainCount][];
+        _domainJewelryThemes = new VariantRoot[domainCount][];
+        _domainClothingThemes = new VariantRoot[domainCount][];
+
+        for (var d = 0; d < domainCount; d++)
+        {
+            var domain = (PantheonDomain)d;
+
+            BuildDomainSubsetTable(_weaponThemesByFamily, domain, out _domainWeaponFamilyIndices[d], out _domainWeaponThemesByFamily[d]);
+            BuildDomainSubsetTable(_metalArmorThemesByMaterial, domain, out _domainMetalMaterialIndices[d], out _domainMetalMaterialThemes[d]);
+            BuildDomainSubsetTable(_lightArmorThemesByMaterial, domain, out _domainLightMaterialIndices[d], out _domainLightMaterialThemes[d]);
+            _domainShieldThemes[d] = FilterThemes(_shieldThemes, domain);
+            _domainJewelryThemes[d] = FilterThemes(_jewelryThemes, domain);
+            _domainClothingThemes[d] = FilterThemes(_clothingThemes, domain);
+        }
+    }
+
+    // Filters a theme array down to the roots belonging to one domain. Cold path (static init
+    // only), so the List<T> + linear PantheonFx.GetDomain scan is fine.
+    private static VariantRoot[] FilterThemes(VariantRoot[] themes, PantheonDomain domain)
+    {
+        var filtered = new List<VariantRoot>(themes.Length);
+
+        for (var i = 0; i < themes.Length; i++)
+        {
+            if (PantheonFx.GetDomain(themes[i]) == domain)
+            {
+                filtered.Add(themes[i]);
+            }
+        }
+
+        return filtered.ToArray();
+    }
+
+    // Filters a per-family/per-material theme table down to one domain, keeping only the
+    // families/materials with a non-empty subset (compact — no empty placeholders). Shared by
+    // the weapon family table and both armor material tables since all three are "index -> theme
+    // array" shaped. Cold path (static init only).
+    private static void BuildDomainSubsetTable(
+        VariantRoot[][] themesByIndex, PantheonDomain domain, out int[] availableIndices, out VariantRoot[][] filteredThemes
+    )
+    {
+        var indices = new List<int>();
+        var themes = new List<VariantRoot[]>();
+
+        for (var i = 0; i < themesByIndex.Length; i++)
+        {
+            var filtered = FilterThemes(themesByIndex[i], domain);
+
+            if (filtered.Length > 0)
+            {
+                indices.Add(i);
+                themes.Add(filtered);
+            }
+        }
+
+        availableIndices = indices.ToArray();
+        filteredThemes = themes.ToArray();
     }
 
     public static LootRollDecision RollDecision(int bagLevel)
@@ -156,6 +240,59 @@ public static class LootRoller
         ApplyRarity(item, decision);
 
         return item;
+    }
+
+    // Domain-locked roll (pantheon-bags §5): every candidate is filtered to one god's roots at
+    // every rarity tier — no leaks. Rarity weights are untouched; only category/family/material/
+    // theme selection is restricted to the domain's pre-filtered tables.
+    public static LootRollDecision RollDecision(int bagLevel, PantheonDomain domain)
+    {
+        if (!TryRollCategoryForDomain(domain, out var category))
+        {
+            // Defensive: the root audit (framework §3) guarantees every domain has candidates in
+            // at least one category. If that ever regresses, fail safe to the generic path rather
+            // than throw on a live server.
+            return RollDecision(bagLevel);
+        }
+
+        var rarity = RollRarity(bagLevel);
+
+        return category switch
+        {
+            LootCategory.Weapon => RollWeaponDecisionForDomain(rarity, bagLevel, domain),
+            LootCategory.Armor => RollArmorDecisionForDomain(rarity, bagLevel, domain),
+            LootCategory.Shield => RollShieldDecisionForDomain(rarity, bagLevel, domain),
+            LootCategory.Jewelry => RollJewelryDecisionForDomain(rarity, domain),
+            _ => RollClothingDecisionForDomain(rarity, domain)
+        };
+    }
+
+    // Domain-locked counterpart to Roll(bagLevel) — same construct/apply-rarity path, only the
+    // decision differs.
+    public static Item Roll(int bagLevel, PantheonDomain domain)
+    {
+        var decision = RollDecision(bagLevel, domain);
+        var item = Construct(decision);
+
+        ApplyRarity(item, decision);
+
+        return item;
+    }
+
+    // Test accessor (pantheon-bags §8 guard): whether a domain has any candidate for a category,
+    // used to assert coverage without duplicating the per-domain table shapes in test code.
+    internal static bool DomainHasCandidates(PantheonDomain domain, LootCategory category)
+    {
+        var d = (int)domain;
+
+        return category switch
+        {
+            LootCategory.Weapon => _domainWeaponFamilyIndices[d].Length > 0,
+            LootCategory.Armor => _domainMetalMaterialIndices[d].Length > 0 || _domainLightMaterialIndices[d].Length > 0,
+            LootCategory.Shield => _domainShieldThemes[d].Length > 0,
+            LootCategory.Jewelry => _domainJewelryThemes[d].Length > 0,
+            _ => _domainClothingThemes[d].Length > 0
+        };
     }
 
     private static ItemRarity RollRarity(int bagLevel)
@@ -213,6 +350,90 @@ public static class LootRoller
         return roll < CategoryWeightJewelry ? LootCategory.Jewelry : LootCategory.Clothing;
     }
 
+    // Same weighted pick as RollCategory, renormalized over only the categories this domain has
+    // candidates for (pantheon-bags §5.2). Returns false if the domain has none anywhere — the
+    // caller falls back to the generic roll.
+    private static bool TryRollCategoryForDomain(PantheonDomain domain, out LootCategory category)
+    {
+        var weaponWeight = DomainHasCandidates(domain, LootCategory.Weapon) ? CategoryWeightWeapon : 0;
+        var armorWeight = DomainHasCandidates(domain, LootCategory.Armor) ? CategoryWeightArmor : 0;
+        var shieldWeight = DomainHasCandidates(domain, LootCategory.Shield) ? CategoryWeightShield : 0;
+        var jewelryWeight = DomainHasCandidates(domain, LootCategory.Jewelry) ? CategoryWeightJewelry : 0;
+        var clothingWeight = DomainHasCandidates(domain, LootCategory.Clothing) ? CategoryWeightClothing : 0;
+
+        var total = weaponWeight + armorWeight + shieldWeight + jewelryWeight + clothingWeight;
+
+        if (total == 0)
+        {
+            category = default;
+            return false;
+        }
+
+        var roll = Utility.Random(total);
+
+        if (roll < weaponWeight)
+        {
+            category = LootCategory.Weapon;
+            return true;
+        }
+
+        roll -= weaponWeight;
+
+        if (roll < armorWeight)
+        {
+            category = LootCategory.Armor;
+            return true;
+        }
+
+        roll -= armorWeight;
+
+        if (roll < shieldWeight)
+        {
+            category = LootCategory.Shield;
+            return true;
+        }
+
+        roll -= shieldWeight;
+        category = roll < jewelryWeight ? LootCategory.Jewelry : LootCategory.Clothing;
+        return true;
+    }
+
+    // Closeness-weighted pick restricted to a subset of material indices (a domain armor table
+    // only stocks materials that have a candidate root). Same weight curve as RollWeightedBaseIndex
+    // evaluated against the full material range, so a subset still favors the index nearest the
+    // bagLevel target; returns the POSITION within availableIndices, not the raw material value.
+    private static int RollWeightedSubsetIndex(int bagLevel, int[] availableIndices)
+    {
+        if (availableIndices.Length <= 1)
+        {
+            return 0;
+        }
+
+        var t = (int)Math.Round(bagLevel / 10.0 * (MaterialsPerArmorFamily - 1));
+
+        var total = 0;
+
+        for (var i = 0; i < availableIndices.Length; i++)
+        {
+            total += Math.Max(1, 4 - Math.Abs(availableIndices[i] - t));
+        }
+
+        var roll = Utility.Random(total);
+        var cumulative = 0;
+
+        for (var i = 0; i < availableIndices.Length; i++)
+        {
+            cumulative += Math.Max(1, 4 - Math.Abs(availableIndices[i] - t));
+
+            if (roll < cumulative)
+            {
+                return i;
+            }
+        }
+
+        return availableIndices.Length - 1;
+    }
+
     // Base pick within a ladder of n items: the index closest to a bagLevel-scaled target is
     // favored (weak bases common in low bags, top bases dominate high bags; all reachable at
     // every level). t = round(bagLevel/10 * (n-1)); weight(i) = max(1, 4 - |i - t|). Tunable.
@@ -258,6 +479,20 @@ public static class LootRoller
         return new LootRollDecision(rarity, LootCategory.Weapon, _weaponFamilies[familyIndex], theme, baseIndex);
     }
 
+    private static LootRollDecision RollWeaponDecisionForDomain(ItemRarity rarity, int bagLevel, PantheonDomain domain)
+    {
+        var d = (int)domain;
+        var availableFamilies = _domainWeaponFamilyIndices[d];
+        var pick = Utility.Random(availableFamilies.Length);
+        var familyIndex = availableFamilies[pick];
+
+        var baseIndex = RollWeightedBaseIndex(bagLevel, _weaponFamilyBaseCount[familyIndex]);
+        var themes = _domainWeaponThemesByFamily[d][pick];
+        var theme = themes[Utility.Random(themes.Length)];
+
+        return new LootRollDecision(rarity, LootCategory.Weapon, _weaponFamilies[familyIndex], theme, baseIndex);
+    }
+
     private static LootRollDecision RollArmorDecision(ItemRarity rarity, int bagLevel)
     {
         var family = Utility.RandomBool() ? LegendaryRegistry.FamilyMetalArmor : LegendaryRegistry.FamilyLightArmor;
@@ -272,10 +507,52 @@ public static class LootRoller
         return new LootRollDecision(rarity, LootCategory.Armor, family, theme, materialIndex);
     }
 
+    private static LootRollDecision RollArmorDecisionForDomain(ItemRarity rarity, int bagLevel, PantheonDomain domain)
+    {
+        var d = (int)domain;
+        var metalMaterials = _domainMetalMaterialIndices[d];
+        var lightMaterials = _domainLightMaterialIndices[d];
+
+        bool useMetal;
+
+        if (metalMaterials.Length == 0)
+        {
+            useMetal = false;
+        }
+        else if (lightMaterials.Length == 0)
+        {
+            useMetal = true;
+        }
+        else
+        {
+            useMetal = Utility.RandomBool();
+        }
+
+        var family = useMetal ? LegendaryRegistry.FamilyMetalArmor : LegendaryRegistry.FamilyLightArmor;
+        var availableMaterials = useMetal ? metalMaterials : lightMaterials;
+        var themesByMaterial = useMetal ? _domainMetalMaterialThemes[d] : _domainLightMaterialThemes[d];
+
+        var pick = RollWeightedSubsetIndex(bagLevel, availableMaterials);
+        var materialIndex = availableMaterials[pick];
+        var themes = themesByMaterial[pick];
+        var theme = themes[Utility.Random(themes.Length)];
+
+        return new LootRollDecision(rarity, LootCategory.Armor, family, theme, materialIndex);
+    }
+
     private static LootRollDecision RollShieldDecision(ItemRarity rarity, int bagLevel)
     {
         var baseIndex = RollWeightedBaseIndex(bagLevel, _shieldFactories.Length);
         var theme = _shieldThemes[Utility.Random(_shieldThemes.Length)];
+
+        return new LootRollDecision(rarity, LootCategory.Shield, LegendaryRegistry.FamilyShields, theme, baseIndex);
+    }
+
+    private static LootRollDecision RollShieldDecisionForDomain(ItemRarity rarity, int bagLevel, PantheonDomain domain)
+    {
+        var baseIndex = RollWeightedBaseIndex(bagLevel, _shieldFactories.Length);
+        var themes = _domainShieldThemes[(int)domain];
+        var theme = themes[Utility.Random(themes.Length)];
 
         return new LootRollDecision(rarity, LootCategory.Shield, LegendaryRegistry.FamilyShields, theme, baseIndex);
     }
@@ -289,6 +566,15 @@ public static class LootRoller
         return new LootRollDecision(rarity, LootCategory.Jewelry, LegendaryRegistry.FamilyJewelry, theme, slot);
     }
 
+    private static LootRollDecision RollJewelryDecisionForDomain(ItemRarity rarity, PantheonDomain domain)
+    {
+        var slot = Utility.Random(_jewelryFactories.Length);
+        var themes = _domainJewelryThemes[(int)domain];
+        var theme = themes[Utility.Random(themes.Length)];
+
+        return new LootRollDecision(rarity, LootCategory.Jewelry, LegendaryRegistry.FamilyJewelry, theme, slot);
+    }
+
     // Clothing has no ladder either (21-clothing.md §1) — piece is uniform. Drop-variants cap at
     // Epic; Legendary clothing exists only as the bound relics, and each theme now has TWO (a body
     // piece + a hat, §3), so at Legendary the "piece" is a uniform pick between the theme's two
@@ -296,6 +582,18 @@ public static class LootRoller
     private static LootRollDecision RollClothingDecision(ItemRarity rarity)
     {
         var theme = _clothingThemes[Utility.Random(_clothingThemes.Length)];
+
+        var piece = rarity == ItemRarity.Legendary
+            ? ClothingRelicPieceIndex(theme)
+            : Utility.Random(_clothingFactories.Length);
+
+        return new LootRollDecision(rarity, LootCategory.Clothing, LegendaryRegistry.FamilyClothing, theme, piece);
+    }
+
+    private static LootRollDecision RollClothingDecisionForDomain(ItemRarity rarity, PantheonDomain domain)
+    {
+        var themes = _domainClothingThemes[(int)domain];
+        var theme = themes[Utility.Random(themes.Length)];
 
         var piece = rarity == ItemRarity.Legendary
             ? ClothingRelicPieceIndex(theme)

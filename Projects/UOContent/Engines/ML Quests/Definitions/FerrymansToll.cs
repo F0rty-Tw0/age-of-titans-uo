@@ -157,8 +157,10 @@ public class FilledLootBagReward : BaseReward
 
     public override void AddRewardItems(PlayerMobile pm, List<Item> rewards)
     {
-        var bag = new LootBag(_bagLevel);
-        bag.DropItem(LootRoller.Roll(_bagLevel));
+        // Barrow quest rewards carry Hades' mark (30-pantheon-bags.md §2) — the Ferryman
+        // pays in the coin of the house he serves.
+        var bag = new LootBag(_bagLevel, PantheonDomain.Underworld);
+        bag.DropItem(LootRoller.Roll(_bagLevel, PantheonDomain.Underworld));
         rewards.Add(bag);
     }
 }
