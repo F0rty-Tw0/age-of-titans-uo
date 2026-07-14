@@ -4241,5 +4241,105 @@
     "Music": "Death",
     "LightLevel": 26,
     "EntryFlash": true
+  },
+  {
+    "$type": "ThemedDungeonRegion",
+    "Name": "Drowned Tholos - Halls (PLACEHOLDER COORDS)",
+    "Map": "Felucca",
+    "Priority": 50,
+    "Area": [{"x1": 6700, "y1": 900, "x2": 6775, "y2": 950}],
+    "GoLocation": {"x": 6710, "y": 910, "z": 0},
+    "Music": "Cave01",
+    "LightLevel": 14
+  },
+  {
+    "$type": "ThemedDungeonRegion",
+    "Name": "Drowned Tholos - Sunken Apse (PLACEHOLDER COORDS)",
+    "Map": "Felucca",
+    "Priority": 50,
+    "Area": [{"x1": 6780, "y1": 900, "x2": 6850, "y2": 950}],
+    "Music": "Approach",
+    "LightLevel": 18,
+    "EntryFlash": true
+  },
+  {
+    "$type": "ThemedDungeonRegion",
+    "Name": "Cinderworks - Upper Forge (PLACEHOLDER COORDS)",
+    "Map": "Felucca",
+    "Priority": 50,
+    "Area": [{"x1": 6700, "y1": 1000, "x2": 6775, "y2": 1050}],
+    "GoLocation": {"x": 6710, "y": 1010, "z": 0},
+    "Music": "Dungeon2",
+    "LightLevel": 20
+  },
+  {
+    "$type": "ThemedDungeonRegion",
+    "Name": "Cinderworks - Bellows Heart (PLACEHOLDER COORDS)",
+    "Map": "Felucca",
+    "Priority": 50,
+    "Area": [{"x1": 6780, "y1": 1000, "x2": 6850, "y2": 1050}],
+    "Music": "Dungeon9",
+    "LightLevel": 16,
+    "EntryFlash": true
+  },
+  {
+    "$type": "ThemedDungeonRegion",
+    "Name": "Nemean Wildwood - Thicket (PLACEHOLDER COORDS)",
+    "Map": "Felucca",
+    "Priority": 50,
+    "Area": [{"x1": 6700, "y1": 1100, "x2": 6775, "y2": 1150}],
+    "GoLocation": {"x": 6710, "y": 1110, "z": 0},
+    "Music": "Forest_a",
+    "LightLevel": 16
+  },
+  {
+    "$type": "ThemedDungeonRegion",
+    "Name": "Nemean Wildwood - Moonlit Heart (PLACEHOLDER COORDS)",
+    "Map": "Felucca",
+    "Priority": 50,
+    "Area": [{"x1": 6780, "y1": 1100, "x2": 6850, "y2": 1150}],
+    "Music": "Jungle_a",
+    "LightLevel": 12,
+    "EntryFlash": true
+  },
+  {
+    "$type": "ThemedDungeonRegion",
+    "Name": "Stormcrown Aerie - Ramparts (PLACEHOLDER COORDS)",
+    "Map": "Felucca",
+    "Priority": 50,
+    "Area": [{"x1": 6700, "y1": 1200, "x2": 6775, "y2": 1250}],
+    "GoLocation": {"x": 6710, "y": 1210, "z": 0},
+    "Music": "Mountn_a",
+    "LightLevel": 8
+  },
+  {
+    "$type": "ThemedDungeonRegion",
+    "Name": "Stormcrown Aerie - Titan Chains (PLACEHOLDER COORDS)",
+    "Map": "Felucca",
+    "Priority": 50,
+    "Area": [{"x1": 6780, "y1": 1200, "x2": 6850, "y2": 1250}],
+    "Music": "Dungeon9",
+    "LightLevel": 12,
+    "EntryFlash": true
+  },
+  {
+    "$type": "ThemedDungeonRegion",
+    "Name": "Stygian Deep - Asphodel Wastes (PLACEHOLDER COORDS)",
+    "Map": "Felucca",
+    "Priority": 50,
+    "Area": [{"x1": 6700, "y1": 1300, "x2": 6775, "y2": 1350}],
+    "GoLocation": {"x": 6710, "y": 1310, "z": 0},
+    "Music": "Dungeon9",
+    "LightLevel": 26
+  },
+  {
+    "$type": "ThemedDungeonRegion",
+    "Name": "Stygian Deep - Throne of the Unseen (PLACEHOLDER COORDS)",
+    "Map": "Felucca",
+    "Priority": 50,
+    "Area": [{"x1": 6780, "y1": 1300, "x2": 6850, "y2": 1350}],
+    "Music": "Death",
+    "LightLevel": 28,
+    "EntryFlash": true
   }
 ]

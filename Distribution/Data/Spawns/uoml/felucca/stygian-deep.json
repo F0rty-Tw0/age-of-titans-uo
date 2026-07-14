@@ -1,0 +1,453 @@
+[
+  {
+    "$type": "Spawner",
+    "guid": "3a6e5f2a-1b4d-4e0e-9a1c-7c5f9e1d2b01",
+    "name": "Stygian Deep - Entry Trash (PLACEHOLDER COORDS)",
+    "location": [
+      6720,
+      1320,
+      0
+    ],
+    "map": "Felucca",
+    "count": 9,
+    "minDelay": "00:01:00",
+    "maxDelay": "00:02:00",
+    "team": 0,
+    "homeRange": 17,
+    "walkingRange": 10,
+    "entries": [
+      {
+        "name": "StygianShade",
+        "maxCount": 5,
+        "probability": 100
+      },
+      {
+        "name": "StygianHound",
+        "maxCount": 4,
+        "probability": 100
+      }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "3a6e5f2a-1b4d-4e0e-9a1c-7c5f9e1d2b02",
+    "name": "Stygian Deep - Deep Trash (PLACEHOLDER COORDS)",
+    "location": [
+      6760,
+      1325,
+      0
+    ],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:03:00",
+    "team": 0,
+    "homeRange": 17,
+    "walkingRange": 10,
+    "entries": [
+      {
+        "name": "StygianReaper",
+        "maxCount": 3,
+        "probability": 100
+      },
+      {
+        "name": "StygianBoneLord",
+        "maxCount": 3,
+        "probability": 100
+      }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "3a6e5f2a-1b4d-4e0e-9a1c-7c5f9e1d2b03",
+    "name": "Stygian Deep - Sentinels (PLACEHOLDER COORDS)",
+    "location": [
+      6800,
+      1330,
+      0
+    ],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      {
+        "name": "StygianSentinel",
+        "maxCount": 2,
+        "probability": 100
+      }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "3a6e5f2a-1b4d-4e0e-9a1c-7c5f9e1d2b04",
+    "name": "Stygian Deep Elite - Charon (PLACEHOLDER COORDS)",
+    "location": [
+      6730,
+      1340,
+      0
+    ],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:15:00",
+    "maxDelay": "00:15:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      {
+        "name": "StygianCharon",
+        "maxCount": 1,
+        "probability": 100
+      }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "3a6e5f2a-1b4d-4e0e-9a1c-7c5f9e1d2b05",
+    "name": "Stygian Deep Elite - Cerberus (PLACEHOLDER COORDS)",
+    "location": [
+      6790,
+      1310,
+      0
+    ],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:15:00",
+    "maxDelay": "00:15:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      {
+        "name": "StygianCerberus",
+        "maxCount": 1,
+        "probability": 100
+      }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "3a6e5f2a-1b4d-4e0e-9a1c-7c5f9e1d2b06",
+    "name": "Stygian Deep Boss - Hades (PLACEHOLDER COORDS)",
+    "location": [
+      6840,
+      1335,
+      0
+    ],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "01:00:00",
+    "maxDelay": "01:00:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      {
+        "name": "StygianLord",
+        "maxCount": 1,
+        "probability": 100
+      }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "3a6e5f2a-1b4d-4e0e-9a1c-7c5f9e1d2b07",
+    "name": "Stygian Deep Boss Guard - Sentinels (PLACEHOLDER COORDS)",
+    "location": [
+      6840,
+      1330,
+      0
+    ],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 6,
+    "walkingRange": 4,
+    "entries": [
+      {
+        "name": "StygianSentinel",
+        "maxCount": 2,
+        "probability": 100
+      }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "3a6e5f2a-1b4d-4e0e-9a1c-7c5f9e1d2b08",
+    "name": "Stygian Deep - Unransomed Dead L9 (PLACEHOLDER COORDS)",
+    "location": [
+      6705,
+      1345,
+      0
+    ],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:01:00",
+    "maxDelay": "00:02:00",
+    "team": 0,
+    "homeRange": 17,
+    "walkingRange": 10,
+    "entries": [
+      {
+        "name": "StygianWight",
+        "maxCount": 2,
+        "probability": 100
+      },
+      {
+        "name": "StygianGhoul",
+        "maxCount": 2,
+        "probability": 100
+      },
+      {
+        "name": "StygianAsphodelKnight",
+        "maxCount": 1,
+        "probability": 100
+      },
+      {
+        "name": "StygianWraith",
+        "maxCount": 1,
+        "probability": 100
+      }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "3a6e5f2a-1b4d-4e0e-9a1c-7c5f9e1d2b09",
+    "name": "Stygian Deep - Unransomed Dead L10 (PLACEHOLDER COORDS)",
+    "location": [
+      6815,
+      1345,
+      0
+    ],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:03:00",
+    "team": 0,
+    "homeRange": 17,
+    "walkingRange": 10,
+    "entries": [
+      {
+        "name": "StygianBoneKnight",
+        "maxCount": 1,
+        "probability": 100
+      },
+      {
+        "name": "StygianLich",
+        "maxCount": 1,
+        "probability": 100
+      },
+      {
+        "name": "StygianRevenant",
+        "maxCount": 1,
+        "probability": 100
+      },
+      {
+        "name": "StygianDishound",
+        "maxCount": 1,
+        "probability": 100
+      },
+      {
+        "name": "StygianLichLord",
+        "maxCount": 1,
+        "probability": 100
+      }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "3a6e5f2a-1b4d-4e0e-9a1c-7c5f9e1d2b0a",
+    "name": "Stygian Deep - Erinyes Court (PLACEHOLDER COORDS)",
+    "location": [
+      6845,
+      1305,
+      0
+    ],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:03:00",
+    "team": 0,
+    "homeRange": 14,
+    "walkingRange": 9,
+    "entries": [
+      {
+        "name": "StygianDamned",
+        "maxCount": 1,
+        "probability": 100
+      },
+      {
+        "name": "StygianWitness",
+        "maxCount": 1,
+        "probability": 100
+      },
+      {
+        "name": "StygianErinys",
+        "maxCount": 1,
+        "probability": 100
+      },
+      {
+        "name": "StygianScourge",
+        "maxCount": 1,
+        "probability": 100
+      },
+      {
+        "name": "StygianArbiter",
+        "maxCount": 1,
+        "probability": 100
+      }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "3a6e5f2a-1b4d-4e0e-9a1c-7c5f9e1d2b0b",
+    "name": "Stygian Deep - Ambient Dead (PLACEHOLDER COORDS)",
+    "location": [
+      6700,
+      1310,
+      0
+    ],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:01:00",
+    "maxDelay": "00:01:00",
+    "team": 0,
+    "homeRange": 20,
+    "walkingRange": 12,
+    "entries": [
+      {
+        "name": "StygianWisp",
+        "maxCount": 2,
+        "probability": 100
+      },
+      {
+        "name": "StygianGraverat",
+        "maxCount": 1,
+        "probability": 100
+      },
+      {
+        "name": "StygianShademoth",
+        "maxCount": 1,
+        "probability": 100
+      }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "3a6e5f2a-1b4d-4e0e-9a1c-7c5f9e1d2b0c",
+    "name": "Stygian Deep Mini-boss - Rhadamanthys (PLACEHOLDER COORDS)",
+    "location": [
+      6820,
+      1345,
+      0
+    ],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:20:00",
+    "maxDelay": "00:30:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      {
+        "name": "StygianRhadamanthys",
+        "maxCount": 1,
+        "probability": 100
+      }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "d5f6c357-6388-4aa9-8937-42da6c665435",
+    "name": "Stygian Deep - orphan wiring 1",
+    "location": [
+      6730,
+      1340,
+      0
+    ],
+    "map": "Felucca",
+    "count": 10,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 15,
+    "walkingRange": 10,
+    "entries": [
+      {
+        "name": "StygianBogle",
+        "maxCount": 2,
+        "probability": 100
+      },
+      {
+        "name": "StygianBoneColossus",
+        "maxCount": 2,
+        "probability": 100
+      },
+      {
+        "name": "StygianCondemned",
+        "maxCount": 2,
+        "probability": 100
+      },
+      {
+        "name": "StygianCorpse",
+        "maxCount": 2,
+        "probability": 100
+      },
+      {
+        "name": "StygianDaemon",
+        "maxCount": 2,
+        "probability": 100
+      }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "75019b96-b46e-4e0c-bef6-b30a7d608f02",
+    "name": "Stygian Deep - orphan wiring 2",
+    "location": [
+      6840,
+      1330,
+      0
+    ],
+    "map": "Felucca",
+    "count": 10,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 15,
+    "walkingRange": 10,
+    "entries": [
+      {
+        "name": "StygianHarrower",
+        "maxCount": 2,
+        "probability": 100
+      },
+      {
+        "name": "StygianJudge",
+        "maxCount": 2,
+        "probability": 100
+      },
+      {
+        "name": "StygianMummy",
+        "maxCount": 2,
+        "probability": 100
+      },
+      {
+        "name": "StygianStyxMage",
+        "maxCount": 2,
+        "probability": 100
+      },
+      {
+        "name": "StygianTormentor",
+        "maxCount": 2,
+        "probability": 100
+      }
+    ]
+  }
+]

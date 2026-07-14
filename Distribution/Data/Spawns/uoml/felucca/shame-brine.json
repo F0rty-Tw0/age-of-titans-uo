@@ -1,0 +1,185 @@
+[
+  {
+    "$type": "Spawner",
+    "guid": "f6a8c04d-6789-4f0a-3b4c-5d6e7f809a12",
+    "name": "Shame - Brine Tide (Water Elemental grounds)",
+    "location": [5605, 202, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "BrineSpume", "maxCount": 2, "probability": 100 },
+      { "name": "BrineSurge", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "07b9d15e-789a-4b1c-4d5e-6f7a8b9c0d23",
+    "name": "Shame - Brine Squall (Air Elemental grounds)",
+    "location": [5527, 210, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "BrineGale", "maxCount": 2, "probability": 100 },
+      { "name": "BrineTempest", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "18cae26f-89ab-4c2d-5e6f-7a8b9c0d1e34",
+    "name": "Shame - Brine Undertow (Ice/Snow Elemental grounds)",
+    "location": [5468, 109, 35],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "BrineSeep", "maxCount": 2, "probability": 100 },
+      { "name": "BrineMaelstrom", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "29dbf370-9abc-4d3e-6f7a-8b9c0d1e2f45",
+    "name": "Shame - Brine Roost (Harpy/Sea Serpent grounds)",
+    "location": [5439, 137, 20],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "BrineLeechEel", "maxCount": 2, "probability": 100 },
+      { "name": "BrineSquallHarrier", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "3aecf481-abcd-4e4f-7a8b-9c0d1e2f3a56",
+    "name": "Shame - Glaukos",
+    "location": [5560, 220, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:20:00",
+    "maxDelay": "00:20:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "Glaukos", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "a1b2c3d4-1111-4aaa-8bbb-c1d2e3f40001",
+    "name": "Shame - Brine Deeps (Water Elemental expansion)",
+    "location": [5600, 195, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "BrineSpray", "maxCount": 1, "probability": 100 },
+      { "name": "BrineRiptide", "maxCount": 1, "probability": 100 },
+      { "name": "BrineTideElemental", "maxCount": 1, "probability": 100 },
+      { "name": "BrineWaterlord", "maxCount": 1, "probability": 100 },
+      { "name": "BrineTelchinAdept", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "a1b2c3d4-2222-4aaa-8bbb-c1d2e3f40002",
+    "name": "Shame - Brine Storm Peaks (Air Elemental expansion)",
+    "location": [5520, 205, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "BrineSquallwind", "maxCount": 1, "probability": 100 },
+      { "name": "BrineCyclone", "maxCount": 1, "probability": 100 },
+      { "name": "BrineTelchinGaler", "maxCount": 1, "probability": 100 },
+      { "name": "BrineTelchinStormcaller", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "a1b2c3d4-3333-4aaa-8bbb-c1d2e3f40003",
+    "name": "Shame - Brine Frost Vault (Ice/Snow Elemental expansion)",
+    "location": [5460, 115, 35],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "BrineFrost", "maxCount": 1, "probability": 100 },
+      { "name": "BrineGlacier", "maxCount": 1, "probability": 100 },
+      { "name": "BrineHailspite", "maxCount": 1, "probability": 100 },
+      { "name": "BrineTelchinBrinesmith", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "a1b2c3d4-4444-4aaa-8bbb-c1d2e3f40004",
+    "name": "Shame - Brine Reef & Roost (Sea Serpent/Kraken/Harpy expansion)",
+    "location": [5435, 130, 20],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "BrineDeepcoil", "maxCount": 1, "probability": 100 },
+      { "name": "BrineAbyssal", "maxCount": 1, "probability": 100 },
+      { "name": "BrineCrusher", "maxCount": 1, "probability": 100 },
+      { "name": "BrineStormHarpy", "maxCount": 1, "probability": 100 },
+      { "name": "BrineSquallHawk", "maxCount": 1, "probability": 100 },
+      { "name": "BrineReefcrab", "maxCount": 1, "probability": 100 },
+      { "name": "BrineTelchinDrowner", "maxCount": 1, "probability": 100 },
+      { "name": "BrineTelchinTideward", "maxCount": 1, "probability": 100 },
+      { "name": "BrineJelly", "maxCount": 1, "probability": 100 },
+      { "name": "BrinePetrel", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "a1b2c3d4-5555-4aaa-8bbb-c1d2e3f40005",
+    "name": "Shame - Ormenos",
+    "location": [5565, 215, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:20:00",
+    "maxDelay": "00:30:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "BrineOrmenos", "maxCount": 1, "probability": 100 }
+    ]
+  }
+]

@@ -12,7 +12,8 @@
     "homeRange": 5,
     "walkingRange": 25,
     "entries": [
-      { "name": "JukaWarrior", "maxCount": 2, "probability": 100 }
+      { "name": "WaymanThug", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanWaylayer", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -28,10 +29,12 @@
     "homeRange": 10,
     "walkingRange": 30,
     "entries": [
-      { "name": "Brigand", "maxCount": 4, "probability": 100 },
-      { "name": "JukaLord", "maxCount": 1, "probability": 100 },
-      { "name": "JukaMage", "maxCount": 1, "probability": 100 },
-      { "name": "JukaWarrior", "maxCount": 3, "probability": 100 }
+      { "name": "WaymanCutpurse", "maxCount": 2, "probability": 100 },
+      { "name": "WaymanBrigand", "maxCount": 2, "probability": 100 },
+      { "name": "WaymanCaptain", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanHedgewizard", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanThug", "maxCount": 2, "probability": 100 },
+      { "name": "WaymanWaylayer", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -47,9 +50,10 @@
     "homeRange": 8,
     "walkingRange": 30,
     "entries": [
-      { "name": "JukaLord", "maxCount": 1, "probability": 100 },
-      { "name": "JukaMage", "maxCount": 1, "probability": 100 },
-      { "name": "JukaWarrior", "maxCount": 3, "probability": 100 }
+      { "name": "WaymanCaptain", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanHedgewizard", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanThug", "maxCount": 2, "probability": 100 },
+      { "name": "WaymanWaylayer", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -65,9 +69,10 @@
     "homeRange": 15,
     "walkingRange": 30,
     "entries": [
-      { "name": "JukaLord", "maxCount": 1, "probability": 100 },
-      { "name": "JukaMage", "maxCount": 1, "probability": 100 },
-      { "name": "JukaWarrior", "maxCount": 3, "probability": 100 }
+      { "name": "WaymanCaptain", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanHedgewizard", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanThug", "maxCount": 2, "probability": 100 },
+      { "name": "WaymanWaylayer", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -83,9 +88,10 @@
     "homeRange": 8,
     "walkingRange": 30,
     "entries": [
-      { "name": "JukaLord", "maxCount": 1, "probability": 100 },
-      { "name": "JukaMage", "maxCount": 1, "probability": 100 },
-      { "name": "JukaWarrior", "maxCount": 3, "probability": 100 }
+      { "name": "WaymanCaptain", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanHedgewizard", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanThug", "maxCount": 2, "probability": 100 },
+      { "name": "WaymanWaylayer", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -101,9 +107,10 @@
     "homeRange": 7,
     "walkingRange": 30,
     "entries": [
-      { "name": "JukaLord", "maxCount": 1, "probability": 100 },
-      { "name": "JukaMage", "maxCount": 1, "probability": 100 },
-      { "name": "JukaWarrior", "maxCount": 3, "probability": 100 }
+      { "name": "WaymanCaptain", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanHedgewizard", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanThug", "maxCount": 2, "probability": 100 },
+      { "name": "WaymanWaylayer", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -119,8 +126,8 @@
     "homeRange": 6,
     "walkingRange": 30,
     "entries": [
-      { "name": "GolemController", "maxCount": 4, "probability": 100 },
-      { "name": "Golem", "maxCount": 4, "probability": 100 }
+      { "name": "WaymanArtificer", "maxCount": 4, "probability": 100 },
+      { "name": "WaymanAutomaton", "maxCount": 4, "probability": 100 }
     ]
   },
   {
@@ -136,10 +143,11 @@
     "homeRange": 8,
     "walkingRange": 30,
     "entries": [
-      { "name": "Golem", "maxCount": 1, "probability": 100 },
-      { "name": "JukaLord", "maxCount": 1, "probability": 100 },
-      { "name": "JukaMage", "maxCount": 1, "probability": 100 },
-      { "name": "JukaWarrior", "maxCount": 3, "probability": 100 }
+      { "name": "WaymanAutomaton", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanCaptain", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanHedgewizard", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanThug", "maxCount": 2, "probability": 100 },
+      { "name": "WaymanWaylayer", "maxCount": 1, "probability": 100 }
     ]
   },
   {
@@ -155,9 +163,127 @@
     "homeRange": 7,
     "walkingRange": 30,
     "entries": [
-      { "name": "JukaLord", "maxCount": 1, "probability": 100 },
-      { "name": "JukaMage", "maxCount": 1, "probability": 100 },
-      { "name": "JukaWarrior", "maxCount": 3, "probability": 100 }
+      { "name": "WaymanCaptain", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanHedgewizard", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanThug", "maxCount": 2, "probability": 100 },
+      { "name": "WaymanWaylayer", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "a1b2c3d4-1000-4000-8000-000000000e08",
+    "name": "Spawner (227)",
+    "location": [5792, 544, 10],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:20:00",
+    "maxDelay": "00:30:00",
+    "team": 0,
+    "homeRange": 6,
+    "walkingRange": 30,
+    "entries": [
+      { "name": "WaymanPeriphetes", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "a1b2c3d4-1000-4000-8000-000000000e09",
+    "name": "Spawner (227)",
+    "location": [5819, 591, 0],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:10:00",
+    "team": 0,
+    "homeRange": 5,
+    "walkingRange": 25,
+    "entries": [
+      { "name": "WaymanFootpad", "maxCount": 2, "probability": 100 },
+      { "name": "WaymanSlinger", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanRuffian", "maxCount": 2, "probability": 100 },
+      { "name": "WaymanBowman", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "a1b2c3d4-1000-4000-8000-000000000e0a",
+    "name": "Spawner (227)",
+    "location": [5690, 534, 0],
+    "map": "Felucca",
+    "count": 7,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:10:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": 30,
+    "entries": [
+      { "name": "WaymanCudgeler", "maxCount": 2, "probability": 100 },
+      { "name": "WaymanRoadwitch", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanEnforcer", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanGearhound", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanBronzeguard", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanBrigadier", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "a1b2c3d4-1000-4000-8000-000000000e0b",
+    "name": "Spawner (227)",
+    "location": [5808, 588, 12],
+    "map": "Felucca",
+    "count": 7,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:10:00",
+    "team": 0,
+    "homeRange": 15,
+    "walkingRange": 30,
+    "entries": [
+      { "name": "WaymanCogwright", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanIronclad", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanWarlord", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanIsthmianCutthroat", "maxCount": 2, "probability": 100 },
+      { "name": "WaymanIsthmianArcher", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanIsthmianReaver", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "a1b2c3d4-1000-4000-8000-000000000e0c",
+    "name": "Spawner (227)",
+    "location": [5828, 530, 0],
+    "map": "Felucca",
+    "count": 9,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:10:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": 30,
+    "entries": [
+      { "name": "WaymanIsthmianHexer", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanIsthmianBravo", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanIsthmianAutomaton", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanIsthmianPinebender", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanIsthmianBedwright", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanIsthmianCaptain", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanCurhound", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanRat", "maxCount": 1, "probability": 100 },
+      { "name": "WaymanCrow", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "a1b2c3d4-1000-4000-8000-000000000e0d",
+    "name": "Spawner (227)",
+    "location": [5857, 586, 15],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:20:00",
+    "maxDelay": "00:30:00",
+    "team": 0,
+    "homeRange": 7,
+    "walkingRange": 30,
+    "entries": [
+      { "name": "WaymanProcrustes", "maxCount": 1, "probability": 100 }
     ]
   }
 ]

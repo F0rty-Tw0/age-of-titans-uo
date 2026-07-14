@@ -1,0 +1,182 @@
+[
+  {
+    "$type": "Spawner",
+    "guid": "6f7a8b9c-9001-4e66-9a06-900000000001",
+    "name": "Peaks Expansion - Giant-kin Vale",
+    "location": [809, 1615, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:07:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "PeakEttin", "maxCount": 2, "probability": 100 },
+      { "name": "PeakOgre", "maxCount": 2, "probability": 100 },
+      { "name": "PeakStoneling", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6f7a8b9c-9002-4e66-9a06-900000000002",
+    "name": "Peaks Expansion - Ettin & Ogre Highlands",
+    "location": [1055, 1442, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "PeakStoneEttin", "maxCount": 2, "probability": 100 },
+      { "name": "PeakTwoheadEttin", "maxCount": 1, "probability": 100 },
+      { "name": "PeakOgreBrute", "maxCount": 1, "probability": 100 },
+      { "name": "PeakOgrelord", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6f7a8b9c-9003-4e66-9a06-900000000003",
+    "name": "Peaks Expansion - SW Peaks Fauna",
+    "location": [741, 1838, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:03:00",
+    "maxDelay": "00:06:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "PeakBear", "maxCount": 2, "probability": 100 },
+      { "name": "PeakBoulderbear", "maxCount": 1, "probability": 100 },
+      { "name": "PeakFrostbear", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRam", "maxCount": 1, "probability": 100 },
+      { "name": "PeakEaglet", "maxCount": 1, "probability": 100 },
+      { "name": "PeakWildgoat", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6f7a8b9c-9004-4e66-9a06-900000000004",
+    "name": "Peaks Expansion - Bronze Cairn (Bronze Watch Camp)",
+    "location": [1474, 1297, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "PeakBronzeWatchman", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeSentry", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeArcher", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeMastiff", "maxCount": 2, "probability": 100 },
+      { "name": "PeakBronzeWarden", "maxCount": 1, "probability": 100 },
+      { "name": "PeakBronzeCaptain", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6f7a8b9c-9005-4e66-9a06-900000000005",
+    "name": "Peaks Expansion - Talos, the Bronze Warden (mini-boss)",
+    "location": [1474, 1297, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:30:00",
+    "maxDelay": "01:00:00",
+    "team": 0,
+    "homeRange": 10,
+    "walkingRange": 6,
+    "entries": [
+      { "name": "PeakTalos", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6f7a8b9c-9006-4e66-9a06-900000000006",
+    "name": "Peaks Expansion - North Peaks Predators",
+    "location": [1749, 474, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:07:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "PeakLion", "maxCount": 1, "probability": 100 },
+      { "name": "PeakSnowcat", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragwolf", "maxCount": 2, "probability": 100 },
+      { "name": "PeakSnowwolf", "maxCount": 1, "probability": 100 },
+      { "name": "PeakRockhound", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCondor", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6f7a8b9c-9007-4e66-9a06-900000000007",
+    "name": "Peaks Expansion - Lost Lands Crag (Get of Polyphemos Camp)",
+    "location": [5558, 824, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "PeakCyclopsYoung", "maxCount": 1, "probability": 100 },
+      { "name": "PeakOldCyclops", "maxCount": 1, "probability": 100 },
+      { "name": "PeakGetShepherd", "maxCount": 1, "probability": 100 },
+      { "name": "PeakGetHerdsman", "maxCount": 1, "probability": 100 },
+      { "name": "PeakGetBoulderthrow", "maxCount": 1, "probability": 100 },
+      { "name": "PeakGetRam", "maxCount": 1, "probability": 100 },
+      { "name": "PeakGetElder", "maxCount": 1, "probability": 100 },
+      { "name": "PeakGetChieftain", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6f7a8b9c-9008-4e66-9a06-900000000008",
+    "name": "Peaks Expansion - Hythloth Approach Gazers",
+    "location": [6119, 219, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:07:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "PeakGazerling", "maxCount": 2, "probability": 100 },
+      { "name": "PeakStonegazer", "maxCount": 1, "probability": 100 },
+      { "name": "PeakElderGazer", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCliffgargoyle", "maxCount": 1, "probability": 100 },
+      { "name": "PeakPika", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6f7a8b9c-9009-4e66-9a06-900000000009",
+    "name": "Peaks Expansion - Hythloth Crag Rocs & Stone",
+    "location": [5986, 203, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:04:00",
+    "maxDelay": "00:08:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "PeakRocFledgling", "maxCount": 1, "probability": 100 },
+      { "name": "PeakStormroc", "maxCount": 1, "probability": 100 },
+      { "name": "PeakGriffonharpy", "maxCount": 1, "probability": 100 },
+      { "name": "PeakGraniteGolem", "maxCount": 1, "probability": 100 },
+      { "name": "PeakStonetroll", "maxCount": 1, "probability": 100 },
+      { "name": "PeakCragtroll", "maxCount": 1, "probability": 100 }
+    ]
+  }
+]

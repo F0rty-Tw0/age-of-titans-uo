@@ -1,0 +1,185 @@
+[
+  {
+    "$type": "Spawner",
+    "guid": "2b6e9a4c-7d1f-4b8a-9c3e-5a2d8f6b1e47",
+    "name": "Deceit - Drowned Dead",
+    "location": [5212, 674, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 10,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "DrownedDead", "maxCount": 4, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "8f4c1e7a-3b9d-4a6e-8c2f-6d1a9b4e7c53",
+    "name": "Deceit - Drowned Legionary & Oathbreaker",
+    "location": [5219, 573, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 10,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "DrownedLegionary", "maxCount": 3, "probability": 60 },
+      { "name": "DrownedOathbreaker", "maxCount": 3, "probability": 40 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "5a9d2f8b-6c4e-4d1a-9b7f-3e8c5a2d6f19",
+    "name": "Deceit - Drowned Shade & Wailer",
+    "location": [5192, 695, 0],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 10,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "DrownedShade", "maxCount": 3, "probability": 60 },
+      { "name": "DrownedWailer", "maxCount": 3, "probability": 40 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "3c7b1e5f-9a4d-4c8e-8f2b-1d6a9c3e5f82",
+    "name": "Deceit - Drowned Lamentor, Mournling & Brackish Hulk",
+    "location": [5163, 567, 0],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 10,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "DrownedLamentor", "maxCount": 4, "probability": 34 },
+      { "name": "DrownedMournling", "maxCount": 4, "probability": 33 },
+      { "name": "DrownedBrackishHulk", "maxCount": 4, "probability": 33 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "9e2d6a4c-5f8b-4e3a-9c1d-7b4e8a2f6c95",
+    "name": "Deceit - Minos",
+    "location": [5310, 752, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:20:00",
+    "maxDelay": "00:20:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "Minos", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1d4f7a2c-8e6b-4c9a-9d3f-2a7c5e8b4d61",
+    "name": "Deceit - Sunken Garrison, sailors & ambient",
+    "location": [5212, 674, 0],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 10,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "DrownedSailor", "maxCount": 6, "probability": 17 },
+      { "name": "DrownedFloater", "maxCount": 6, "probability": 17 },
+      { "name": "DrownedRower", "maxCount": 6, "probability": 17 },
+      { "name": "DrownedSilt", "maxCount": 6, "probability": 17 },
+      { "name": "DrownedBrinerot", "maxCount": 6, "probability": 16 },
+      { "name": "DrownedGraveEel", "maxCount": 6, "probability": 16 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6c8e2b4d-3a9f-4d1c-8e6a-4b2d7f9c3e58",
+    "name": "Deceit - Sunken Garrison, marines & reavers",
+    "location": [5219, 573, 0],
+    "map": "Felucca",
+    "count": 5,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 10,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "DrownedMarine", "maxCount": 5, "probability": 20 },
+      { "name": "DrownedReaver", "maxCount": 5, "probability": 20 },
+      { "name": "DrownedSaltMummy", "maxCount": 5, "probability": 20 },
+      { "name": "DrownedDeepGaunt", "maxCount": 5, "probability": 20 },
+      { "name": "DrownedHarbinger", "maxCount": 5, "probability": 20 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "4a7d1e9c-6f3b-4a8d-9c1e-7d4a8b2f6c93",
+    "name": "Deceit - Sunken Garrison, wraiths & hauntings",
+    "location": [5192, 695, 0],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 10,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "DrownedHaunt", "maxCount": 6, "probability": 17 },
+      { "name": "DrownedNecromage", "maxCount": 6, "probability": 17 },
+      { "name": "DrownedBanshee", "maxCount": 6, "probability": 17 },
+      { "name": "DrownedKeen", "maxCount": 6, "probability": 17 },
+      { "name": "DrownedTidewraith", "maxCount": 6, "probability": 16 },
+      { "name": "DrownedWrecklich", "maxCount": 6, "probability": 16 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "7b3e9d5a-2c8f-4b6d-9a3e-8c5b1d7f9e24",
+    "name": "Deceit - the Nostoi crew",
+    "location": [5163, 567, 0],
+    "map": "Felucca",
+    "count": 6,
+    "minDelay": "00:02:00",
+    "maxDelay": "00:05:00",
+    "team": 0,
+    "homeRange": 10,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "DrownedNostosDeckhand", "maxCount": 6, "probability": 17 },
+      { "name": "DrownedNostosOarsman", "maxCount": 6, "probability": 17 },
+      { "name": "DrownedNostosArcher", "maxCount": 6, "probability": 17 },
+      { "name": "DrownedNostosNavigator", "maxCount": 6, "probability": 17 },
+      { "name": "DrownedNostosBosun", "maxCount": 6, "probability": 16 },
+      { "name": "DrownedNostosCurser", "maxCount": 6, "probability": 16 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "3f9c6a2e-5d8b-4f1a-8c6e-2a9d5f7b3e46",
+    "name": "Deceit - Phrontis, the Unreturned",
+    "location": [5310, 752, 0],
+    "map": "Felucca",
+    "count": 1,
+    "minDelay": "00:20:00",
+    "maxDelay": "00:30:00",
+    "team": 0,
+    "homeRange": 8,
+    "walkingRange": -1,
+    "entries": [
+      { "name": "DrownedPhrontis", "maxCount": 1, "probability": 100 }
+    ]
+  }
+]

@@ -13,10 +13,9 @@
     "walkingRange": 20,
     "entries": [
       { "name": "DreadSpider", "maxCount": 2, "probability": 100 },
-      { "name": "FireElemental", "maxCount": 1, "probability": 100 },
-      { "name": "HellCat", "maxCount": 1, "probability": 100 },
-      { "name": "LavaLizard", "maxCount": 1, "probability": 100 },
-      { "name": "LavaSnake", "maxCount": 1, "probability": 100 }
+      { "name": "PyreServitor", "maxCount": 1, "probability": 100 },
+      { "name": "PyreHound", "maxCount": 1, "probability": 100 },
+      { "name": "PyreCrawler", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -50,10 +49,9 @@
     "walkingRange": 20,
     "entries": [
       { "name": "DreadSpider", "maxCount": 2, "probability": 100 },
-      { "name": "FireElemental", "maxCount": 1, "probability": 100 },
-      { "name": "HellCat", "maxCount": 1, "probability": 100 },
-      { "name": "LavaLizard", "maxCount": 1, "probability": 100 },
-      { "name": "LavaSnake", "maxCount": 1, "probability": 100 }
+      { "name": "PyreServitor", "maxCount": 1, "probability": 100 },
+      { "name": "PyreHound", "maxCount": 1, "probability": 100 },
+      { "name": "PyreCrawler", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -70,10 +68,9 @@
     "walkingRange": 20,
     "entries": [
       { "name": "DreadSpider", "maxCount": 2, "probability": 100 },
-      { "name": "FireElemental", "maxCount": 1, "probability": 100 },
-      { "name": "HellCat", "maxCount": 1, "probability": 100 },
-      { "name": "LavaLizard", "maxCount": 1, "probability": 100 },
-      { "name": "LavaSnake", "maxCount": 1, "probability": 100 }
+      { "name": "PyreServitor", "maxCount": 1, "probability": 100 },
+      { "name": "PyreHound", "maxCount": 1, "probability": 100 },
+      { "name": "PyreCrawler", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -90,10 +87,9 @@
     "walkingRange": 20,
     "entries": [
       { "name": "DreadSpider", "maxCount": 2, "probability": 100 },
-      { "name": "FireElemental", "maxCount": 1, "probability": 100 },
-      { "name": "HellCat", "maxCount": 1, "probability": 100 },
-      { "name": "LavaLizard", "maxCount": 1, "probability": 100 },
-      { "name": "LavaSnake", "maxCount": 1, "probability": 100 }
+      { "name": "PyreServitor", "maxCount": 1, "probability": 100 },
+      { "name": "PyreHound", "maxCount": 1, "probability": 100 },
+      { "name": "PyreCrawler", "maxCount": 2, "probability": 100 }
     ]
   },
   {
@@ -110,10 +106,62 @@
     "walkingRange": 20,
     "entries": [
       { "name": "DreadSpider", "maxCount": 2, "probability": 100 },
-      { "name": "FireElemental", "maxCount": 1, "probability": 100 },
-      { "name": "HellCat", "maxCount": 1, "probability": 100 },
-      { "name": "LavaLizard", "maxCount": 1, "probability": 100 },
-      { "name": "LavaSnake", "maxCount": 1, "probability": 100 }
+      { "name": "PyreServitor", "maxCount": 1, "probability": 100 },
+      { "name": "PyreHound", "maxCount": 1, "probability": 100 },
+      { "name": "PyreCrawler", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "7e9f2a4b-6c8d-4e1f-3a5b-4c2d1e9f7a8b",
+    "name": "Spawner (Pyre Expansion - coalwalk leak)",
+    "location": [5956, 1310, -2],
+    "map": "Felucca",
+    "count": 4,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:10:00",
+    "team": 0,
+    "homeRange": 10,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "PyreCoalwalker", "maxCount": 1, "probability": 100 },
+      { "name": "PyreScorchling", "maxCount": 1, "probability": 100 },
+      { "name": "PyreCindermoth", "maxCount": 2, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "8f1a3b5c-7d9e-4f2a-4b6c-5d3e2f1a8b9c",
+    "name": "Spawner (Pyre Expansion - ashen leak)",
+    "location": [5976, 1387, -22],
+    "map": "Felucca",
+    "count": 3,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:10:00",
+    "team": 0,
+    "homeRange": 10,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "PyreCharhound", "maxCount": 1, "probability": 100 },
+      { "name": "PyreAshgull", "maxCount": 1, "probability": 100 },
+      { "name": "PyreSlaggrub", "maxCount": 1, "probability": 100 }
+    ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "9a2b4c6d-8e1f-4a3b-5c7d-6e4f3a2b9c1d",
+    "name": "Spawner (Pyre Expansion - Kaminoi outrider)",
+    "location": [5999, 1327, 10],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:05:00",
+    "maxDelay": "00:10:00",
+    "team": 0,
+    "homeRange": 10,
+    "walkingRange": 20,
+    "entries": [
+      { "name": "PyreKaminosStoker", "maxCount": 1, "probability": 100 },
+      { "name": "PyreKaminosAcolyte", "maxCount": 1, "probability": 100 }
     ]
   }
 ]
