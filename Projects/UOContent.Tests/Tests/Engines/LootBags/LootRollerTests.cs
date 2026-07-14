@@ -74,22 +74,30 @@ public class LootRollerDecisionTests
     [Fact]
     public void RollDecision_RarityDistributionAtBagLevelTen_MatchesWeightsWithinTolerance()
     {
-        // Weights 0/0/0/90/10 out of 100 (framework §8 bag-level-10 row, 2026-07-08 no-Commons
-        // directive). Common/Uncommon/Rare are 0-weight buckets — zero must be exact, not "within
-        // tolerance", since a single stray sample would mean the floor is broken.
+        // User directive 2026-07-14: bag 10 = GUARANTEED Legendary (weights 0/0/0/0/100);
+        // bag 9 inherited bag 10's old 90/10 Epic/Legendary split. Zero-weight buckets must
+        // be exactly zero — a single stray sample would mean the floor is broken.
         const int samples = 50000;
-        var counts = new int[5];
+        var counts10 = new int[5];
+        var counts9 = new int[5];
 
         for (var i = 0; i < samples; i++)
         {
-            counts[(int)LootRoller.RollDecision(10).Rarity]++;
+            counts10[(int)LootRoller.RollDecision(10).Rarity]++;
+            counts9[(int)LootRoller.RollDecision(9).Rarity]++;
         }
 
-        Assert.Equal(0, counts[(int)ItemRarity.Common]);
-        Assert.Equal(0, counts[(int)ItemRarity.Uncommon]);
-        Assert.Equal(0, counts[(int)ItemRarity.Rare]);
-        AssertWithinTolerance(counts[(int)ItemRarity.Epic], samples, 90);
-        AssertWithinTolerance(counts[(int)ItemRarity.Legendary], samples, 10);
+        Assert.Equal(0, counts10[(int)ItemRarity.Common]);
+        Assert.Equal(0, counts10[(int)ItemRarity.Uncommon]);
+        Assert.Equal(0, counts10[(int)ItemRarity.Rare]);
+        Assert.Equal(0, counts10[(int)ItemRarity.Epic]);
+        Assert.Equal(samples, counts10[(int)ItemRarity.Legendary]);
+
+        Assert.Equal(0, counts9[(int)ItemRarity.Common]);
+        Assert.Equal(0, counts9[(int)ItemRarity.Uncommon]);
+        Assert.Equal(0, counts9[(int)ItemRarity.Rare]);
+        AssertWithinTolerance(counts9[(int)ItemRarity.Epic], samples, 90);
+        AssertWithinTolerance(counts9[(int)ItemRarity.Legendary], samples, 10);
     }
 
     [Theory]
