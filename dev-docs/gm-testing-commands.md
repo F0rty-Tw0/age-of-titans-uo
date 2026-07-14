@@ -72,6 +72,9 @@ Bag level drives the rarity weight table (level 0 ≈ Common-heavy … level 10 
 | `[SetLevel <0-10>` | Target a player → set their level directly, XP snapped to that level's threshold. Raising replays every level-up crossed (stat top-up, caps, the level-4 coin/bolt grant); lowering just resets level + caps. | `Commands/LevelTestCommands.cs` |
 | `[GiveXP <amount>` | Target a player → routes through the production `LevelSystem.AwardXP` path. Must target a Player-access character — staff targets no-op by design (same exemption real XP gain uses). | `Commands/LevelTestCommands.cs` |
 | `[NewbieBarrow` | Teleports you to the newbie dungeon's entrance `GoLocation` (`dev-docs/newbie-dungeon.md`). | `Commands/LevelTestCommands.cs` |
+| `[GoDungeon <name>` | Teleports you to a ladder dungeon's `GoLocation` by partial region name — `tholos`, `cinder`, `wildwood`, `aerie`, `stygian` (`dev-docs/dungeon-ladder.md`). | `Commands/LevelTestCommands.cs` |
+| `[Beast <className>` | Spawns ONE creature of any custom class at a targeted spot and reports its level — e.g. `[Beast LaborNemeanLion`. All 368 classes: `dev-docs/beast-reference.md`. | `Commands/BeastCommands.cs` |
+| `[BeastSpawner <className> [count=3] [respawnMinutes=5]` | Places a RUNNING `Spawner` (home range 10) for the class at a targeted spot and force-respawns it — e.g. `[BeastSpawner PyreHound 4 10`. Tune afterward with `[props`. | `Commands/BeastCommands.cs` |
 | `[Level` | Player-access. Shows your current level, total XP, and XP remaining to the next level. | `Commands/LevelCommand.cs` |
 | `[LevelGuide` | Player-access. Reopens the leveling primer gump (normally shown once, on first ding). | `Commands/LevelCommand.cs` |
 

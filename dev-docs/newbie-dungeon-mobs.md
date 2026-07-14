@@ -54,6 +54,55 @@ Shared facts:
 | Immunities | Bleed, Lesser poison |
 | Teaches | the buff-bar read + cure/bandage reaction — first status effect |
 
+### a bone bowman — `NewbieBoneBowman` *(L1)*
+| | |
+|---|---|
+| Level tag | 1 |
+| Body / hue | Skeleton 50/56, pale 0x0482, carries a real Bow + arrows |
+| HP / dmg | 30–45 / 2–4, Archery 25–35, **AI_Archer** |
+| Teaches | "someone is shooting me" — cover / closing in, at pillow-fight damage |
+
+### a barrow bat — `NewbieBarrowBat` *(L1)*
+| | |
+|---|---|
+| Level tag | 1 |
+| Body / hue | Mongbat 39, shadow 0x0455, VeryFast |
+| HP / dmg | 22–32 / 1–3 |
+| Teaches | targeting a fast, erratic mover — movement practice with a new silhouette |
+
+### a forgotten mourner — `NewbieMourner`
+| | |
+|---|---|
+| Level tag | 2 |
+| Body / hue | Spectre 26, deep shadow 0x0455 |
+| HP / dmg | 60–78 / 2–5, **AI_Mage** (Magery 35–45 — magic arrow/harm tier) |
+| Immunities | Bleed, Lesser poison |
+| Teaches | closing distance on a caster — the barrow's only trash mage, primer for the Hollow Warden elite |
+
+### a barrow chanter — `NewbieChanter`
+| | |
+|---|---|
+| Level tag | 2 |
+| Body / hue | Skeletal Mage 148, pale 0x047E (Warden elite shares the body — hue keeps them distinct) |
+| HP / dmg | 66–80 / 2–5, **AI_Mage** (Magery 35–45) |
+| Teaches | second caster silhouette — reinforces "close the mage" |
+
+### a grave archer — `NewbieGraveArcher`
+| | |
+|---|---|
+| Level tag | 2 |
+| Body / hue | Skeleton 50/56, ash 0x0385, real Bow + arrows |
+| HP / dmg | 66–82 / 3–6, Archery 40–50, Dex 70–85, **AI_Archer** |
+| Teaches | sustained kiting under ranged fire — the deeper-halls pressure lesson |
+
+### an unremembered wight — `NewbieWight`
+| | |
+|---|---|
+| Level tag | 2 |
+| Body / hue | Ghoul 153, shadow 0x0455, SLOW (0.4/0.8) |
+| HP / dmg | 90–100 / 4–7 — top of the L2 band |
+| Teaches | pacing a tanky fight — stamina management, not blind trading |
+
 ### a restless dead — `NewbieRestlessArcher`
 | | |
 |---|---|
