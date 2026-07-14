@@ -66,7 +66,7 @@ Behavior baked into the region type (code, not config): player↔player harm
 blocked (incl. fields, potions, pets), no criminal flags, corpse loot
 owner-only, entry gate character level ≤ 3 (staff exempt).
 
-## 4. Spawners — `Distribution/Data/Spawns/post-uoml/felucca/newbie-dungeon.json`
+## 4. Spawners — `Distribution/Data/Spawns/uoml/felucca/newbie-dungeon.json`
 
 Six spawner objects; update each `location` to sit inside its matching zone
 rect from step 3:
@@ -74,8 +74,8 @@ rect from step 3:
 | Spawner | Contents | Count | Respawn |
 |---|---|---|---|
 | Entrance | NewbieFerryman (greeter) | 1 | 30s–1m |
-| Trash L1 | BoneShade 5, GraveRat 4, CorpseCrawler 4 | 13 | 1–2 min |
-| Trash L2 | GraveMiasma 4, RestlessArcher 3 | 7 | 2 min |
+| Trash L1 | BoneShade 5, GraveRat 4, CorpseCrawler 4, BoneBowman 2, BarrowBat 2 | 17 | 1–2 min |
+| Trash L2 | GraveMiasma 4, RestlessArcher 3, Mourner 2, Chanter 1, GraveArcher 2, Wight 1 | 13 | 2 min |
 | Elite ×3 | one spawner per named elite | 1 each | 15 min |
 
 Spawn files also load at boot. Alternative: place spawners live as GM
