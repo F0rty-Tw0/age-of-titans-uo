@@ -209,7 +209,7 @@ public static partial class RarityEffects
                 }
             case ClauseType.OnKillRestore:
                 {
-                    if (!defender.Alive)
+                    if (!defender.Alive && GrantsKillBenefits(defender))
                     {
                         RestoreWithSpill(attacker, 'S', attacker.StamMax - attacker.Stam);
 

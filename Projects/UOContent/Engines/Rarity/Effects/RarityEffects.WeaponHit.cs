@@ -818,7 +818,7 @@ public static partial class RarityEffects
             }
         }
 
-        if (defender.Alive)
+        if (defender.Alive || !GrantsKillBenefits(defender))
         {
             return;
         }

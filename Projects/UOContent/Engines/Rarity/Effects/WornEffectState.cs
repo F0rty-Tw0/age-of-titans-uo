@@ -726,8 +726,9 @@ public static class WornEffectState
     internal static string CapstoneEffectText(ArmorMaterialType material) => material switch
     {
         ArmorMaterialType.Leather   => "+6% dodge",
-        ArmorMaterialType.Studded   => "your hits poison the target",
-        ArmorMaterialType.Bone      => "your hits heal-block the target",
+        // 30s = T2A Lesser poison wear-off (PoisonKinds.Configure: 3.5s delay + 10 ticks @ 3s).
+        ArmorMaterialType.Studded   => "your hits poison the target for 30s",
+        ArmorMaterialType.Bone      => "your hits heal-block the target for 2s",
         ArmorMaterialType.Ringmail  => "+8% reflect while struck",
         ArmorMaterialType.Chainmail => "damage reduction is increased to its maximum for 5s after you take a crit",
         ArmorMaterialType.Plate     => "your hits briefly stun the target",
