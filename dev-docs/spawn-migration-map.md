@@ -405,6 +405,13 @@ this swaps the stock type onto its themed equivalent.)
 
 ## F. Phased changeover plan (lowest-risk order)
 
+| Phase | Scope | Status |
+|---|---|---|
+| Phase 1 | Graveyards + Classic Five | ✓ EXECUTED 2026-07-14 |
+| Phase 2 | Overworld routing | ✓ EXECUTED 2026-07-14 |
+| Phase 3 | Gap families | ✓ EXECUTED 2026-07-14 |
+| Phase 4 | Era policy (Blighted Grove/Paroxysmus/Prism/Sanctuary → `Spawns/disabled/felucca/`) | ✓ EXECUTED 2026-07-14 |
+
 Convert **existing-class lanes first** (zero new content — pure spawn edits), then the
 **gap families** as each roster ships, then the **era-mismatch** decision last.
 

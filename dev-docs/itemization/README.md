@@ -27,6 +27,7 @@ exists.
 | `20-jewelry.md` | ring/bracelet/necklace/earrings | 4 slots | 20 |
 | `21-clothing.md` | bonus-bearing cloth | 12 shapes | 5 relics |
 | | | **total** | **270** |
+| `30-pantheon-bags.md` | pantheon-targeted loot bags + god sanctum expansion — approved design 2026-07-14, implementation pending | — | — |
 
 **Name-uniqueness guard:** all 270 legendary proper nouns are globally unique (verified
 2026-07-07 by parsing every `| **Name** |` table row across the set — zero duplicates). **Roots

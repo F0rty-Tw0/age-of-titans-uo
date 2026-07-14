@@ -426,17 +426,25 @@ see `21-clothing.md` §1.
 | 6 | 0 | — | 75 | 25 | — |
 | 7 | 0 | — | 66 | 30 | 4 |
 | 8 | 0 | — | 55 | 39 | 6 |
-| 9 | 0 | — | 40 | 52 | 8 |
-| 10 | 0 | — | — | 90 | 10 |
+| 9 | 0 | — | — | 90 | 10 |
+| 10 | 0 | — | — | — | 100 |
 
-User directive 2026-07-08: bags never drop Common. Floors: L0-4 Uncommon, L5-9 Rare, L10
-Epic-only. Weights above L1 remain live-tuning placeholders.
+User directive 2026-07-08: bags never drop Common. Floors: L0-4 Uncommon, L5-8 Rare, L9 Epic,
+L10 Legendary. User directive 2026-07-14: bag 10 is guaranteed Legendary (dupes are fine —
+Divine Resonance echoes them); bag 9 takes bag 10's old 90/10 Epic/Legendary split. Weights
+above L1 remain live-tuning placeholders.
 
 - **Base pick within family:** weight ∝ closeness of base index to bag level scaled onto the
   ladder (weak bases common in low bags, top bases dominate high bags); all bases possible at all
   levels. Exact curve is an implementation detail.
 - **Legendary** finds broadcast via `RaritySystem.Announce` (user directive 2026-07-07; the
   `rarity.announceMinTier` setting can lower it back to Epic without a code change).
+
+### Drop sources
+
+Which mobs/dungeons drop which bag levels is out of scope for this framework doc. See
+`itemization/30-pantheon-bags.md` (§3 map, design pending) for pantheon-targeted bag design, and
+`dev-docs/loot-and-drops.md` for the canonical per-dungeon drop tables.
 
 ## 9. Balance rules (hard)
 

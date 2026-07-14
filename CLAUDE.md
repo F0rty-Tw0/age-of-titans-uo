@@ -36,6 +36,10 @@ Apply these when writing or reviewing `.cs` files under `Projects/`.
 | Code standards & LINQ tiers | `dev-docs/code-standards.md` |
 | Serialization system | `dev-docs/serialization.md` |
 | Content patterns (Items, Mobiles, Creatures) | `dev-docs/content-patterns.md` |
+| Itemization (Greek rarity framework, law) | `dev-docs/itemization/` |
+| Pantheon loot bags design | `dev-docs/itemization/30-pantheon-bags.md` |
+| Loot & drop tables | `dev-docs/loot-and-drops.md` |
+| T2A crafting | `dev-docs/t2a-crafting.md` |
 | Era & expansion handling | `dev-docs/era-expansion.md` |
 | Timer system | `dev-docs/timers.md` |
 | Event scheduler (wall-clock/calendar) | `dev-docs/event-scheduler.md` |
@@ -48,7 +52,9 @@ Apply these when writing or reviewing `.cs` files under `Projects/`.
 | Classic dungeon enhancements (elites/pins/brood) | `dev-docs/classic-five-enhancements.md` |
 | Bestiaries (dungeon ×5 / classic ×5 / open world) | `dev-docs/dungeon-ladder-bestiary.md` / `dev-docs/classic-five-bestiary.md` / `dev-docs/open-world-bestiary.md` |
 | Master bestiary taxonomy + gap families | `dev-docs/bestiary-master.md` |
+| Gap families bestiary | `dev-docs/gap-families-bestiary.md` |
 | Beast reference (ALL creatures, generated) | `dev-docs/beast-reference.md` |
+| the reference shard research/bestiary source material | `dev-docs/reference-shard-*.md` |
 | Spawn migration map (world changeover plan) | `dev-docs/spawn-migration-map.md` |
 | Event system | `dev-docs/events.md` |
 | Threading model | `dev-docs/threading-model.md` |
@@ -56,6 +62,7 @@ Apply these when writing or reviewing `.cs` files under `Projects/`.
 | Configuration system | `dev-docs/configuration.md` |
 | Networking & packets | `dev-docs/networking-packets.md` |
 | Region system | `dev-docs/regions.md` |
+| Pathfinding | `dev-docs/pathfinding.md` |
 | String handling & ValueStringBuilder | `dev-docs/string-handling.md` |
 | RunUO migration (overview) | `dev-docs/runuo-migration-docs/00-overview.md` |
 | RunUO migration (all docs) | `dev-docs/runuo-migration-docs/` |

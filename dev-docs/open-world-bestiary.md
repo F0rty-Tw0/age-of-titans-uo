@@ -1,6 +1,10 @@
 # Open-World Bestiary — Biome Families + The Labors (design, 2026-07-14)
 
-> **IMPLEMENTED 2026-07-14** (uncommitted): 30 biome classes in `Mobiles/OpenWorld/`,
+> **STATUS:** Design v1 (2026-07-14). Rosters were subsequently expanded to 51 per biome (255
+> total) — the implemented roster lives in `beast-reference.md` (generated, authoritative); this
+> doc remains the design intent for themes/abilities.
+
+> **IMPLEMENTED 2026-07-14** (uncommitted): 255 biome classes (51 per biome × 5 biomes) in `Mobiles/OpenWorld/`,
 > 6 Labors in `Mobiles/OpenWorld/Labors/` (all `DungeonElite`, guaranteed bag = level,
 > 60-120 min timers at real landmarks), spawn files `open-world-families.json` (20
 > spawners, real coords; Shore marked APPROX — verify sand tiles in-game) + `labors.json`.
