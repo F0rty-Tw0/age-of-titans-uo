@@ -15,7 +15,7 @@ ModernUO [![Discord](https://img.shields.io/discord/751317910504603701?logo=disc
 
 ## Age of Titans — Shard Customizations
 
-This repository is a fork of [ModernUO](https://github.com/modernuo/ModernUO) customized for the **Age of Titans** shard: T2A era, Felucca-only. The sections below document the shard systems added on top of upstream (last updated 2026-07-06).
+This repository is a fork of [ModernUO](https://github.com/modernuo/ModernUO) customized for the **Age of Titans** shard: T2A era, Felucca-only. The sections below document the shard systems added on top of upstream (last updated 2026-07-14).
 
 ### Player & Mob Leveling — `Projects/UOContent/Engines/Leveling/`
 - 10-level XP progression. Kills award XP to every player with looting rights, scaled by the mob-vs-player level gap (0.25x for easy kills up to 1.5x for mobs 2+ levels above you; mobs 3+ levels below award nothing).
@@ -26,13 +26,24 @@ This repository is a fork of [ModernUO](https://github.com/modernuo/ModernUO) cu
 - `[level` shows progress; `[levelguide` explains the system; a one-time primer gump appears on first level-up.
 
 ### Loot Bags — `Projects/UOContent/Engines/LootBags/`
-- Non-controlled creatures can drop a level-tagged `LootBag` (bag level = mob level). Drop chance scales from 5% at level 1 to 30% at level 10; level-0 ambient creatures never drop one.
-- Bag hue and displayed `[level N]` tag reflect the level. Bag level caps the rarity of future rolled contents.
+- Non-controlled creatures can drop a level-tagged `LootBag` (default bag level = mob level, `LootBagLevel` is virtual per class). Drop chance ramps convex from 10% at level 1 to 50% at level 10 (`LootBagConfig.ChanceForMobLevel`); level-0 ambient creatures never drop one.
+- Each bag rolls exactly **one** item — no Commons ever drop. Rarity odds scale with bag level (`LootRoller._rarityWeights`); bag 9 is a 90/10 Epic/Legendary split, bag 10 is **100% guaranteed Legendary**.
+- Themed dungeon trash (the newbie barrow, the Five Domains ladder) overrides the default down one tier — bag level = mob level − 1 — while open-world biome creatures keep the plain mob-level default. Dungeon elites and bosses opt out of the roll entirely and force-drop a guaranteed bag (`DungeonElite.EliteBagLevel`/`EliteBagCount`), telegraphed with a corpse sparkle. **The Stygian Deep's Hades is the only bag-10 source on the shard.**
+- Bag hue and displayed `[level N]` tag reflect the level. Full reference: `dev-docs/loot-and-drops.md`.
+
+### World Content — Dungeons & Bestiary
+942 custom creatures across 63 named elites/bosses, all spawnable, level-pinned, and covered by tests (`dev-docs/beast-reference.md` is the generated full roster; `dev-docs/dungeon-ladder.md` covers the ladder below).
+- **Barrow of the Unremembered** (L0–3, 15 mobs) — the newbie safe on-ramp.
+- **Five Domains dungeon ladder** (L4–10) — Drowned Tholos, Cinderworks, Nemean Wildwood, Stormcrown Aerie, Stygian Deep, one per god, climbing to Hades's throne.
+- **Enhanced Classic Five** — Despise, Deceit, Shame, Destard, Hythloth each get a themed family and a named elite alongside the untouched stock roster.
+- **9 themed gap-family dungeons** — Fire (Pyre), Ice (Rime), Khaldun (Cursed), Solen Hive (Myrmi), Terathan Keep (Ophian), Orc Caves (Lykai), Covetous (Argus), Wrong (Wayman), Painted Caves (Pelasg).
+- **5 open-world biome families** (Groves, Peaks, Mire, Restless, Shore) plus **The Labors** — 6 named roaming world-hunt elites.
 
 ### Equipment Rarity — `Projects/UOContent/Engines/Rarity/`
 - Five tiers (common, uncommon, rare, epic, legendary) on weapons, armor, clothing, and jewelry. Serialized with versioned migrations, GM-settable via `[props`.
 - Non-common items show `rarity: <tier>` in tooltips and a `[tier]` suffix on T2A single-click labels, including unidentified magic items.
 - Pantheon altar hub (`[Add PantheonAltar`): salvage Uncommon–Epic variants into ichor (2/4/8), spend ichor on deterministic tier upgrades (20 → Rare, 80 → Epic; item keeps its theme), or make the two-for-one legendary domain offering. A world-broadcast announcement fires on epic+ finds when the loot bag is opened.
+- Pantheon-targeted farming (`dev-docs/itemization/30-pantheon-bags.md`, approved design, **implementation pending**): themed mobs will drop god-locked bags 70% of the time so players can farm a specific god's gear.
 
 ### Floating Combat Text — `Projects/UOContent/Misc/FloatingCombatText.cs`
 - Overhead numbers replace the client's raw damage packet: red melee, red-orange spells, green heals, dark-green poison, tagged with the source (e.g. `-19 (Flame Strike)`).
@@ -54,7 +65,7 @@ This repository is a fork of [ModernUO](https://github.com/modernuo/ModernUO) cu
 ### Shard Setup & Ops
 - T2A expansion, Felucca-only maps, starting city fixed to Felucca; character creation uses a fixed 30/25/25 stat spread with all skills vendor-trained to 30.0.
 - Single-click item detail labels (damage, protection, etc.) controlled by `ItemInfoConfiguration`.
-- Command and network-disconnect audit logs; shard configuration and world saves are tracked in the repository (per-account saves and generated pathfinding data are ignored).
+- Command and network-disconnect audit logs; shard configuration is tracked in the repository (`Distribution/Saves` — world and account data — and generated pathfinding data are gitignored).
 
 ### Tests
 - Each system ships with xUnit coverage under `Projects/UOContent.Tests/`: leveling math, loot bag drops, rarity serialization/labels, combat text, equip swaps, notoriety, skill gain curve, and single-click packets.
@@ -63,40 +74,15 @@ This repository is a fork of [ModernUO](https://github.com/modernuo/ModernUO) cu
 
 Ranked review of the systems above — what to fix and how.
 
-### 1. Testing knob is live on `main` (high priority)
-`LevelConfig.FirstLevelXP = 1` (`Projects/UOContent/Engines/Leveling/LevelConfig.cs`) makes every new character reach level 1 after a single kill instead of the designed 3,750 XP. It exists only for in-game testing.
-
-**Fix:** replace the constant with a `ServerConfiguration` setting (e.g. `leveling.firstLevelXP`, default `3750`) so test shards can override it in `modernuo.json` without code changes, and production can never ship the test value by accident.
-
-### 2. Binary world saves tracked in git (high priority)
-The repository commits binary save files (`Saves/`). Git cannot diff or merge them, every save cycle bloats history permanently, and a bad merge can silently corrupt world state.
-
-**Fix:** move saves to Git LFS, or keep them out of the repo entirely and back them up via a dedicated mechanism (separate backup branch/remote, scheduled archive). Keep only `Configuration/` in git.
-
-### 3. Skill gain bands dropped per-skill difficulty
+### 1. Skill gain bands dropped per-skill difficulty
 The new `SkillCheck.GainChance` ignores `skill.Info.GainFactor`, so hard skills (Taming, Magery) gain exactly as fast as trivial ones (Camping). If uniform speed is the design, document it; otherwise the difficulty signal is lost.
 
 **Fix:** multiply the band chance by `skill.Info.GainFactor` (or a clamped version of it) inside `GainChance`, keeping the bands as the base curve.
 
-### 4. Rarity label logic duplicated four times
-The same "append `[tier]` suffix to the single-click label" pattern is hand-copied into `BaseWeapon`, `BaseArmor`, `BaseClothing`, and `BaseJewel`. The `LootBag` hue table also near-duplicates the `RarityConfig` hue table — two tables to keep in sync when hues get tuned.
-
-**Fix:** extract one shared helper (e.g. `RaritySystem.AppendSuffix(ref ValueStringBuilder, ItemRarity)` plus a label variant) and call it from all four bases; derive the bag hue from `RarityConfig.GetHue(RarityConfig.MaxRarityForBagLevel(level))` instead of a second table.
-
-### 5. `RaritySystem.Announce` is dead code with a per-call config read
-No call sites exist yet, and it reads `rarity.announceMinTier` from `ServerConfiguration` on every invocation instead of once.
-
-**Fix:** either delete it until the loot roller lands, or keep it and cache the tier in a `Configure()` method like `SkillCheck` does.
-
-### 6. ~~`IRarity.MaxRarity` is not enforced~~ (fixed 2026-07-06)
+### 2. ~~`IRarity.MaxRarity` is not enforced~~ (fixed 2026-07-06)
 Every base returned `Legendary` and nothing clamped `Rarity` against it, so the property was decorative — a GM (or future code) could set any tier on any item.
 
 **Fixed:** each base now hand-writes the `Rarity` property (`[SerializableProperty]`, same slot — no version bump) and clamps through a shared `RaritySystem.Clamp(value, MaxRarity)`, covering both out-of-range negatives (→ common) and tiers above the item's cap. Covered by clamp tests in `RarityItemTests`.
-
-### 7. Two git identities in history
-Commits alternate between `Artiom Tofan` and `F0rty_Tw0`. GitHub links only one to the account, which fragments blame/contribution history.
-
-**Fix:** pick one and set it globally (`git config --global user.name` / `user.email`); optionally add a `.mailmap` file so tooling merges the existing history.
 
 ## Requirements
 #### Supported Operating Systems

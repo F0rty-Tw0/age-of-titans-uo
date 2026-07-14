@@ -3,9 +3,9 @@
 > The single master taxonomy for every hostile creature on the shard. Adapts the UO
 > Outlands creature **system** (`dev-docs/outlands-creatures.md`, `dev-docs/outlands-bestiary.md`)
 > to our own **1–10 mob-level ladder** (`Projects/UOContent/Engines/Leveling/LevelConfig.cs`).
-> Absorbs the ~276 custom creatures already built (barrow, open world, Classic Five, Five
-> Domains) into one family tree, then names the **gap families** — world areas whose stock
-> spawns still have no Greek-themed replacement. The changeover itself lives in
+> Absorbs the custom creatures built (942 as of 2026-07-14 — barrow, open world, Classic Five,
+> Five Domains, and the gap families, all since implemented and expanded to full 35-per-family
+> rosters; see beast-reference.md for the authoritative list). The changeover itself lives in
 > `dev-docs/spawn-migration-map.md`; this doc is the *what exists / what's missing* half.
 >
 > **Design stubs only** for the gap families — names, prefix, concept, band, size, patron,
@@ -75,7 +75,7 @@ the design contract every roster is tuned inside.
 | **7** | ≤720 | titan, blood elemental, phoenix | heavy | bag 6 |
 | **8** | ≤950 | dragon, white wyrm, ogre lord | gear wall | bag 7 |
 | **9** | ≤2400 | balron, ancient wyrm, hydra | endgame trash | bag 8 |
-| **10** | >2400 | custom bosses only | graduation | bag 9 |
+| **10** | >2400 | custom bosses only | graduation | bag 9 (Hades only: bag 10) |
 
 \* Two bag conventions coexist (both honest): **dungeon trash** overrides `LootBagLevel =
 level − 1` (barrow idiom); **open-world trash** carries no override and rides the natural
@@ -111,14 +111,14 @@ members · the stock types it already stands in for. Full stat blocks live in th
 
 ### 4.1 Newbie tier — the Barrow of the Unremembered (L0–3) · `Newbie*`
 *Patron seed: Hades (the sealed deeper gate).* `dev-docs/newbie-dungeon-mobs.md`.
-The tutorial dungeon: 8 combat + 1 greeter. Foreshadows Hermes/Ares/Hades via its three
-elites (Charon → Fallen Champion → Hollow Warden). Stands in for graveyard fodder (skeleton,
-zombie, ghoul, giant rat) in the starter zone.
+The tutorial dungeon: 14 combat + 1 greeter (expanded to 15 total 2026-07-14). Foreshadows
+Hermes/Ares/Hades via its three elites (Charon → Fallen Champion → Hollow Warden). Stands in
+for graveyard fodder (skeleton, zombie, ghoul, giant rat) in the starter zone.
 
 | Rank | Members |
 |---|---|
-| L1 trash | NewbieBoneShade, NewbieGraveRat, NewbieCorpseCrawler |
-| L2 trash | NewbieGraveMiasma, NewbieRestlessArcher |
+| L1 trash | NewbieBoneShade, NewbieGraveRat, NewbieCorpseCrawler, NewbieBoneBowman, NewbieBarrowBat |
+| L2 trash | NewbieGraveMiasma, NewbieMourner, NewbieChanter, NewbieGraveArcher, NewbieWight, NewbieRestlessArcher |
 | L3 elites | NewbieCharon, NewbieFallenChampion, NewbieHollowWarden |
 | prop | NewbieFerryman (greeter, blessed) |
 
@@ -179,13 +179,13 @@ the only bag-10 source on the shard.
 
 | Group | Classes | Doc |
 |---|---|---|
-| Barrow (Newbie) | 9 | newbie-dungeon-mobs.md |
-| Open world biomes + Labors | 36 | open-world-bestiary.md |
-| Classic Five (elites + brood) | 11 | classic-five-enhancements.md |
-| Classic Five (+45 families) | 45 | classic-five-bestiary.md |
-| Five Domains core | 36 | dungeon-ladder.md |
-| Five Domains +140 | 140 | dungeon-ladder-bestiary.md |
-| **Total built** | **≈277** | — |
+| Barrow (Newbie) | 14 combat + 1 greeter | newbie-dungeon-mobs.md |
+| Open world biomes (51 × 5) | 255 | open-world-bestiary.md (design v1 — rosters in beast-reference.md) |
+| The Labors | 6 | open-world-bestiary.md |
+| Five Domains (35×4 + 36) | 176 | dungeon-ladder.md + dungeon-ladder-bestiary.md |
+| Classic Five (33×5 + 11 elites/brood) | 176 | classic-five-enhancements.md + classic-five-bestiary.md |
+| Gap families (35 × 9) | 315 | gap-families-bestiary.md (design v1 — rosters in beast-reference.md) |
+| **Total built** | **942** (excl. greeter) | beast-reference.md (GENERATED, authoritative) |
 
 ---
 

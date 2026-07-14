@@ -1,5 +1,9 @@
 # Gap-Families Bestiary — Age of Titans (rosters v1, 2026-07-14)
 
+> **STATUS:** Design v1 (2026-07-14). Rosters were subsequently expanded to 35 per family (9
+> families) — the implemented roster lives in `beast-reference.md` (generated, authoritative);
+> this doc remains the design intent for themes/abilities.
+
 > Full rosters for the **9 gap families** stubbed in `dev-docs/bestiary-master.md` §6 — the
 > world areas whose stock spawns still had no Greek-themed replacement. Each family here is a
 > complete stat-block table in the `dev-docs/dungeon-ladder-bestiary.md` format, built to the

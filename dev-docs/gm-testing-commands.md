@@ -48,7 +48,7 @@ Wrong base shape on `[Legendary`? The validation message tells you what it needs
 |---|---|---|
 | `[LootTest <level 0-10> [count≤100]` | Creates loot bags of the given level, each filled by `LootRoller.Roll` (the production drop path). | `Commands/LootTest.cs` |
 
-Bag level drives the rarity weight table (level 0 ≈ Common-heavy … level 10 ≈ Epic/Legendary-capable) — see `Engines/LootBags/LootRoller.cs` and `RarityConfig.MaxRarityForBagLevel`.
+Bag level drives the rarity weight table (level 0 ≈ Common-heavy … level 9 = 90/10 Epic/Legendary … level 10 = guaranteed Legendary) — see `Engines/LootBags/LootRoller.cs` and `RarityConfig.MaxRarityForBagLevel`. Per-dungeon drop sources: `dev-docs/loot-and-drops.md`.
 
 ## Reference
 
