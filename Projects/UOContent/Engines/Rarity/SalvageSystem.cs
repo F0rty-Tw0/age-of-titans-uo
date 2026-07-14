@@ -1,4 +1,5 @@
 using System;
+using Server.Engines.MLQuests.Definitions;
 using Server.Items;
 
 namespace Server.Engines.Rarity;
@@ -111,6 +112,7 @@ public static class SalvageSystem
         }
 
         from.SendMessage($"The altar consumes the offering and yields {yield} ichor.");
+        FerrymansTollHooks.OnSalvaged(from);
         return true;
     }
 
@@ -131,6 +133,7 @@ public static class SalvageSystem
 
         RarityEffects.ApplyVariant(item, ((IVariantItem)item).VariantRoot, next);
         from.SendMessage($"The gods reforge your item to {RarityConfig.GetName(next)}.");
+        FerrymansTollHooks.OnUpgraded(from);
         return true;
     }
 

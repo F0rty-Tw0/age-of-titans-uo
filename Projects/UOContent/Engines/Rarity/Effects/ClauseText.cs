@@ -106,9 +106,10 @@ public static class ClauseText
         ClauseType.ExtraSwingStackingHit => $"the first hit strikes an additional time and each later hit gains +{p1}% chance to hit, up to {p2}%",
 
         // Crit riders (Phobos / caster lines)
+        // 30s = T2A Lesser poison wear-off (PoisonKinds.Configure: 3.5s delay + 10 ticks @ 3s).
         ClauseType.CritPoisonTick => p1 > 0
-            ? $"every {Ord(p1)} hit crits and applies poison"
-            : "critical hits apply poison",
+            ? $"every {Ord(p1)} hit crits and poisons the target for 30s"
+            : "critical hits poison the target for 30s",
         ClauseType.CritStagger => p1 > 0
             ? $"every {Ord(p1)} hit crits and briefly staggers the target"
             : "critical hits briefly stagger the target",
@@ -147,7 +148,7 @@ public static class ClauseText
         ClauseType.ShrugFirstHitGuaranteed => "the first hit taken each fight is always shrugged",
 
         // Option A slot-set signatures (armor-slotsets plan, Phase 3)
-        ClauseType.ShrugFirstHitPoisonAttacker => "the first hit taken each fight is shrugged, poisoning the attacker",
+        ClauseType.ShrugFirstHitPoisonAttacker => "the first hit taken each fight is shrugged, poisoning the attacker for 30s",
         ClauseType.ShrugFirstHitDrainStam => $"the first hit taken each fight is shrugged, draining {AmountOr(p1)} stamina from the attacker",
         ClauseType.ShrugFirstHitDrBurst => $"the first hit taken each fight is shrugged, granting +{p1}% damage reduction for {SecsOr(p2)}",
         ClauseType.ShrugReflectStun => $"a shrugged hit reflects {p1}% of its damage back and briefly stuns the attacker",
@@ -156,7 +157,7 @@ public static class ClauseText
         ClauseType.FlameProcDoubleFirstHit => "the flame proc chance doubles vs the first hit of any fight",
         ClauseType.FlameProcHealBlock => $"the flame proc also heal-blocks the attacker for {SecsOr(p1)}",
         ClauseType.FlameProcBoostLowHp => $"the flame proc chance rises to {PctOr(p1)} while under {p2}% health",
-        ClauseType.FlameProcPoison => "the flame proc also applies a poison tick to the attacker",
+        ClauseType.FlameProcPoison => "the flame proc also poisons the attacker for 30s",
         ClauseType.FlameProcSplash => $"the flame proc also splashes to {p1} extra nearby attackers",
         ClauseType.FlameProcEveryN => $"every {Ord(p1)} hit taken guarantees a flame proc",
 

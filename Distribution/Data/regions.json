@@ -4198,5 +4198,48 @@
     "Priority": 50,
     "Area": [{ "x1": 435, "y1": 2270, "z1": -25, "x2": 675, "y2": 2490, "z2": 128 }],
     "GoLocation": { "x": 542, "y": 2473, "z": 0 }
+  },
+  {
+    "$type": "NewbieDungeonRegion",
+    "Name": "Newbie Barrow - Entrance (PLACEHOLDER COORDS)",
+    "Map": "Felucca",
+    "Priority": 50,
+    "Area": [{"x1": 6700, "y1": 700, "x2": 6720, "y2": 720}],
+    "GoLocation": {"x": 6710, "y": 710, "z": 0},
+    "EjectLocation": {"x": 6690, "y": 690, "z": 0},
+    "Music": "Approach",
+    "LightLevel": 6
+  },
+  {
+    "$type": "NewbieDungeonRegion",
+    "Name": "Newbie Barrow - Trash L1 (PLACEHOLDER COORDS)",
+    "Map": "Felucca",
+    "Priority": 50,
+    "Area": [{"x1": 6725, "y1": 700, "x2": 6760, "y2": 740}],
+    "EjectLocation": {"x": 6690, "y": 690, "z": 0},
+    "Music": "Cave01",
+    "LightLevel": 12
+  },
+  {
+    "$type": "NewbieDungeonRegion",
+    "Name": "Newbie Barrow - Trash L2 (PLACEHOLDER COORDS)",
+    "Map": "Felucca",
+    "Priority": 50,
+    "Area": [{"x1": 6765, "y1": 700, "x2": 6800, "y2": 740}],
+    "EjectLocation": {"x": 6690, "y": 690, "z": 0},
+    "Music": "Dungeon2",
+    "LightLevel": 20,
+    "EntryFlash": true
+  },
+  {
+    "$type": "NewbieDungeonRegion",
+    "Name": "Newbie Barrow - Elite Depth (PLACEHOLDER COORDS)",
+    "Map": "Felucca",
+    "Priority": 50,
+    "Area": [{"x1": 6805, "y1": 700, "x2": 6850, "y2": 750}],
+    "EjectLocation": {"x": 6690, "y": 690, "z": 0},
+    "Music": "Death",
+    "LightLevel": 26,
+    "EntryFlash": true
   }
 ]

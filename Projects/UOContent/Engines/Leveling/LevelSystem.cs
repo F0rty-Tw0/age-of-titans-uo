@@ -1,7 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using ModernUO.CodeGeneratedEvents;
+using Server.Engines.BuffIcons;
+using Server.Engines.MLQuests.Definitions;
 using Server.Gumps;
+using Server.Items;
 using Server.Mobiles;
 
 namespace Server.Engines.Leveling;
@@ -166,6 +170,37 @@ public class LevelSystem : GenericPersistence
         }
     }
 
+    // GM testing hook (Commands/LevelTestCommands.cs): sets a player's level directly, bypassing
+    // the XP curve. Raising replays ApplyLevelUp for every level crossed (stat top-up, caps, and
+    // the level-4 coin/bolt path all fire exactly as they would from real XP); lowering just resets
+    // the level and caps without re-triggering those one-time effects.
+    public static void SetLevel(PlayerMobile pm, int level)
+    {
+        if (pm == null)
+        {
+            return;
+        }
+
+        level = Math.Clamp(level, 0, LevelConfig.MaxLevel);
+        var context = GetOrCreate(pm);
+        var oldLevel = context.Level;
+
+        if (level > oldLevel)
+        {
+            for (var lvl = oldLevel + 1; lvl <= level; lvl++)
+            {
+                ApplyLevelUp(pm, lvl);
+            }
+        }
+        else
+        {
+            ApplyCaps(pm, level);
+        }
+
+        context.Level = level;
+        context.XP = LevelConfig.XPToReach(level);
+    }
+
     // Applies the stat top-up (levels 1..5 only) and the level's caps, then notifies the player.
     private static void ApplyLevelUp(PlayerMobile pm, int level)
     {
@@ -204,6 +239,27 @@ public class LevelSystem : GenericPersistence
         ApplyCaps(pm, level);
 
         pm.SendMessage($"You have reached level {level}!");
+        pm.LocalOverheadMessage(MessageType.Regular, 0x35, false, $"LEVEL {level}");
+        BuffHelper.AddCustomBuff(pm, BuffIcon.ArcaneEmpowerment, $"Level {level}", TimeSpan.FromSeconds(5));
+
+        FerrymansTollHooks.OnLevelUp(pm, level);
+
+        // Newbie Dungeon graduation (dev-docs/newbie-dungeon.md §5): fires once per character,
+        // the level the entry gate's XP curve first grays out L1 mobs entirely.
+        if (level == 4)
+        {
+            Effects.SendBoltEffect(pm);
+
+            var hasCoin = pm.Backpack?.FindItemByType<FerrymansCoin>() != null ||
+                          pm.BankBox?.FindItemByType<FerrymansCoin>() != null;
+            if (!hasCoin)
+            {
+                pm.AddToBackpack(new FerrymansCoin(pm.RawName));
+                pm.SendMessage(
+                    "The Ferryman presses a cold coin into your hand. 'Not yet your time. Go up — and remember the road down.'"
+                );
+            }
+        }
     }
 
     // Sets the StatCap and every per-skill Skill.Cap for the given level. Public so character

@@ -42,12 +42,14 @@ public static class LevelConfig
         [typeof(OrcishMage)] = 4, [typeof(RatmanMage)] = 4,
         [typeof(Gazer)] = 3, [typeof(ElderGazer)] = 6,
         [typeof(OphidianMage)] = 5, [typeof(OphidianArchmage)] = 6,
-        [typeof(Lich)] = 5, [typeof(LichLord)] = 7, [typeof(AncientLich)] = 9
-    };
+        [typeof(Lich)] = 5, [typeof(LichLord)] = 7, [typeof(AncientLich)] = 9,
 
-    // TESTING knob: first ding after a single kill. Production: delete this constant
-    // and the level == 1 branch below so L1 costs 3750 like the table says.
-    public const long FirstLevelXP = 1;
+        // Newbie dungeon (Barrow of the Unremembered): pinned regardless of HP tuning so
+        // the [lvl N] tag, XP gap, and bag level stay stable as stats get balanced.
+        [typeof(NewbieBoneShade)] = 1, [typeof(NewbieGraveRat)] = 1, [typeof(NewbieCorpseCrawler)] = 1,
+        [typeof(NewbieGraveMiasma)] = 2, [typeof(NewbieRestlessArcher)] = 2,
+        [typeof(NewbieCharon)] = 3, [typeof(NewbieFallenChampion)] = 3, [typeof(NewbieHollowWarden)] = 3
+    };
 
     // Cumulative XP needed to reach each level (index 0 = level 1 .. index 9 = level 10).
     // Hand-tuned, not a formula: per-level cost = kill target x mob XP one level above the
@@ -71,11 +73,6 @@ public static class LevelConfig
         if (level > MaxLevel)
         {
             level = MaxLevel;
-        }
-
-        if (level == 1)
-        {
-            return FirstLevelXP;
         }
 
         return _cumulativeXP[level - 1];

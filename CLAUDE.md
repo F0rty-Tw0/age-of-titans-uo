@@ -43,6 +43,7 @@ Apply these when writing or reviewing `.cs` files under `Projects/`.
 | Gump (UI dialog) system | `dev-docs/gump-system.md` |
 | Commands & targeting | `dev-docs/commands-targeting.md` |
 | GM testing commands (rarity/loot/sets) | `dev-docs/gm-testing-commands.md` |
+| Newbie dungeon (design / setup / bestiary) | `dev-docs/newbie-dungeon.md` / `dev-docs/newbie-dungeon-setup.md` / `dev-docs/newbie-dungeon-mobs.md` |
 | Event system | `dev-docs/events.md` |
 | Threading model | `dev-docs/threading-model.md` |
 | Server lifecycle & bootstrap phases (Configure/ConfigurePrompts/Initialize) | `dev-docs/server-lifecycle.md` |

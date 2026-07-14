@@ -11,6 +11,7 @@ using Server.Guilds;
 using Server.Misc;
 using Server.Mobiles;
 using Server.Network;
+using Server.Regions;
 
 namespace Server.Items;
 
@@ -979,8 +980,17 @@ public partial class Corpse : Container, ICarvable
         }
     }
 
-    public bool CanLoot(Mobile from, Item item) =>
-        !IsCriminalAction(from) || (Map.Rules & MapRules.HarmfulRestrictions) == 0;
+    public bool CanLoot(Mobile from, Item item)
+    {
+        // Newbie dungeon: owner-only looting, regardless of notoriety/party rules.
+        if (from != Owner && from.AccessLevel == AccessLevel.Player &&
+            Region.Find(GetWorldLocation(), Map).IsPartOf<NewbieDungeonRegion>())
+        {
+            return false;
+        }
+
+        return !IsCriminalAction(from) || (Map.Rules & MapRules.HarmfulRestrictions) == 0;
+    }
 
     public bool CheckLoot(Mobile from, Item item)
     {

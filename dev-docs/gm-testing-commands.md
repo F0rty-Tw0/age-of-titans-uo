@@ -64,3 +64,32 @@ Bag level drives the rarity weight table (level 0 ≈ Common-heavy … level 10 
   - Plate: Adamas, Kaminos, Kolossos, Panoplia, Akamatos
 - **Generic armor roots** (any armor): Polias (not shields), Cyclopean, Paean, Tritonian, Talarian. Shields: Aegis, Amyntor, Probolos, Herkos, Pnoe. Jewelry: Olympian, Hecatean, Tychean, Nyxian, Demetrian. Clothing: Laurel, Charis, Maenad, Hestian, Arachne.
 - Base items for `[Legendary` targeting: spawn with the stock `[Add <ItemType>` command.
+
+## Leveling / newbie dungeon
+
+| Command | What it does | Source |
+|---|---|---|
+| `[SetLevel <0-10>` | Target a player → set their level directly, XP snapped to that level's threshold. Raising replays every level-up crossed (stat top-up, caps, the level-4 coin/bolt grant); lowering just resets level + caps. | `Commands/LevelTestCommands.cs` |
+| `[GiveXP <amount>` | Target a player → routes through the production `LevelSystem.AwardXP` path. Must target a Player-access character — staff targets no-op by design (same exemption real XP gain uses). | `Commands/LevelTestCommands.cs` |
+| `[NewbieBarrow` | Teleports you to the newbie dungeon's entrance `GoLocation` (`dev-docs/newbie-dungeon.md`). | `Commands/LevelTestCommands.cs` |
+| `[Level` | Player-access. Shows your current level, total XP, and XP remaining to the next level. | `Commands/LevelCommand.cs` |
+| `[LevelGuide` | Player-access. Reopens the leveling primer gump (normally shown once, on first ding). | `Commands/LevelCommand.cs` |
+
+## Build & test quickref
+
+| Purpose | Command |
+|---|---|
+| Compile-verify while the shard is running (avoids the Distribution DLL lock) | `dotnet build Projects/UOContent/UOContent.csproj -p:OutDir=scratch-verify -p:SolutionDir=E:/age-of-titans-uo/` |
+| Full test suite (shard must be STOPPED first — Distribution DLLs lock) | `MODERNUO_TEST_DATA_DIR='F:\UO' dotnet test Projects/UOContent.Tests/` |
+| Serialization migrations after a `[SerializationGenerator]` change | `dotnet run --project Projects/BuildTool -- --action migrate` |
+| Production build + run | `dotnet build` from repo root, then run ModernUO from `Distribution/` |
+
+**GM smoke script — newbie dungeon**
+
+1. `[NewbieBarrow` — teleport to the entrance.
+2. `[SetLevel 0` — confirm the entry gate lets you through at level 0.
+3. Single-click each mob type — verify `[lvl N]` tag hues match the level gap (yellow for L1/L2 mobs vs. a level-0 character, red inside the elite depth).
+4. Kill a few trash mobs — confirm XP gain messages and watch for the loot-bag sparkle telegraph (not guaranteed at trash level).
+5. `[SetLevel 3` — enter the elite chamber and kill one elite — confirm the guaranteed bag-2 drop + corpse sparkle/sound telegraph fire every time.
+6. `[GiveXP <amount>` repeatedly to cross level 4 — confirm the bolt effect, the Ferryman's Coin grant (once only — re-run and confirm no duplicate), and that re-entering the dungeon at level 4+ ejects you back to the entrance with the "outgrown it" message.
+7. PvP-block spot checks with two characters inside the dungeon: melee swing, a field spell, an explosion potion, and a pet attack should all be blocked player-vs-player while mob-vs-player and player-vs-mob stay unaffected.

@@ -1,0 +1,22 @@
+{
+  "version": 0,
+  "type": "Server.Items.FerrymansCoin",
+  "properties": [
+    {
+      "name": "OwnerName",
+      "type": "string",
+      "rule": "PrimitiveTypeMigrationRule",
+      "ruleArguments": [
+        ""
+      ]
+    },
+    {
+      "name": "GraduationDate",
+      "type": "System.DateTime",
+      "rule": "PrimitiveTypeMigrationRule",
+      "ruleArguments": [
+        ""
+      ]
+    }
+  ]
+}

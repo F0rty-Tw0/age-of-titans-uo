@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ModernUO.CodeGeneratedEvents;
 using Server.Collections;
+using Server.Engines.Leveling;
 using Server.Items;
 using Server.Misc;
 using Server.Mobiles;
@@ -425,8 +426,9 @@ public static partial class RarityEffects
         // General on-kill dispatch for clothing/jewelry effects (Laurel/Klotho, Hecatean's
         // Asteria, Demetrian's Okeanos) — these aren't tied to the killer's own weapon the way
         // P2's on-kill weapon riders are, so they hook the mobile-gone event via LastKiller
-        // instead, firing on ANY kill (melee, spell, poison, ...).
-        if (m.LastKiller is { Deleted: false } killer && killer != m)
+        // instead, firing on ANY kill (melee, spell, poison, ...). Level-0 victims grant
+        // nothing — including the fight reset, which would re-arm first-hit clauses.
+        if (m.LastKiller is { Deleted: false } killer && killer != m && GrantsKillBenefits(m))
         {
             ApplyOnKillEffects(killer);
             CombatFxState.ResetFight(killer); // a kill ends the killer's fight → next foe is a fresh first-hit
@@ -461,6 +463,12 @@ public static partial class RarityEffects
         ClauseType.OnKillFullManaRestore, ClauseType.OnKillStamRegenBurstStacking,
         ClauseType.OnKillTriggerHeldPotion, ClauseType.OnKillFullStamNextHitCrit
     };
+
+    // Level-0 mobs (LevelConfig.MobLevelOverrides ambient/farm pins — 0 XP, gray tag) grant no
+    // killer benefits: a chicken kill must not refill mana/stamina or re-arm first-hit clauses.
+    // Player victims always grant them (PvP kills stay live).
+    internal static bool GrantsKillBenefits(Mobile victim) =>
+        victim is not BaseCreature bc || LevelConfig.GetMobLevel(bc) > 0;
 
     private static void ApplyOnKillEffects(Mobile killer)
     {

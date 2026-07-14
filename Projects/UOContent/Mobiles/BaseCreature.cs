@@ -2962,6 +2962,14 @@ namespace Server.Mobiles
             base.OnSingleClick(from);
         }
 
+        // Whether this creature rolls the global loot-bag drop on death. Newbie-dungeon
+        // elites override this to false and force their own guaranteed drop instead.
+        public virtual bool DropsLootBag => !Controlled;
+
+        // Bag level used for the roll below. Defaults to the mob's XP level; newbie-dungeon
+        // trash overrides this to keep bag rarity below what their XP level would imply.
+        public virtual int LootBagLevel => Engines.Leveling.LevelConfig.GetMobLevel(this);
+
         public override bool OnBeforeDeath()
         {
             TriggerAbility(MonsterAbilityTrigger.Death, null);
@@ -3024,17 +3032,17 @@ namespace Server.Mobiles
                     }
                 }
 
-                if (!Controlled)
+                if (DropsLootBag)
                 {
-                    var mobLevel = Engines.Leveling.LevelConfig.GetMobLevel(this);
+                    var bagLevel = LootBagLevel;
 
-                    if (Utility.RandomDouble() < Engines.LootBags.LootBagConfig.ChanceForMobLevel(mobLevel))
+                    if (Utility.RandomDouble() < Engines.LootBags.LootBagConfig.ChanceForMobLevel(bagLevel))
                     {
-                        var lootBag = new LootBag(mobLevel);
+                        var lootBag = new LootBag(bagLevel);
 
                         // Announce happens when the bag is opened (LootBag.OnDoubleClick), so
                         // the roll no longer needs the killer.
-                        lootBag.DropItem(Engines.LootBags.LootRoller.Roll(mobLevel));
+                        lootBag.DropItem(Engines.LootBags.LootRoller.Roll(bagLevel));
                         PackItem(lootBag);
                     }
                 }
