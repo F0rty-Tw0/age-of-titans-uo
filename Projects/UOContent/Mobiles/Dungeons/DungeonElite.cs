@@ -53,5 +53,14 @@ public abstract partial class DungeonElite : BaseCreature
 
         Effects.SendLocationEffect(c, 0x3728, 10);
         Effects.PlaySound(c.Location, c.Map, 0x1F2);
+
+        // Deco drop: 1% chance for level 7+ elites, after the anti-farm clamp above so
+        // over-leveled farmers who got downgraded/denied the bag also get nothing here.
+        if (LevelConfig.GetMobLevel(this) >= 7 && Utility.RandomDouble() < 0.01)
+        {
+            c.DropItem(CreateDecoDrop());
+        }
     }
+
+    protected virtual Item CreateDecoDrop() => EliteDecoDrops.Roll(LevelConfig.GetMobLevel(this));
 }

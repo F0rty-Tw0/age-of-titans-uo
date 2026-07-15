@@ -70,4 +70,6 @@ public partial class StygianRhadamanthys : DungeonElite
             defender.PublicOverheadMessage(MessageType.Regular, 0x480, true, "Rhadamanthys passes sentence!");
         }
     }
+
+    protected override Item CreateDecoDrop() => new ScalesOfTheJudgeKing();
 }

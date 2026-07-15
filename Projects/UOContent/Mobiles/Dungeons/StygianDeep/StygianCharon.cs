@@ -1,4 +1,5 @@
 using ModernUO.Serialization;
+using Server.Items;
 
 namespace Server.Mobiles;
 
@@ -67,4 +68,6 @@ public partial class StygianCharon : DungeonElite
             defender.PublicOverheadMessage(MessageType.Regular, 0x480, true, "Charon demands his toll!");
         }
     }
+
+    protected override Item CreateDecoDrop() => new CharonsFerryLantern();
 }
