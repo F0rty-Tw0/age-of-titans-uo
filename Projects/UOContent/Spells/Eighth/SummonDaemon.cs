@@ -31,7 +31,7 @@ namespace Server.Spells.Eighth
                 return false;
             }
 
-            if (Caster.Followers + (Core.SE ? 4 : 5) > Caster.FollowersMax)
+            if (Caster.Followers + 1 > Caster.FollowersMax)
             {
                 Caster.SendLocalizedMessage(1049645); // You have too many followers to summon that creature.
                 return false;

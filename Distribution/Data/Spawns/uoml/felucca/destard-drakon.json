@@ -166,5 +166,22 @@
     "entries": [
       { "name": "DrakonIsmenos", "maxCount": 1, "probability": 100 }
     ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "d8520346-9d7b-4ec9-b240-396cb6228ea3",
+    "name": "Destard - Drakon Tamables",
+    "location": [5306, 842, 0],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:10:00",
+    "maxDelay": "00:20:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "DrakonBroodling", "maxCount": 1, "probability": 100 },
+      { "name": "DrakonZostrich", "maxCount": 1, "probability": 100 }
+    ]
   }
 ]

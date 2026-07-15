@@ -52,7 +52,7 @@ namespace Server.Spells.Fifth
                 return false;
             }
 
-            if (Caster.Followers + 2 > Caster.FollowersMax)
+            if (Caster.Followers + 1 > Caster.FollowersMax)
             {
                 Caster.SendLocalizedMessage(1049645); // You have too many followers to summon that creature.
                 return false;

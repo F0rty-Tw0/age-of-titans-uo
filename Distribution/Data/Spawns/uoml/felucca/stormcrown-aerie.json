@@ -199,5 +199,22 @@
     "entries": [
       { "name": "StormEphialtes", "maxCount": 1, "probability": 100 }
     ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "8b07209c-0289-4893-adc5-63c3495e958f",
+    "name": "Stormcrown Aerie - Tamables (PLACEHOLDER COORDS)",
+    "location": [6732, 1210, 0],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:10:00",
+    "maxDelay": "00:20:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "StormDrakeling", "maxCount": 1, "probability": 100 },
+      { "name": "StormZostrich", "maxCount": 1, "probability": 100 }
+    ]
   }
 ]

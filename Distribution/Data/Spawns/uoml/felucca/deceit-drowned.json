@@ -181,5 +181,22 @@
     "entries": [
       { "name": "DrownedPhrontis", "maxCount": 1, "probability": 100 }
     ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6ad2c06a-9e40-4830-ab8c-9c6dfb5d45a0",
+    "name": "Deceit - Drowned Tamables",
+    "location": [5224, 674, 0],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:10:00",
+    "maxDelay": "00:20:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "DrownedHound", "maxCount": 1, "probability": 100 },
+      { "name": "DrownedCharger", "maxCount": 1, "probability": 100 }
+    ]
   }
 ]

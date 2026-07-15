@@ -36,6 +36,19 @@ public static class LevelConfig
         [typeof(Dolphin)] = 0, [typeof(Walrus)] = 0, [typeof(Squirrel)] = 0, [typeof(Ferret)] = 0,
         [typeof(Eagle)] = 0, [typeof(DesertOstard)] = 0, [typeof(ForestOstard)] = 0,
 
+        // Pantheon tamables (1 pet + 1 mount per dungeon): ambient taming targets on a
+        // pet stat budget — no XP, gray tag, same as stock farm/mount animals.
+        [typeof(TideBull)] = 0, [typeof(TideSteed)] = 0,
+        [typeof(CinderHound)] = 0, [typeof(CinderSteed)] = 0,
+        [typeof(WyldCub)] = 0, [typeof(WyldCourser)] = 0,
+        [typeof(StormDrakeling)] = 0, [typeof(StormZostrich)] = 0,
+        [typeof(StygianWhelp)] = 0, [typeof(StygianNightmare)] = 0,
+        [typeof(GaianEarthbear)] = 0, [typeof(GaianOrn)] = 0,
+        [typeof(DrownedHound)] = 0, [typeof(DrownedCharger)] = 0,
+        [typeof(BrineLynx)] = 0, [typeof(BrineOclock)] = 0,
+        [typeof(DrakonBroodling)] = 0, [typeof(DrakonZostrich)] = 0,
+        [typeof(TartarusHellcat)] = 0, [typeof(TartarusZostrich)] = 0,
+
         // Casters punch above their HP: +1..2 over the HP curve.
         [typeof(EvilMage)] = 3, [typeof(EvilMageLord)] = 4,
         [typeof(SkeletalMage)] = 3, [typeof(BoneMagi)] = 3,

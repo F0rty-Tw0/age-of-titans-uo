@@ -47,6 +47,7 @@ Apply these when writing or reviewing `.cs` files under `Projects/`.
 | Gump (UI dialog) system | `dev-docs/gump-system.md` |
 | Commands & targeting | `dev-docs/commands-targeting.md` |
 | GM testing commands (rarity/loot/sets) | `dev-docs/gm-testing-commands.md` |
+| Tamables (1-follower cap, pets/mounts, taming lane) | `dev-docs/tamables.md` |
 | Newbie dungeon (design / setup / bestiary) | `dev-docs/newbie-dungeon.md` / `dev-docs/newbie-dungeon-setup.md` / `dev-docs/newbie-dungeon-mobs.md` |
 | Dungeon ladder — Five Domains (L4-10) | `dev-docs/dungeon-ladder.md` |
 | Classic dungeon enhancements (elites/pins/brood) | `dev-docs/classic-five-enhancements.md` |

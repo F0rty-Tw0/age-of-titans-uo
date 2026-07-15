@@ -199,5 +199,22 @@
     "entries": [
       { "name": "WyldProkris", "maxCount": 1, "probability": 100 }
     ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "7aa7250b-acda-4a3a-9c53-b396f1a9a0bc",
+    "name": "Nemean Wildwood - Tamables (PLACEHOLDER COORDS)",
+    "location": [6722, 1110, 0],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:10:00",
+    "maxDelay": "00:20:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "WyldCub", "maxCount": 1, "probability": 100 },
+      { "name": "WyldCourser", "maxCount": 1, "probability": 100 }
+    ]
   }
 ]

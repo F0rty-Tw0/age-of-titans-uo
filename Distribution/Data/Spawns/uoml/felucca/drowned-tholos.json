@@ -199,5 +199,22 @@
     "entries": [
       { "name": "TideNavarch", "maxCount": 1, "probability": 100 }
     ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "73dfce77-50d2-4654-bb02-4edb9a596169",
+    "name": "Drowned Tholos - Tamables (PLACEHOLDER COORDS)",
+    "location": [6727, 915, 0],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:10:00",
+    "maxDelay": "00:20:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "TideBull", "maxCount": 1, "probability": 100 },
+      { "name": "TideSteed", "maxCount": 1, "probability": 100 }
+    ]
   }
 ]

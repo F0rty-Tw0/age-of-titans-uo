@@ -4,7 +4,7 @@
 > in `UOContent.Tests/Tests/Engines/Leveling/BestiaryGuardTests.cs` enforce pin coverage +
 > bag/pin agreement. Spawn one: `[Beast <class>` · spawner: `[BeastSpawner <class> [count] [min]`.
 
-**Totals: 942 creatures, 63 named elites/bosses. All spawnable, all pinned (test-enforced), zero duplicate display names.**
+**Totals: 962 creatures, 63 named elites/bosses. All spawnable, all pinned (test-enforced), zero duplicate display names.**
 
 - **Newbie Barrow** — 15 creatures
 - **Argus** — 35 creatures
@@ -1086,3 +1086,31 @@
 | `LaborStymphalianHarpy` | the Stymphalian Matriarch | 6 | 530–550 | 15–20 | Melee | 30 | 0x08A5 | — | when-struck proc, spawns adds | elite bag 6 |
 | `LaborErymanthianBoar` | the Erymanthian Boar | 7 | 690–720 | 17–22 | Melee | 0x122 | 0x0481 | — | on-hit proc | elite bag 7 |
 | `LaborCretanBull` | the Cretan Bull | 8 | 900–950 | 20–25 | Melee | 0xE9 | 0x0021 | bleed-immune | on-hit proc | elite bag 8 |
+## Pantheon Tamables (20) — added 2026-07-15, post-generation
+
+Taming lane (`dev-docs/tamables.md`): 1 offensive pet + 1 rideable mount per ladder
+dungeon. All `Tamable`, `ControlSlots 1`, pinned level **0** (no XP, no loot bag),
+pet-budget stats. Sorted by MinTameSkill.
+
+| Class | Display | Tame | HP | Dmg | Kind | Body | Hue |
+|---|---|---|---|---|---|---|---|
+| `GaianOrn` | a gaian orn | 45.1 | 85–105 | 5–8 | mount (desert ostard) | 0xD2 | 0x0972 |
+| `TideSteed` | a tide-born steed | 47.1 | 95–115 | 6–9 | mount (horse) | 0xE2 | 0x0481 |
+| `GaianEarthbear` | an earthborn bear | 55.1 | 110–130 | 8–12 | pet (grizzly) | 212 | 0x0972 |
+| `DrownedCharger` | a drowned charger | 55.1 | 110–140 | 7–10 | mount (horse) | 0xCC | 0x0835 |
+| `TideBull` | a sea-born bull | 59.1 | 130–150 | 9–13 | pet (bull) | 0xE8/0xE9 | 0x0847 |
+| `CinderSteed` | a cinder steed | 63.1 | 140–170 | 8–11 | mount (horse) | 0xC8 | 0x0654 |
+| `DrownedHound` | a barrow hound | 65.1 | 150–180 | 10–14 | pet (dire wolf) | 23 | 0x0841 |
+| `BrineOclock` | a brine oclock | 67.1 | 160–190 | 9–12 | mount (forest ostard) | 0xDB | 0x04F8 |
+| `CinderHound` | a forge hound | 71.1 | 190–230 | 11–15 | pet (hellhound) | 98 | 0x0654 |
+| `BrineLynx` | a brine lynx | 75.1 | 220–260 | 12–16 | pet (panther) | 0xD6 | 0x0480 |
+| `WyldCourser` | a moon-marked courser | 77.1 | 190–220 | 10–13 | mount (horse) | 0xE4 | 0x0486 |
+| `DrakonZostrich` | a drakon zostrich | 80.1 | 210–250 | 11–14 | mount (frenzied ostard) | 0xDA | 0x0501 |
+| `WyldCub` | a nemean cub | 82.1 | 260–310 | 13–17 | pet (panther) | 0xD6 | 0x0501 |
+| `TartarusZostrich` | a tartarus zostrich | 85.1 | 240–290 | 12–15 | mount (frenzied ostard) | 0xDA | 0x0021 |
+| `DrakonBroodling` | a drakon broodling | 87.1 | 300–350 | 14–18 | pet (drake) | 60/61 | 0x0501 |
+| `StormZostrich` | a storm zostrich | 90.1 | 280–330 | 12–16 | mount (frenzied ostard) | 0xDA | 0x0481 |
+| `TartarusHellcat` | a tartarus hellcat | 92.1 | 350–400 | 15–19 | pet (panther) | 0xD6 | 0x0021 |
+| `StygianNightmare` | a stygian nightmare | 95.1 | 320–380 | 13–17 | mount (horse) | 0xE4 | 0x0455 |
+| `StormDrakeling` | a storm drakeling | 96.1 | 400–460 | 16–20 | pet (drake) | 60/61 | 0x0480 |
+| `StygianWhelp` | a cerberus whelp | 98.7 | 460–500 | 17–20 | pet (hellhound) | 98 | 0x0453 |

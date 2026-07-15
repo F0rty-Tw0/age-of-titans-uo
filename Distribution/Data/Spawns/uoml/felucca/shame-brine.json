@@ -181,5 +181,22 @@
     "entries": [
       { "name": "BrineOrmenos", "maxCount": 1, "probability": 100 }
     ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "1907453f-192b-4827-9b55-26545125bbf5",
+    "name": "Shame - Brine Tamables",
+    "location": [5617, 202, 0],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:10:00",
+    "maxDelay": "00:20:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "BrineLynx", "maxCount": 1, "probability": 100 },
+      { "name": "BrineOclock", "maxCount": 1, "probability": 100 }
+    ]
   }
 ]

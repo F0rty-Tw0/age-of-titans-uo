@@ -2300,12 +2300,20 @@ namespace Server.Mobiles
             base.RevealingAction();
         }
 
+        // Slots actually charged to the master by AddFollowers(). Not serialized —
+        // Followers is rebuilt on load, so this rebuilds with it.
+        public int FollowersCounted { get; protected set; }
+
+        // Slots to charge right now; BaseMount returns 0 while its master rides it.
+        public virtual int CountedControlSlots => ControlSlots;
+
         public void RemoveFollowers()
         {
             var master = m_ControlMaster ?? m_SummonMaster;
             if (master != null)
             {
-                master.Followers -= Math.Min(ControlSlots, master.Followers);
+                master.Followers -= Math.Min(FollowersCounted, master.Followers);
+                FollowersCounted = 0;
                 if (master is PlayerMobile pm)
                 {
                     pm.RemoveFollower(this);
@@ -2319,7 +2327,9 @@ namespace Server.Mobiles
             var master = m_ControlMaster ?? m_SummonMaster;
             if (master != null)
             {
-                master.Followers += ControlSlots;
+                var slots = CountedControlSlots;
+                master.Followers += slots;
+                FollowersCounted = slots;
                 (master as PlayerMobile)?.AddFollower(this);
             }
         }

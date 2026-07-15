@@ -199,5 +199,22 @@
     "entries": [
       { "name": "CinderKedalion", "maxCount": 1, "probability": 100 }
     ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "7d005da8-9115-42fb-a0ba-1e8d5507f8f9",
+    "name": "Cinderworks - Tamables (PLACEHOLDER COORDS)",
+    "location": [6754, 1010, 0],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:10:00",
+    "maxDelay": "00:20:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "CinderHound", "maxCount": 1, "probability": 100 },
+      { "name": "CinderSteed", "maxCount": 1, "probability": 100 }
+    ]
   }
 ]

@@ -63,7 +63,7 @@ namespace Server.Mobiles
 
             VirtualArmor = 58;
             
-            ControlSlots = Core.SE ? 4 : 5;
+            ControlSlots = 1;
         }
         
         public override bool DeleteCorpseOnDeath => Summoned;
