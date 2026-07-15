@@ -67,7 +67,7 @@ namespace Server.Mobiles
             }
 
             VirtualArmor = 40;
-            ControlSlots = 2;
+            ControlSlots = 1;
         }
 
         public override bool DeleteCorpseOnDeath => Summoned;

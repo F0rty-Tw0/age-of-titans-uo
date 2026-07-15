@@ -37,6 +37,9 @@ public abstract partial class BaseMount : BaseCreature, IMount
     public virtual bool AllowMaleRider => true;
     public virtual bool AllowFemaleRider => true;
 
+    // 1-follower rule: a controlled mount is free while its master rides it.
+    public override int CountedControlSlots => _rider != null && _rider == ControlMaster ? 0 : ControlSlots;
+
     // Stamina System - 1 step per 1 second and 3840 steps max = 64 minutes
     public virtual int StepsMax => 3840;
     public virtual int StepsGainedPerIdleTime => 1;
@@ -83,6 +86,8 @@ public abstract partial class BaseMount : BaseCreature, IMount
                 return;
             }
 
+            var oldRider = _rider;
+
             if (value == null)
             {
                 var loc = _rider.Location;
@@ -125,6 +130,21 @@ public abstract partial class BaseMount : BaseCreature, IMount
             }
 
             _rider = value;
+
+            // 1-follower rule: refund the slot while the master rides, re-charge on dismount.
+            if (ControlMaster != null)
+            {
+                if (value == ControlMaster && FollowersCounted > 0)
+                {
+                    ControlMaster.Followers -= Math.Min(FollowersCounted, ControlMaster.Followers);
+                    FollowersCounted = 0;
+                }
+                else if (value == null && oldRider == ControlMaster && FollowersCounted == 0)
+                {
+                    ControlMaster.Followers += ControlSlots;
+                    FollowersCounted = ControlSlots;
+                }
+            }
 
             if (value == null)
             {
@@ -178,6 +198,15 @@ public abstract partial class BaseMount : BaseCreature, IMount
         if (InternalItem == null)
         {
             Delete();
+            return;
+        }
+
+        // _rider loads after base Deserialize already charged AddFollowers();
+        // refund the slot when the save happened while the master was mounted.
+        if (_rider != null && _rider == ControlMaster && FollowersCounted > 0)
+        {
+            ControlMaster.Followers -= Math.Min(FollowersCounted, ControlMaster.Followers);
+            FollowersCounted = 0;
         }
     }
 

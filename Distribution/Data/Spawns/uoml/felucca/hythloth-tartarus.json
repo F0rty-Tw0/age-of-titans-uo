@@ -196,5 +196,22 @@
     "entries": [
       { "name": "TartarusMenoetius", "maxCount": 1, "probability": 100 }
     ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "d6f5c606-18ff-45b3-b5dc-e70aa9ff58ac",
+    "name": "Hythloth - Tartarus Tamables",
+    "location": [5930, 235, 44],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:10:00",
+    "maxDelay": "00:20:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "TartarusHellcat", "maxCount": 1, "probability": 100 },
+      { "name": "TartarusZostrich", "maxCount": 1, "probability": 100 }
+    ]
   }
 ]

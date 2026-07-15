@@ -449,5 +449,34 @@
         "probability": 100
       }
     ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6bdfcbb5-3eb5-4b5d-a83b-b25af84e71a9",
+    "name": "Stygian Deep - Tamables (PLACEHOLDER COORDS)",
+    "location": [
+      6732,
+      1320,
+      0
+    ],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:10:00",
+    "maxDelay": "00:20:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      {
+        "name": "StygianWhelp",
+        "maxCount": 1,
+        "probability": 100
+      },
+      {
+        "name": "StygianNightmare",
+        "maxCount": 1,
+        "probability": 100
+      }
+    ]
   }
 ]

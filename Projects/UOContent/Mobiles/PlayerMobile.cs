@@ -209,6 +209,8 @@ namespace Server.Mobiles
 
             m_GameTime = TimeSpan.Zero;
             m_GuildRank = RankDefinition.Lowest;
+
+            FollowersMax = 1; // shard rule: one active follower (pet OR summon)
         }
 
         public PlayerMobile(Serial s) : base(s)
@@ -1285,6 +1287,10 @@ namespace Server.Mobiles
                 from.SendGump(new ServerLockdownNoticeGump(notice));
                 return;
             }
+
+            // Shard rule: one active follower. Overrides the serialized pre-cap value (5)
+            // on every login; staff keep the stock pool.
+            from.FollowersMax = from.AccessLevel == AccessLevel.Player ? 1 : 5;
 
             VirtueSystem.CheckAtrophies(from);
             from.ClaimAutoStabledPets();

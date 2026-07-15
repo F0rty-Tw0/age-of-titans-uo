@@ -79,6 +79,27 @@ Bag level drives the rarity weight table (level 0 ≈ Common-heavy … level 9 =
 | `[Level` | Player-access. Shows your current level, total XP, and XP remaining to the next level. | `Commands/LevelCommand.cs` |
 | `[LevelGuide` | Player-access. Reopens the leveling primer gump (normally shown once, on first ding). | `Commands/LevelCommand.cs` |
 
+## Taming / followers
+
+| Command | What it does | Source |
+|---|---|---|
+| `[TameInfo` | Target a creature → taming stats + the invisible slot bookkeeping (`ControlSlots` vs `CountedControlSlots` vs `FollowersCounted`, rider/stable state). Target a player → `Followers/FollowersMax` + every controlled creature with its counted slots. THE tool for verifying the 1-follower cap and free-ridden-mount rule. | `Commands/TameTestCommands.cs` |
+| `[Tamables` | Echoes the 20-tamable roster: dungeon, pet + mount class, MinTameSkill ladder (45.1 → 98.7). Spawn any of them with `[Beast <class>`. | `Commands/TameTestCommands.cs` |
+
+System doc: `dev-docs/tamables.md`. Skill setup for tame tests: `[set Skills.AnimalTaming 100` (self or target); stock `AnimalTrainer` NPCs handle stable/claim.
+
+**GM smoke script — taming lane**
+
+1. On a **Player**-access character: `[TameInfo` self → `Followers 0/1` (staff show 0/5).
+2. `[Beast TideBull`, tame it → 1/1. Second tame attempt + every T2A summon (blade spirits, EV, summon creature, 4 elementals, daemon) → all blocked.
+3. Stable the bull, `[Beast TideSteed`, tame + ride it → `[TameInfo` self shows the mount `[RIDDEN] counted=0`, Followers 0/1.
+4. While mounted, tame a pet → 1/1. Dismount → 2/1 overflow; verify new acquisitions blocked; stable one → 1/1.
+5. **Restart the shard while mounted with a pet out** → relog → `[TameInfo` self must show Followers exactly 1 (pet) and the mount `counted=0`. The single riskiest path.
+6. Die while mounted → dismount fires → Followers 2 (ghost keeps both); res and stable down.
+7. `[remove` the ridden mount → Followers unchanged (0 from the mount), no drift on later tames.
+8. Each summon castable at 0 followers; each blocked at 1; dispel/timeout frees the slot.
+9. `[Beast` each of the 20 (list via `[Tamables`) → hue on creature AND ridden mount item, tame at ladder skill, no XP message, no loot bag on death.
+
 ## Build & test quickref
 
 | Purpose | Command |

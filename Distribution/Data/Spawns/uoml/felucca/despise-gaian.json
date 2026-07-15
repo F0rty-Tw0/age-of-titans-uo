@@ -181,5 +181,22 @@
     "entries": [
       { "name": "GaianPeloreus", "maxCount": 1, "probability": 100 }
     ]
+  },
+  {
+    "$type": "Spawner",
+    "guid": "6fe0c663-6f49-4519-9d2f-50d8809683c0",
+    "name": "Despise - Gaian Tamables",
+    "location": [5472, 526, 60],
+    "map": "Felucca",
+    "count": 2,
+    "minDelay": "00:10:00",
+    "maxDelay": "00:20:00",
+    "team": 0,
+    "homeRange": 12,
+    "walkingRange": 8,
+    "entries": [
+      { "name": "GaianEarthbear", "maxCount": 1, "probability": 100 },
+      { "name": "GaianOrn", "maxCount": 1, "probability": 100 }
+    ]
   }
 ]
