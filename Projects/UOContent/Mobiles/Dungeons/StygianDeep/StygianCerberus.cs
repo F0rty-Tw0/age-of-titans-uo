@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ModernUO.Serialization;
+using Server.Items;
 
 namespace Server.Mobiles;
 
@@ -79,4 +80,6 @@ public partial class StygianCerberus : DungeonElite
 
         _adds.Clear();
     }
+
+    protected override Item CreateDecoDrop() => new StatueOfCerberus();
 }

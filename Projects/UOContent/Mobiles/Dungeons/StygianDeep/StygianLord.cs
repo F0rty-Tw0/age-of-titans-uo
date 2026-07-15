@@ -97,4 +97,6 @@ public partial class StygianLord : DungeonElite
 
         _adds.Clear();
     }
+
+    protected override Item CreateDecoDrop() => new BidentOfHades();
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ModernUO.Serialization;
+using Server.Items;
 
 namespace Server.Mobiles;
 
@@ -84,4 +85,6 @@ public partial class StormFather : DungeonElite
     {
         AddLoot(LootPack.Rich);
     }
+
+    protected override Item CreateDecoDrop() => new TyphonsStormStandard();
 }
