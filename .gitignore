@@ -44,6 +44,7 @@
 
 /packages/*
 /Distribution/Configuration/server-access.json
+/Distribution/Configuration/modernuo.json
 
 # BuildTool native binaries (downloaded from GitHub Releases)
 /tools/
