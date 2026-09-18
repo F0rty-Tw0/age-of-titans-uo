@@ -55,7 +55,7 @@ Apply these when writing or reviewing `.cs` files under `Projects/`.
 | Master bestiary taxonomy + gap families | `dev-docs/bestiary-master.md` |
 | Gap families bestiary | `dev-docs/gap-families-bestiary.md` |
 | Beast reference (ALL creatures, generated) | `dev-docs/beast-reference.md` |
-| the reference shard research/bestiary source material | `dev-docs/reference-shard-*.md` |
+| the reference shard research/bestiary source material (local only, gitignored) | `dev-docs/reference-shard-*.md` |
 | Spawn migration map (world changeover plan) | `dev-docs/spawn-migration-map.md` |
 | Event system | `dev-docs/events.md` |
 | Threading model | `dev-docs/threading-model.md` |

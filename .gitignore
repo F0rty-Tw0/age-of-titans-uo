@@ -50,3 +50,5 @@
 /tools/
 artifacts
 scratch*
+# Third-party research notes, local only
+/dev-docs/reference-shard-*.md
