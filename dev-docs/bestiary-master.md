@@ -1,7 +1,7 @@
 # Bestiary Master — Age of Titans (taxonomy v1, 2026-07-14)
 
-> The single master taxonomy for every hostile creature on the shard. Adapts the UO
-> the reference shard creature **system** (`dev-docs/reference-shard-creatures.md`, `dev-docs/reference-shard-bestiary.md`)
+> The single master taxonomy for every hostile creature on the shard. Adapts a
+> difficulty-derived creature **system** (local research notes, `dev-docs/_local/`)
 > to our own **1–10 mob-level ladder** (`Projects/UOContent/Engines/Leveling/LevelConfig.cs`).
 > Absorbs the custom creatures built (942 as of 2026-07-14 — barrow, open world, Classic Five,
 > Five Domains, and the gap families, all since implemented and expanded to full 35-per-family
@@ -14,17 +14,17 @@
 
 ---
 
-## 1. The system, ported from the reference shard
+## 1. The system: one derived number
 
-the reference shard runs its whole bestiary off **one derived number** (Difficulty → Gold ×10 → all
+The reference design runs its whole bestiary off **one derived number** (Difficulty → Gold ×10 → all
 rewards). We already have that shape: our **mob level (1–10)** is the single knob, derived from
 HP (`MobLevelFromHits`) or hand-pinned (`MobLevelOverrides`), and it drives XP
 (`BaseMobXP = level × 100`), the overhead tag hue, the XP gap multiplier, and the loot-bag
 tier. Retune a creature's HP or pin and everything downstream moves with it. No separate loot
-tables anywhere — same philosophy as the reference shard, same as our rarity D-values.
+tables anywhere — same philosophy as our rarity D-values.
 
-Five the reference shard principles carry over verbatim (all five are already in use across the built
-rosters — see `dev-docs/dungeon-ladder.md` §"the reference shard patterns stolen"):
+Five principles carry over verbatim (all five are already in use across the built
+rosters — see `dev-docs/dungeon-ladder.md` §"Borrowed patterns"):
 
 1. **Role-first stat model.** A creature is a *role*, not a stat sheet: **Melee** (low resist,
    plain block), **Caster** (Mage AI, carries the immunities/high resist), **Skirmisher**
@@ -50,7 +50,7 @@ already reached ~276 creatures, and how the gap families in §6 will be filled.
 
 ### What we deliberately do NOT port
 - **Separate wild/tamed stat budgets** — no taming content yet; revisit if pets ship.
-- **Paragon overlay / participation-scaled raid bosses** — the reference shard' two elite systems. We use
+- **Paragon overlay / participation-scaled raid bosses** — the two classic elite systems. We use
   the simpler `DungeonElite` force-drop + over-level clamp instead. Paragons are a future
   option, not in this taxonomy.
 - **Progressive per-hour loot, weekly region/dungeon rotation, Black Goods, Antiquities** —
@@ -58,7 +58,7 @@ already reached ~276 creatures, and how the gap families in §6 will be filled.
 
 ---
 
-## 2. The ladder (our tiers replace the reference shard Difficulty)
+## 2. The ladder (our tiers replace a raw Difficulty number)
 
 Source of truth: `LevelConfig.MobLevelFromHits` and `MobLevelOverrides`. HP ceiling per band is
 the design contract every roster is tuned inside.
@@ -219,8 +219,8 @@ classes, and every individual member must be grep-checked against `dev-docs/item
 `Mobiles/**` at roster time (the `Wyld*`/Nemean precedent: sharing a proper noun with a
 legendary item is fine flavor; sharing a *class name* is not).
 
-Ideas are lifted from the the reference shard bestiary (`reference-shard-bestiary.md`) and reflavored to Greek
-myth — the reference shard' Inferno/ice/hive/undead rosters are the raw material.
+Ideas are lifted from the local research bestiary (`dev-docs/_local/`) and reflavored to Greek
+myth — its fire/ice/hive/undead rosters are the raw material.
 
 ### 6.1 Fire dungeon — `Pyre*` · Phlegethon / the fire-Titan's pit
 The burning river Pyriphlegethon has broken through into the Fire dungeon's lava halls;
@@ -334,5 +334,5 @@ world (era-mismatch areas excluded pending an era-policy call).
 4. **Rarity ceilings:** bag 5–6 → Epic, bag 7–9 → Legendary, bag 10 → guaranteed Legendary.
 5. **Divine Resonance** echoes duplicate legendaries (no instance caps).
 
-Future layers to consider (the reference shard, not yet ours): Paragon overlay, participation-scaled raid
+Future layers to consider (not yet ours): Paragon overlay, participation-scaled raid
 bosses with threshold looting rights, progressive per-hour loot, weekly region/dungeon rotation.

@@ -40,7 +40,6 @@ public static class StaffInfo
         "dmurphy22",
         "qbradq",
 
-        // Outlands Staff
         "Owyn",
         "Luthius",
         "Jaedan"

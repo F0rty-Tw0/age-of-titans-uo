@@ -89,7 +89,7 @@ they get worse.
 | `CinderCyclops` *(elite)* | Brontes, the Last Cyclops | Cyclops (75) | soot + ember ~0x0967 | 6 | 540–550 | 15–19 | Melee | **Hammerfall** — OnGaveMelee 25%: knockback + 18 stam drain | BleedImmune |
 | `CinderHeart` *(BOSS)* | Kelmion, the Bellows-Heart | Daemon (9) | molten core ~0x0669 | 6 | 545–550 | 16–20 | **Mage** | **Reforge** — OnGotMelee 12%: self-heal leech 8% max HP; HasBreath Fire ("Pyroclasm") | PoisonImmune |
 
-**Anti-abuse:** clamp. `CinderAutomaton`'s Overheat is the the reference shard comeback lever —
+**Anti-abuse:** clamp. `CinderAutomaton`'s Overheat is the comeback lever —
 over-cautious players who chip it slowly get punished, rewarding commitment. Boss guard: two
 `CinderSentinel`. Respawn: elite 15, boss 30–45.
 
@@ -113,7 +113,7 @@ discipline, and what it feels like to be the hunted.
 | `WyldStag` *(BOSS)* | Elaphos, the Golden-Horned | Great Hart (0xEA) | golden ~0x0501 | 7 | 710–720 | 17–21 | Melee (VeryFast) | **Endless Hunt** — OnGaveMelee 25%: "Marked Quarry" msg + 15 stam drain | BleedImmune + PoisonImmune |
 
 **Anti-abuse:** clamp. Kill Atalanta first or the hound adds never stop — the "kill the
-alpha" lesson (elite is a caster/summoner, not a bigger sack of HP: the the reference shard
+alpha" lesson (elite is a caster/summoner, not a bigger sack of HP: the
 "harder = different role" rule). Boss guard: two `WyldHound`. Respawn: elite 15, boss 45–60.
 
 ---
@@ -174,7 +174,7 @@ Respawn: elites 15, boss 60 min.
 
 ## Shared Systems
 
-### Signature variant — the Pantheon Sentinel line (the reference shard recolor trick)
+### Signature variant — the Pantheon Sentinel line (recolor trick)
 One archetype, five recolors, zero new combat math. Base class `PantheonSentinel :
 BaseCreature` holds the shared skeleton (elemental body, melee AI, PoisonImmune, mid-band HP
 for its dungeon). Each dungeon subclass sets only **hue + breath type + level/HP band**.
@@ -203,7 +203,7 @@ Class prefix per dungeon: `Tide*`, `Cinder*`, `Wyld*`, `Storm*`, `Stygian*` (bar
 `Newbie*` idiom). Trash = UO-lowercase display ("a barnacled hoplite"). Named elites/bosses
 get `Name` + `Title`. Folder: `Projects/UOContent/Mobiles/Dungeons/<Dungeon>/` per dungeon.
 
-### the reference shard patterns stolen (labelled)
+### Borrowed patterns (labelled)
 1. **Recolor signature variant** — the Pantheon Sentinel line.
 2. **Role-based resist tiers** — casters carry immunities/resists, melee stay low; by role
    not rank.

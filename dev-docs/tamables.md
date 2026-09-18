@@ -1,6 +1,6 @@
 # Tamables — 1-Follower Cap + Pantheon Pets & Mounts (v1, 2026-07-15)
 
-The shard's taming lane. Design informed by `reference-shard-creatures.md §5` (pets live on their
+The shard's taming lane. Design informed by the local research notes (`dev-docs/_local/`, creatures §5) (pets live on their
 own stat budget, never on dungeon-trash numbers). Every ladder dungeon offers a themed
 reason to bring a tamer: **1 offensive pet + 1 rideable mount**, hue-matched to the family.
 

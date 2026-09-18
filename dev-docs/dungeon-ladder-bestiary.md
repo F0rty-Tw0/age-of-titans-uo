@@ -6,8 +6,7 @@
 > mini-boss renamed Minos → **Rhadamanthys** (classic-five already seats Minos in Deceit);
 > 5 wisp-donor Aerie mobs un-passived (FightMode.Aggressor → aggressive). Enriches the five Domain dungeons of
 > `dev-docs/dungeon-ladder.md` from ~7-8 creatures each to ~35. Adds **+28 new mobs per
-> dungeon (140 total)**, the reference shard deep-keep style (`dev-docs/reference-shard-bestiary.md`,
-> `dev-docs/reference-shard-creatures.md` §3): one theme × an HP curve × role-appropriate resists =
+> dungeon (140 total)**, deep-keep style (local research notes, `dev-docs/_local/`): one theme × an HP curve × role-appropriate resists =
 > a deep roster where **higher rank means a different role, not bigger numbers**. Most rows
 > are **pure stat blocks** — no custom code, just stats/speed/AI/immunities/HitPoison/breath/
 > pack-instinct, which the codebase already supports for free.

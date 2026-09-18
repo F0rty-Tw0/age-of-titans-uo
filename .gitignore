@@ -70,6 +70,6 @@
 !/tools/Export-IpBlocklist.ps1
 artifacts
 scratch*
-# Third-party research notes, local only
-/dev-docs/reference-shard-*.md
+# Local-only research notes
+/dev-docs/_local/
 TestResults/

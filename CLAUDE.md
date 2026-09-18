@@ -65,7 +65,7 @@ Apply these in every session, in this repository and in any fork or custom proje
 | Master bestiary taxonomy + gap families | `dev-docs/bestiary-master.md` |
 | Gap families bestiary | `dev-docs/gap-families-bestiary.md` |
 | Beast reference (ALL creatures, generated) | `dev-docs/beast-reference.md` |
-| the reference shard research/bestiary source material (local only, gitignored) | `dev-docs/reference-shard-*.md` |
+| Local-only research notes (gitignored, not in repo) | `dev-docs/_local/` |
 | Spawn migration map (world changeover plan) | `dev-docs/spawn-migration-map.md` |
 | Generic commands (`where`/`order by`/`distinct`, dot notation, `@""` literals, `[batch`, `[interface`) | `dev-docs/generic-commands.md` |
 | Event system | `dev-docs/events.md` |
