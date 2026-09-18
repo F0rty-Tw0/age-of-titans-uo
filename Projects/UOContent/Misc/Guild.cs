@@ -191,7 +191,7 @@ namespace Server.Guilds
 
         public void TurnToMember(Guild g)
         {
-            if (g.Alliance != this || !m_PendingMembers.Contains(g) || m_Members.Contains(g))
+            if (g.Alliance != this || m_Members.Contains(g) || !m_PendingMembers.Remove(g))
             {
                 return;
             }
@@ -199,21 +199,16 @@ namespace Server.Guilds
             g.GuildMessage(1070760, Name);    // Your Guild has joined the ~1_ALLIANCENAME~ Alliance.
             AllianceMessage(1070761, g.Name); // A new Guild has joined your Alliance: ~1_GUILDNAME~
 
-            m_PendingMembers.Remove(g);
             m_Members.Add(g);
             g.Alliance.InvalidateMemberProperties();
         }
 
         public void RemoveGuild(Guild g)
         {
-            if (m_PendingMembers.Contains(g))
-            {
-                m_PendingMembers.Remove(g);
-            }
+            m_PendingMembers.Remove(g);
 
-            if (m_Members.Contains(g)) // Sanity, just incase someone with a custom script adds a character to BOTH arrays
+            if (m_Members.Remove(g)) // Sanity, just incase someone with a custom script adds a character to BOTH arrays
             {
-                m_Members.Remove(g);
                 g.InvalidateMemberProperties();
 
                 g.GuildMessage(1070763, Name);    // Your Guild has been removed from the ~1_ALLIANCENAME~ Alliance.
@@ -503,25 +498,22 @@ namespace Server.Guilds
         }
     }
 
-    public class WarTimer : Timer
+    public class GuildMaintenanceTimer : Timer
     {
-        public WarTimer() : base(TimeSpan.FromMinutes(1.0), TimeSpan.FromMinutes(1.0))
+        public GuildMaintenanceTimer() : base(TimeSpan.FromMinutes(1.0), TimeSpan.FromMinutes(1.0))
         {
         }
 
         public static void Initialize()
         {
-            if (Guild.NewGuildSystem)
-            {
-                new WarTimer().Start();
-            }
+            new GuildMaintenanceTimer().Start();
         }
 
         protected override void OnTick()
         {
             foreach (var g in World.Guilds.Values)
             {
-                (g as Guild)?.CheckExpiredWars();
+                (g as Guild)?.RunMaintenance();
             }
         }
     }
@@ -1105,8 +1097,18 @@ namespace Server.Guilds
             list.TrimExcess();
         }
 
-        public override void Serialize(IGenericWriter writer)
+        /// <summary>
+        /// Periodic bookkeeping that used to ride on every world save: the daily fealty
+        /// recalculation, war expiry, and the alliance leadership check. Saves must be pure,
+        /// so this runs from <see cref="GuildMaintenanceTimer"/> instead.
+        /// </summary>
+        public void RunMaintenance()
         {
+            if (Disbanded)
+            {
+                return;
+            }
+
             if (LastFealty + TimeSpan.FromDays(1.0) < Core.Now)
             {
                 CalculateGuildmaster();
@@ -1115,7 +1117,10 @@ namespace Server.Guilds
             CheckExpiredWars();
 
             Alliance?.CheckLeader();
+        }
 
+        public override void Serialize(IGenericWriter writer)
+        {
             writer.Write(5); // version
 
             writer.Write(PendingWars.Count);

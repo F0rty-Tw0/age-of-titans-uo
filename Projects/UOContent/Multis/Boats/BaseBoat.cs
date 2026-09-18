@@ -19,9 +19,24 @@ namespace Server.Multis
         Single
     }
 
-    [SerializationGenerator(4, false)]
+    [SerializationGenerator(5, false)]
     public abstract partial class BaseBoat : BaseMulti
     {
+        private void MigrateFrom(V4Content content)
+        {
+            _mapItem = content.MapItem;
+            _nextNavPoint = content.NextNavPoint;
+            _facing = content.Facing;
+            _timeOfDecay = content.TimeOfDecay;
+            _owner = content.Owner;
+            _pPlank = content.PPlank;
+            _sPlank = content.SPlank;
+            _tillerMan = content.TillerMan;
+            _hold = content.Hold;
+            _anchored = content.Anchored;
+            _shipName = content.ShipName;
+        }
+
         public enum DryDockResult
         {
             Valid,
@@ -136,31 +151,23 @@ namespace Server.Multis
             }
         }
 
-        [DeltaDateTime]
-        [SerializableProperty(3)]
-        [CommandProperty(AccessLevel.GameMaster)]
-        public DateTime TimeOfDecay
+        [SerializableField(3, fieldChanged: nameof(OnTimeOfDecayChanged))]
+        [AnchoredDateTime]
+        [SerializedCommandProperty(AccessLevel.GameMaster)]
+        private DateTime _timeOfDecay;
+
+        private void OnTimeOfDecayChanged(DateTime oldValue, DateTime newValue)
         {
-            get => _timeOfDecay;
-            set
-            {
-                _timeOfDecay = value;
-                TillerMan?.InvalidateProperties();
-                this.MarkDirty();
-            }
+            TillerMan?.InvalidateProperties();
         }
 
-        [SerializableProperty(10)]
-        [CommandProperty(AccessLevel.GameMaster)]
-        public string ShipName
+        [SerializableField(10, fieldChanged: nameof(OnShipNameChanged))]
+        [SerializedCommandProperty(AccessLevel.GameMaster)]
+        private string _shipName;
+
+        private void OnShipNameChanged(string oldValue, string newValue)
         {
-            get => _shipName;
-            set
-            {
-                _shipName = value;
-                TillerMan?.InvalidateProperties();
-                this.MarkDirty();
-            }
+            TillerMan?.InvalidateProperties();
         }
 
         [CommandProperty(AccessLevel.GameMaster)]

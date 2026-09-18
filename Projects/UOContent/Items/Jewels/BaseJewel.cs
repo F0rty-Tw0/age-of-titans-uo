@@ -54,6 +54,7 @@ public abstract partial class BaseJewel : Item, ICraftable, IAosItem, IRarity, I
     private int _gemCount;
 
     [SerializableProperty(8)]
+    [SaveFlag(nameof(ShouldSerializeRarity), nameof(RarityDefaultValue))]
     [CommandProperty(AccessLevel.GameMaster)]
     public ItemRarity Rarity
     {
@@ -71,10 +72,8 @@ public abstract partial class BaseJewel : Item, ICraftable, IAosItem, IRarity, I
         }
     }
 
-    [SerializableFieldSaveFlag(8)]
     private bool ShouldSerializeRarity() => _rarity != ItemRarity.Common;
 
-    [SerializableFieldDefault(8)]
     private ItemRarity RarityDefaultValue() => ItemRarity.Common;
 
     public virtual ItemRarity MaxRarity => ItemRarity.Legendary;
@@ -138,16 +137,13 @@ public abstract partial class BaseJewel : Item, ICraftable, IAosItem, IRarity, I
         }
     }
 
-    [SerializableProperty(2)]
-    [CommandProperty(AccessLevel.GameMaster)]
-    public CraftResource Resource
+    [SerializableField(2, fieldChanged: nameof(OnResourceChanged))]
+    [SerializedCommandProperty(AccessLevel.GameMaster)]
+    private CraftResource _resource;
+
+    private void OnResourceChanged(CraftResource oldValue, CraftResource newValue)
     {
-        get => _resource;
-        set
-        {
-            _resource = value;
-            Hue = CraftResources.GetHue(_resource);
-        }
+        Hue = CraftResources.GetHue(_resource);
     }
 
     public override int PhysicalResistance => Resistances.Physical;

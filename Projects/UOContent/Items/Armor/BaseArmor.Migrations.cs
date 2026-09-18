@@ -1,3 +1,4 @@
+using System;
 using Server.Engines.Rarity;
 using AMA = Server.Items.ArmorMeditationAllowance;
 
@@ -30,7 +31,7 @@ public partial class BaseArmor
         _intReq = content.IntRequirement ?? -1;
         _meditate = content.MeditationAllowance ?? (AMA)(-1);
         _skillBonuses = content.SkillBonuses ?? SkillBonusesDefaultValue();
-        _playerConstructed = content.PlayerConstructed;
+        PlayerConstructed = content.PlayerConstructed;
     }
 
     private void MigrateFrom(V9Content content)
@@ -59,7 +60,7 @@ public partial class BaseArmor
         _intReq = content.IntRequirement ?? -1;
         _meditate = content.MeditationAllowance ?? (AMA)(-1);
         _skillBonuses = content.SkillBonuses ?? SkillBonusesDefaultValue();
-        _playerConstructed = content.PlayerConstructed;
+        PlayerConstructed = content.PlayerConstructed;
         // _rarity stays default (Common)
     }
 
@@ -89,7 +90,7 @@ public partial class BaseArmor
         _intReq = content.IntRequirement ?? -1;
         _meditate = content.MeditationAllowance ?? (AMA)(-1);
         _skillBonuses = content.SkillBonuses ?? SkillBonusesDefaultValue();
-        _playerConstructed = content.PlayerConstructed;
+        PlayerConstructed = content.PlayerConstructed;
         _rarity = content.Rarity ?? ItemRarity.Common;
         // _variantRoot / _legendaryId stay default (None / 0)
     }
@@ -120,12 +121,45 @@ public partial class BaseArmor
         _intReq = content.IntRequirement ?? -1;
         _meditate = content.MeditationAllowance ?? (AMA)(-1);
         _skillBonuses = content.SkillBonuses ?? SkillBonusesDefaultValue();
-        _playerConstructed = content.PlayerConstructed;
+        PlayerConstructed = content.PlayerConstructed;
         _rarity = content.Rarity ?? ItemRarity.Common;
         _legendaryId = content.LegendaryId;
         // 2026-07-07 re-theme: retired shared armor roots remap to the material's lane-equivalent
         // root (shield set for shields). Legendary items self-heal via the registry regardless.
         _variantRoot = RethemeMigration.RemapArmorRoot(content.VariantRoot, MaterialType, this is BaseShield);
+    }
+
+    // PlayerConstructed moved onto Item (upstream v10); our rarity fields re-indexed 25-27 -> 24-26.
+    private void MigrateFrom(V12Content content)
+    {
+        _attributes = content.Attributes ?? AttributesDefaultValue();
+        _armorAttributes = content.ArmorAttributes ?? ArmorAttributesDefaultValue();
+        _physicalBonus = content.PhysicalBonus ?? 0;
+        _fireBonus = content.FireBonus ?? 0;
+        _coldBonus = content.ColdBonus ?? 0;
+        _poisonBonus = content.PoisonBonus ?? 0;
+        _energyBonus = content.EnergyBonus ?? 0;
+        _identified = content.Identified;
+        _maxHitPoints = content.MaxHitPoints ?? 0;
+        _hitPoints = content.HitPoints ?? 0;
+        _crafter = content.Crafter;
+        _quality = content.Quality ?? ArmorQuality.Regular;
+        _durability = content.Durability ?? ArmorDurabilityLevel.Regular;
+        _protectionLevel = content.ProtectionLevel ?? ArmorProtectionLevel.Regular;
+        _resource = content.Resource ?? DefaultResource;
+        _armorBase = content.BaseArmorRating ?? -1;
+        _strBonus = content.StrBonus ?? -1;
+        _dexBonus = content.DexBonus ?? -1;
+        _intBonus = content.IntBonus ?? -1;
+        _strReq = content.StrRequirement ?? -1;
+        _dexReq = content.DexRequirement ?? -1;
+        _intReq = content.IntRequirement ?? -1;
+        _meditate = content.MeditationAllowance ?? (AMA)(-1);
+        _skillBonuses = content.SkillBonuses ?? SkillBonusesDefaultValue();
+        PlayerConstructed = content.PlayerConstructed;
+        _rarity = content.Rarity ?? ItemRarity.Common;
+        _variantRoot = content.VariantRoot;
+        _legendaryId = content.LegendaryId;
     }
 
     // Version 7 (pre-codegen)
@@ -257,5 +291,38 @@ public partial class BaseArmor
         }
 
         PlayerConstructed = GetSaveFlag(flags, OldSaveFlag.PlayerConstructed);
+    }
+
+    private static bool GetSaveFlag(OldSaveFlag flags, OldSaveFlag toGet) => (flags & toGet) != 0;
+
+    [Flags]
+    private enum OldSaveFlag
+    {
+        None = 0x00000000,
+        Attributes = 0x00000001,
+        ArmorAttributes = 0x00000002,
+        PhysicalBonus = 0x00000004,
+        FireBonus = 0x00000008,
+        ColdBonus = 0x00000010,
+        PoisonBonus = 0x00000020,
+        EnergyBonus = 0x00000040,
+        Identified = 0x00000080,
+        MaxHitPoints = 0x00000100,
+        HitPoints = 0x00000200,
+        Crafter = 0x00000400,
+        Quality = 0x00000800,
+        Durability = 0x00001000,
+        Protection = 0x00002000,
+        Resource = 0x00004000,
+        BaseArmor = 0x00008000,
+        StrBonus = 0x00010000,
+        DexBonus = 0x00020000,
+        IntBonus = 0x00040000,
+        StrReq = 0x00080000,
+        DexReq = 0x00100000,
+        IntReq = 0x00200000,
+        MedAllowance = 0x00400000,
+        SkillBonuses = 0x00800000,
+        PlayerConstructed = 0x01000000
     }
 }

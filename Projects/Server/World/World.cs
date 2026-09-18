@@ -14,7 +14,6 @@
  *************************************************************************/
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -44,8 +43,11 @@ public static class World
     private static readonly MobilePersistence _mobilePersistence = new();
     private static readonly GenericEntityPersistence<BaseGuild> _guildPersistence = new("Guilds", 3, 1, 0x7FFFFFFF);
 
-    private static int _threadId;
+    // All workers including the main thread's inline worker (last index), for heap lookups.
     internal static SerializationThreadWorker[] _threadWorkers;
+    // How many of those own a thread (wake/sleep/exit applies only to these).
+    private static int _realWorkerCount;
+    private static readonly SerializationChunkSource _chunkSource = new();
     private static readonly ManualResetEvent _diskWriteHandle = new(true);
 
     private static string _tempSavePath; // Path to the temporary folder for the save
@@ -91,6 +93,21 @@ public static class World
     public static string SavePath { get; private set; }
     public static WorldState WorldState { get; private set; }
     public static bool Saving => WorldState == WorldState.Saving;
+
+    /// <summary>
+    /// UTC time the current or most recent world save started. Written into save indexes so
+    /// anchored timestamps can be re-based by the downtime at load.
+    /// </summary>
+    public static DateTime SaveStartTime { get; internal set; }
+
+    /// <summary>
+    /// The anchored-time shift for the save currently being loaded: the downtime between the
+    /// save's start and this load. Stamped while entity indexes are read (they all carry the
+    /// same anchor, since the whole save shares one <see cref="SaveStartTime" />) and applied
+    /// to every reader of that save's files — including <see cref="GenericPersistence" />
+    /// payloads, which carry no anchor of their own. Zero for saves that predate the anchor.
+    /// </summary>
+    public static TimeSpan LoadTimeShift { get; internal set; }
     public static bool Running => WorldState is not WorldState.Loading and not WorldState.Initial;
     public static bool Loading => WorldState == WorldState.Loading;
 
@@ -104,6 +121,8 @@ public static class World
 
         UseMultiThreadedSaves = ServerConfiguration.GetOrUpdateSetting("world.useMultithreadedSaves", true);
     }
+
+    internal static void SetSavePathForTest(string path) => SavePath = path;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void WaitForWriteCompletion() => _diskWriteHandle.WaitOne();
@@ -178,6 +197,8 @@ public static class World
         logger.Information("Loading world");
         var watch = Stopwatch.StartNew();
 
+        RecoverStagedSave();
+
         Persistence.Load(SavePath);
         EventSink.InvokeWorldLoad();
 
@@ -195,48 +216,46 @@ public static class World
             watch.Elapsed.TotalSeconds
         );
 
-        // Create the serialization threads.
-        var threadCount = UseMultiThreadedSaves ? Math.Max(Environment.ProcessorCount - 1, 1) : 1;
-        _threadWorkers = new SerializationThreadWorker[threadCount];
+        // Create the serialization threads, plus an inline worker the main thread uses to
+        // join the drain after publishing work instead of idling until the workers finish.
+        _realWorkerCount = UseMultiThreadedSaves ? Math.Max(Environment.ProcessorCount - 1, 1) : 1;
+        _threadWorkers = new SerializationThreadWorker[_realWorkerCount + 1];
 
-        for (var i = 0; i < _threadWorkers.Length; i++)
+        // The save we just loaded tells us how big the heaps need to be, so the first save
+        // doesn't pay copy-on-grow inside the freeze window. 25% headroom for world growth.
+        var heapSizeHint = (int)Math.Min(GetLoadedSaveSize() / _threadWorkers.Length * 5 / 4, 1024 * 1024 * 1024);
+
+        for (var i = 0; i < _realWorkerCount; i++)
         {
-            _threadWorkers[i] = new SerializationThreadWorker(i);
+            _threadWorkers[i] = new SerializationThreadWorker(i, _chunkSource, heapSizeHint);
         }
+
+        _threadWorkers[_realWorkerCount] =
+            SerializationThreadWorker.CreateInline(_realWorkerCount, _chunkSource, heapSizeHint);
     }
 
-    /**
-     * Duplicates can be weeded out asynchronously while flushing
-     * If performance becomes a problem, we need to build a dual mode concurrent array.
-     *
-     ****************************************************** Proposal ******************************************************
-     * The structure is initialized with a large capacity to avoid unnecessary resizing.
-     * Write Mode:
-     * - Multiple threads can add a single, or a range of elements concurrently.
-     * - Elements can be Peeked, but there are no guarantees.
-     * - To resize the internal array, replaced it with the next size up from an array pool.
-     * - The structure cannot be cleared in this mode.
-     *
-     * Read Mode:
-     * - The array can be read from multiple threads using a ref struct enumerator.
-     * - Elements cannot be added or reassigned.
-     * - Cleared by replacing the internal array with another one from the pool.
-     * - Note: Upon clearing, the existing array is not sent back to the pool until there are zero enumerators.
-     *
-     * Enumeration:
-     * - Multiple threads can enumerate while in read mode. The enumerator will Interlocked.Increment a read counter.
-     * - Upon dispose of the enumerator, the read counter will be lowered with an Interlocked.Decrement
-     * - When the read counter reaches 0, if there is a cleared array, the array is sent back to the pool zeroed.
-     *
-     * Notes:
-     * - Elements can never be removed.
-     *
-     * How is this different from ConcurrentQueue?
-     * The functionality is very similar, except the constraints allow the implementation to be done without locks.
-     * Since this implementation uses pooled arrays, allocations will approach zero over time.
-     **********************************************************************************************************************
-     */
-    public static ConcurrentQueue<Type> SerializedTypes { get; } = new();
+    private static long GetLoadedSaveSize()
+    {
+        try
+        {
+            if (!Directory.Exists(SavePath))
+            {
+                return 0;
+            }
+
+            var total = 0L;
+            foreach (var file in Directory.EnumerateFiles(SavePath, "*.bin", SearchOption.AllDirectories))
+            {
+                total += new FileInfo(file).Length;
+            }
+
+            return total;
+        }
+        catch
+        {
+            return 0;
+        }
+    }
 
     public static void Save()
     {
@@ -256,6 +275,8 @@ public static class World
     {
         try
         {
+            RecoverStagedSave();
+
             // Allocate the heaps for the GC
             foreach (var worker in _threadWorkers)
             {
@@ -287,6 +308,10 @@ public static class World
 
         WorldState = WorldState.Saving;
 
+        // The world is frozen from here: one anchor for the whole save. Written into save
+        // indexes so anchored timestamps can be re-based by the downtime at load.
+        SaveStartTime = Core.Now;
+
         Broadcast(0x35, true, "The world is saving, please wait.");
 
         logger.Information("Saving world");
@@ -303,21 +328,49 @@ public static class World
             }
 
             Persistence.SerializeAll();
-            PauseSerializationThreads();
-
-            EventSink.InvokeWorldSave();
         }
         catch (Exception ex)
         {
             exception = ex;
         }
 
-        WorldState = WorldState.WritingSave;
-        ThreadPool.QueueUserWorkItem(WriteFiles, snapshotPath);
+        // Always join the workers; any serializer exception fails the save.
+        try
+        {
+            PauseSerializationThreads();
+        }
+        catch (Exception ex)
+        {
+            exception ??= ex;
+        }
+
+        for (var i = 0; i < _threadWorkers.Length; i++)
+        {
+            exception ??= _threadWorkers[i].Error;
+        }
+
+        if (exception == null)
+        {
+            LogWorkerBalance();
+
+            try
+            {
+                EventSink.InvokeWorldSave();
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "A WorldSave handler failed");
+                Persistence.TraceException(ex);
+            }
+        }
+
         watch.Stop();
 
         if (exception == null)
         {
+            WorldState = WorldState.WritingSave;
+            ThreadPool.QueueUserWorkItem(WriteFiles, snapshotPath);
+
             var duration = watch.Elapsed.TotalSeconds;
             logger.Information("Saving world {Status} ({Duration:F2} seconds)", "done", duration);
 
@@ -329,10 +382,11 @@ public static class World
             Persistence.TraceException(exception);
 
             BroadcastStaff(0x35, true, "World save failed! Check the logs!");
+
+            _diskWriteHandle.Set();
+            FinishWorldSave();
         }
     }
-
-    private static readonly HashSet<Type> _typesSet = [];
 
     private static void WriteFiles(object state)
     {
@@ -342,26 +396,8 @@ public static class World
             var watch = Stopwatch.StartNew();
             logger.Information("Writing world save snapshot");
 
-            // Dedupe the types
-            while (SerializedTypes.TryDequeue(out var type))
-            {
-                _typesSet.Add(type);
-            }
-
-            Persistence.WriteSnapshotAll(snapshotPath, _typesSet);
-
-            _typesSet.Clear();
-
-            try
-            {
-                EventSink.InvokeWorldSavePostSnapshot(SavePath, snapshotPath);
-                PathUtility.MoveDirectoryContents(snapshotPath, SavePath);
-                Directory.SetLastWriteTimeUtc(SavePath, Core.Now);
-            }
-            catch (Exception ex)
-            {
-                Persistence.TraceException(ex);
-            }
+            Persistence.WriteSnapshotAll(snapshotPath);
+            PublishSnapshot(snapshotPath);
 
             watch.Stop();
             logger.Information("Writing world save snapshot {Status} ({Duration:F2} seconds)", "done", watch.Elapsed.TotalSeconds);
@@ -374,11 +410,92 @@ public static class World
             BroadcastStaff(0x35, true, "Writing world save snapshot failed! Check the logs!");
         }
 
-        // Clear types
-        SerializedTypes.Clear();
-
         _diskWriteHandle.Set();
         Core.LoopContext.Post(FinishWorldSave);
+    }
+
+    /// <summary>
+    /// A complete snapshot is staged here before the previous save is touched; a staged
+    /// directory is always a complete save newer than <see cref="SavePath" />.
+    /// </summary>
+    internal static string StagedSavePath => SavePath + ".next";
+
+    // Stage, let subscribers archive the previous save, then rename the staged save into place.
+    private static void PublishSnapshot(string snapshotPath)
+    {
+        var staging = StagedSavePath;
+
+        if (Directory.Exists(staging))
+        {
+            SetAside(staging, "unpublished");
+        }
+
+        MoveDirectory(snapshotPath, staging);
+        PublishStagedSave(archive: true);
+    }
+
+    private static void PublishStagedSave(bool archive)
+    {
+        var staging = StagedSavePath;
+
+        if (archive)
+        {
+            EventSink.InvokeWorldSavePostSnapshot(SavePath, staging);
+        }
+
+        if (Directory.Exists(SavePath))
+        {
+            SetAside(SavePath, "previous");
+        }
+
+        MoveDirectory(staging, SavePath);
+        Directory.SetLastWriteTimeUtc(SavePath, Core.Now);
+    }
+
+    /// <summary>
+    /// Finishes an interrupted publish. Runs at boot (before load) and before every save;
+    /// whatever is at Saves/ is set aside, never deleted.
+    /// </summary>
+    internal static void RecoverStagedSave()
+    {
+        var staging = StagedSavePath;
+
+        if (!Directory.Exists(staging))
+        {
+            return;
+        }
+
+        logger.Warning(
+            "A complete world save was staged at {Staging} but never published; publishing it now.",
+            staging
+        );
+
+        PublishStagedSave(archive: false);
+    }
+
+    private static void SetAside(string path, string reason)
+    {
+        var aside = $"{path}.{reason}-{Core.Now:yyyy-MM-dd-HH-mm-ss-fff}";
+        MoveDirectory(path, aside);
+        logger.Warning("Set aside {Path} as {Aside}; delete or archive it by hand.", path, aside);
+    }
+
+    // Atomic rename on one volume, file-by-file move otherwise.
+    private static void MoveDirectory(string source, string destination)
+    {
+        try
+        {
+            Directory.Move(source, destination);
+        }
+        catch (IOException)
+        {
+            if (Directory.Exists(destination))
+            {
+                throw;
+            }
+
+            PathUtility.MoveDirectoryContents(source, destination);
+        }
     }
 
     private static void FinishWorldSave()
@@ -386,45 +503,84 @@ public static class World
         WorldState = WorldState.Running;
         Persistence.PostWorldSaveAll(); // Process decay and safety queues
         MovementThrottle.ResetAllMovementTiming(); // Prevent post-save movement rejection bursts
+
+        // The snapshot is on disk; release the per-worker write logs so serialized
+        // entity references don't linger between saves.
+        for (var i = 0; i < _threadWorkers.Length; i++)
+        {
+            _threadWorkers[i].ReleaseWriteLogs();
+        }
+    }
+
+    // Debug-level output only exists in DEBUG builds (see LogFactory), so Release builds
+    // should not pay for the stat summing and argument boxing inside the freeze at all.
+    [Conditional("DEBUG")]
+    private static void LogWorkerBalance()
+    {
+        var totalEntities = 0L;
+        var totalBytes = 0L;
+        var minBytes = long.MaxValue;
+        var maxBytes = 0L;
+
+        for (var i = 0; i < _threadWorkers.Length; i++)
+        {
+            var worker = _threadWorkers[i];
+            totalEntities += worker.EntitiesSerialized;
+            var bytes = worker.BytesSerialized;
+            totalBytes += bytes;
+            minBytes = Math.Min(minBytes, bytes);
+            maxBytes = Math.Max(maxBytes, bytes);
+        }
+
+        logger.Debug(
+            "Serialized {EntityCount} entities ({ByteCount} bytes) across {WorkerCount} workers (min {MinBytes}, max {MaxBytes} bytes per worker)",
+            totalEntities,
+            totalBytes,
+            _threadWorkers.Length,
+            minBytes,
+            maxBytes
+        );
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void WakeSerializationThreads()
     {
-        for (var i = 0; i < _threadWorkers.Length; i++)
+        for (var i = 0; i < _realWorkerCount; i++)
         {
             _threadWorkers[i].Wake();
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void PauseSerializationThreads()
     {
-        for (var i = 0; i < _threadWorkers.Length; i++)
+        // Publish the partial chunk before the workers are told to finish draining.
+        _chunkSource.Flush();
+
+        // Join the drain: the main thread would otherwise idle here while workers finish.
+        _threadWorkers[_realWorkerCount].DrainInline();
+
+        for (var i = 0; i < _realWorkerCount; i++)
         {
             _threadWorkers[i].Sleep();
         }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static int GetThreadWorkerCount() => Math.Max(Environment.ProcessorCount - 1, 1);
+    internal static void SetChunkSourceOwner(Persistence owner) => _chunkSource.SetOwner(owner);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static void ResetRoundRobin() => _threadId = 0;
+    internal static void PushToCache(IGenericSerializable e) => _chunkSource.Push(e);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static void PushToCache(IGenericSerializable e)
-    {
-        _threadWorkers[_threadId++].Push(e);
-        if (_threadId == _threadWorkers.Length)
-        {
-            _threadId = 0;
-        }
-    }
+    internal static void PushSingleToCache(GenericPersistence persistence) => _chunkSource.PushSingle(persistence);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static void PushSlotRangesToCache(ISlotRangeSource source, int slotCount) =>
+        _chunkSource.PushSlotRanges(source, slotCount);
 
     public static void ExitSerializationThreads()
     {
-        for (var i = 0; i < _threadWorkers.Length; i++)
+        for (var i = 0; i < _realWorkerCount; i++)
         {
             _threadWorkers[i]?.Exit();
         }

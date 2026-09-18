@@ -1,7 +1,5 @@
 using System;
 using System.Diagnostics;
-using Server.Engines.Pathing;
-using Server.Engines.Pathing.Cache;
 using Server.Items;
 using Server.PathAlgorithms;
 using Server.Spells;
@@ -60,8 +58,6 @@ public sealed class MovementPath
     public static void Configure()
     {
         CommandSystem.Register("Path", AccessLevel.GameMaster, Path_OnCommand);
-        CacheEvictionTimer.Configure();
-        PathCacheCommands.Configure();
     }
 
     [Usage("Path")]

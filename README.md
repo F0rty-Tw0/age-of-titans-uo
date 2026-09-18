@@ -86,15 +86,16 @@ Every base returned `Legendary` and nothing clamped `Rarity` against it, so the 
 
 ## Requirements
 #### Supported Operating Systems
-[![Windows 10/11/2012/2016/2019/2022/2025](https://img.shields.io/badge/-server%202025-3c78d5?labelColor=222222&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHJvbGU9ImltZyIgdmlld0JveD0iMCAwIDI0IDI0Ij48dGl0bGU+V2luZG93czwvdGl0bGU+PHBhdGggZD0iTTAsMEgxMS4zNzdWMTEuMzcySDBaTTEyLjYyMywwSDI0VjExLjM3MkgxMi42MjNaTTAsMTIuNjIzSDExLjM3N1YyNEgwWm0xMi42MjMsMEgyNFYyNEgxMi42MjMiIGZpbGw9IiMzYzc4ZDUiLz48L3N2Zz4=)](https://www.microsoft.com/en-US/evalcenter/evaluate-windows-server-2022)
+[![Windows 10/11/2012 R2/2016/2019/2022/2025](https://img.shields.io/badge/-server%202025-3c78d5?labelColor=222222&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHJvbGU9ImltZyIgdmlld0JveD0iMCAwIDI0IDI0Ij48dGl0bGU+V2luZG93czwvdGl0bGU+PHBhdGggZD0iTTAsMEgxMS4zNzdWMTEuMzcySDBaTTEyLjYyMywwSDI0VjExLjM3MkgxMi42MjNaTTAsMTIuNjIzSDExLjM3N1YyNEgwWm0xMi42MjMsMEgyNFYyNEgxMi42MjMiIGZpbGw9IiMzYzc4ZDUiLz48L3N2Zz4=)](https://www.microsoft.com/en-US/evalcenter/evaluate-windows-server-2022)
 ![MacOS 14+](https://img.shields.io/badge/-sonoma-222222?logo=apple&logoColor=white&labelColor=222222)
 [![Debian 12+](https://img.shields.io/badge/-trixie-A81D33?logo=debian&logoColor=A81D33&labelColor=222222)](https://www.debian.org/distrib/)
-[![Ubuntu 22+ LTS](https://img.shields.io/badge/-24LTS-E95420?logo=ubuntu&logoColor=E95420&labelColor=222222)](https://ubuntu.com/download/server)
+[![Ubuntu 22+ LTS](https://img.shields.io/badge/-26LTS-E95420?logo=ubuntu&logoColor=E95420&labelColor=222222)](https://ubuntu.com/download/server)
 <br/>
 [![Alpine 3.22+](https://img.shields.io/badge/-3.22-0D597F?logo=alpinelinux&logoColor=0D597F&labelColor=222222)](https://alpinelinux.org/downloads/)
-[![Fedora 42+](https://img.shields.io/badge/-42-51a2da?logo=fedora&logoColor=51a2da&labelColor=222222)](https://getfedora.org/en/server/download/)
-[![RedHat 9+](https://img.shields.io/badge/-9-BE0000?logo=redhat&logoColor=BE0000&labelColor=222222)](https://access.redhat.com/downloads)
-[![CentOS Stream 9+](https://img.shields.io/badge/-stream_9-262577?logo=centos&logoColor=white&labelColor=222222)](https://www.centos.org/download/)
+[![Fedora 42+](https://img.shields.io/badge/-44-51a2da?logo=fedora&logoColor=51a2da&labelColor=222222)](https://getfedora.org/en/server/download/)
+[![RedHat 9+](https://img.shields.io/badge/-10-BE0000?logo=redhat&logoColor=BE0000&labelColor=222222)](https://access.redhat.com/downloads)
+[![CentOS Stream 9+](https://img.shields.io/badge/-stream_10-262577?logo=centos&logoColor=white&labelColor=222222)](https://www.centos.org/download/)
+[![AlmaLinux 10](https://img.shields.io/badge/-10-0F4266?logo=almalinux&logoColor=white&labelColor=222222)](https://almalinux.org/get-almalinux/)
 [![openSUSE 15.6+](https://img.shields.io/badge/-15.6-73BA25?logo=openSUSE&logoColor=73BA25&labelColor=222222)](https://get.opensuse.org/)
 [![SUSE Enterprise 15 SP6](https://img.shields.io/badge/-15%20SP6-0C322C?logo=suse&logoColor=30BA78&labelColor=222222)](https://www.suse.com/download/sles/)
 [![Linux Mint 21+](https://img.shields.io/badge/-21-87CF3E?logo=linux%20mint&logoColor=87CF3E&labelColor=222222)](https://linuxmint.com/download.php)
@@ -106,6 +107,17 @@ Every base returned `Legendary` and nothing clamped `Rarity` against it, so the 
 
 ##### Windows
 [![VC++ Redistributable v14](https://img.shields.io/badge/-Redist%20v14-00599C?logo=cplusplus&logoColor=white&labelColor=222222)](https://aka.ms/vc14/vc_redist.x64.exe)
+
+#### Hardware
+
+| Use | vCPU | RAM | Storage |
+|---|---|---|---|
+| Development / test | 2 **dedicated** | 2 GB | SSD |
+| Small live shard (< 50 concurrent) | 4 dedicated | 4 GB | NVMe |
+| Medium (50–200) | 4–8 | 8 GB | NVMe |
+| Large (200+) | 8+, high clock | 16 GB+ | NVMe |
+
+See [dev-docs/server-requirements.md](dev-docs/server-requirements.md) for more information.
 
 #### Development
 [![git](https://img.shields.io/badge/-git-F05032?logo=git&logoColor=F05032&labelColor=222222)](https://git-scm.com/downloads)
@@ -148,23 +160,40 @@ Run `./publish.cmd` (Windows) or `./publish.sh` (Linux/macOS) with no arguments 
   - `arm64` - ARM 64-bit
 
 ## Linux Prerequisites
-### Fedora, CentOS, RHEL, etc
+### Fedora, CentOS, RHEL, AlmaLinux, Rocky, etc
 ```shell
 dnf upgrade --refresh -y
-# CentOS does not come with EPEL enabled
-dnf install -y epel-release epel-next-release
-dnf install -y findutils libicu libdeflate-devel zstd libargon2-devel liburing-devel
+# RHEL-family distributions (CentOS Stream, AlmaLinux, Rocky, RHEL) need CRB and EPEL enabled.
+# Fedora skips this block.
+dnf install -y dnf-plugins-core
+dnf config-manager --set-enabled crb
+dnf install -y epel-release
+# Prerequisites
+dnf install -y findutils libicu libdeflate libargon2 tzdata
 ```
 
 ### Ubuntu, Debian, etc
 ```shell
 apt-get update -y
-apt-get install -y libicu-dev libdeflate-dev zstd libargon2-dev liburing-dev
+# The ICU runtime package carries the ABI version in its name (libicu74, libicu76, …) and has no
+# stable alias, so match it by pattern rather than pinning a release-specific name.
+apt-get install -y '^libicu[0-9]+$' libdeflate0 libargon2-1 tzdata
 ```
+
+Only the runtime libraries are needed — the `-dev`/`-devel` packages are not. Run
+`./build-tool --check-prereqs` to check the current machine and print the exact packages your
+release needs.
+
+`zstd` is not listed because ZstdNet bundles `libzstd` for every platform, and `liburing` is not
+listed because IORingGroup issues `io_uring` syscalls directly.
+
+If the shard's configured time zone is a legacy alias such as `US/Eastern`, Debian 12 and Ubuntu
+24.04 also need `tzdata-legacy`. See [Platform Prerequisites](dev-docs/platform-prerequisites.md)
+for what each dependency is for and what breaks without it.
 
 ## OSX Requirements
 ```shell
-brew install icu4c libdeflate zstd argon2
+brew install icu4c libdeflate argon2
 ```
 
 ## Running the Server

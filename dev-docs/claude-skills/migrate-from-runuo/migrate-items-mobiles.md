@@ -29,6 +29,9 @@ description: >
 - `BaseCreature(AI, Fight, 10, 1, 0.2, 0.4)` -> `BaseCreature(AI, Fight)` (extra params default)
 - `Name = "text"` -> `public override string DefaultName => "text";`
 - Expression-bodied overrides: `public override int Meat { get { return 1; } }` -> `public override int Meat => 1;`
+- AI movement calls lose the `run` flag: `MoveTo(m, true, range)` -> `MoveTo(m, range)` (also `WalkMobileRange`, `ApproachTarget`, `MoveToPoint`, `PathFollower.Follow`); the Running bit is derived from step pace -> `dev-docs/runuo-migration-docs/09-items-mobiles-creatures.md` § AI Movement
+- `AcquireOnApproach` (bool) -> `AcquireOnApproachDelay` (TimeSpan; `Zero` = old instant behavior) -> same doc § Target Acquisition
+- `DamageEntries` is an inline `ref readonly ValueLinkList<DamageEntry>`, not a `List`: indexer/`Add`/`Remove`/`Clear` -> `foreach` / `.ByDescending()` (needs `using Server.Collections;`) and `ClearDamageEntries()`; `GetLootingRights` takes it by `in` -> same doc § Damage Entries
 
 ## Anti-Patterns
 - Using `_field--` instead of `Property--` (bypasses MarkDirty tracking)

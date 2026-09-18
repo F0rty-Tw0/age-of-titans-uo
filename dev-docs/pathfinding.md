@@ -55,6 +55,21 @@ Per think-tick decision:
 Open terrain stays on the greedy fast path and never builds a `PathFollower` — pathfinding only
 engages when greedy movement stalls.
 
+### Approach outcome
+
+`ApproachTarget` returns a `bool` for its callers, but records which exit it took in
+`BaseAI.LastApproach` (`ApproachOutcome`): `Arrived`, `Waiting` (frozen/casting/throttled),
+`DirectProgress` (greedy step closed the distance), `Routing` (a `PathFollower` is working a
+detour), `Blocked` (move-eligible tick, no step, stall counter still running), `GaveUp`, or
+`InvalidGoal`. A policy that needs to distinguish "outpaced on open ground" from "stuck"
+reads this after its `MoveTo`/`WalkMobileRange` call instead of running a second scheduler —
+`FamiliarAI.TryKeepUp` is the reference use: snap to the caster on `DirectProgress` beyond
+`KeepUpRange`, or on `GaveUp`; never on `Routing`. After a policy-driven relocation call
+`ResetApproachState()` so the next approach starts fresh (`OnTeleported` only repaths).
+
+`MoveToPoint(goal, range)` takes the arrival range explicitly; herding passes 0 because
+`CheckHerding` ends on the tile (its exit is `distance < 1`), and the default 1 stops beside it.
+
 ## The algorithm: windowed A* with hard limits
 
 `BitmapAStarAlgorithm` (`Find`) is a **bounded local** pathfinder, not a global one. Key
@@ -139,13 +154,17 @@ several-minutes cost. Wiring:
   after assemblies load (so content can register prompts) but **before Serilog starts**, so the
   console prompt is not interleaved with the async console sink. Any class can participate by
   defining `public static void ConfigurePrompts()` and self-gating on first-boot state.
-- The bake runs in the later `Invoke("Initialize")` phase (after the tile matrix + world load,
-  which the bake walks).
+- Both the reader open and the bake run in `Invoke("Initialize")`, after the tile matrix and world
+  load. Neither belongs in `Configure`, which runs *before* both: the fingerprint hashes the map
+  files, so opening a `.swb` there would force the lazy `Map.Tiles` property and build every
+  `TileMatrix` ahead of `TileMatrixLoader` — possibly before `TileMatrix.Configure()` settles
+  `Pre6000ClientSupport`, since both sit at the default call priority and the phase sort is
+  unstable. `PathCacheCommands.Configure` is limited to settings and command registration.
 - Staleness is decided by the `.swb` fingerprint, which `StepCacheFile.OpenForLazy` validates at
   open time (hash of `tiledata.mul` + the per-map `.mul`/`.uop` files — never the in-memory
-  `TileData` tables, which the server patches at runtime). `Configure` opens a reader for every
-  up-to-date file; the bake in `Initialize` then skips any map where `StepCache.HasLazyReader` is
-  already true, so the fingerprint is computed once per boot, not twice.
+  `TileData` tables, which the server patches at runtime). `Initialize` opens a reader for every
+  up-to-date file, then skips any map where `StepCache.HasLazyReader` is already true, so the
+  fingerprint is computed once per boot. Each newly baked map reopens only itself.
 
 ## Configuration levers
 
@@ -154,7 +173,7 @@ several-minutes cost. Wiring:
 | `pathfinding.enable` | `PathFollower.Configure` | `true` | Master switch for `PathFollower` pathfinding. Off → greedy/auto-turn only, no A* at all. |
 | `bitmap_pathfinding_cache` feature flag (`ContentFeatureFlags.BitmapPathfindingCache`, `Server.Systems.FeatureFlags`) | `FeatureFlagManager` | `true` | Off → `BitmapAStar` routes straight to the slow path with **no cache probe and no warming memory**. ≈ old FastAStar at ~1×. |
 | `pathfinding.maxResidentChunks` | `PathCacheCommands.Configure` | 8192 (~40 MB) | LRU cap on resident chunks = the warming-memory ceiling. Lower it (e.g. 512–1024 ≈ 2.5–5 MB) on small shards. |
-| `pathfinding.maxSearchNodes` | `PathCacheCommands.Configure` → `BitmapAStarAlgorithm.MaxSearchNodes` | 1000 | A* per-Find node-expansion budget. See limits above; ~1000 is the sweet spot. |
+| `pathfinding.maxSearchNodes` | `BitmapAStarAlgorithm.Configure` → `BitmapAStarAlgorithm.MaxSearchNodes` | 1000 | A* per-Find node-expansion budget. See limits above; ~1000 is the sweet spot. |
 | `pathfinding.prebakeMaps` | `PathCacheCommands` (first-boot prompt + `Initialize`) | `false` | When set, bakes any missing/stale `.swb` for the selected maps at startup (fingerprint-gated, so a fresh cache is a no-op). Set interactively by the first-boot prompt. |
 | `PathFollower` `RepathDelay` | `PathFollower.cs` (const) | 2 s | Throttle: a moving goal re-`Find`s at most ~once per 2 s; a stationary reachable goal is pathed once and reused until arrival. Not a setting (compile-time). |
 

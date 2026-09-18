@@ -414,8 +414,8 @@ public static partial class RarityEffects
 
     [OnEvent(nameof(PlayerMobile.PlayerDeathEvent))]
     [OnEvent(nameof(PlayerMobile.PlayerDeletedEvent))]
-    [OnEvent(nameof(BaseCreature.CreatureDeathEvent))]
-    [OnEvent(nameof(BaseCreature.CreatureDeletedEvent))]
+    [OnEvent(nameof(CreatureEvents.CreatureDeathEvent))]
+    [OnEvent(nameof(CreatureEvents.CreatureDeletedEvent))]
     public static void OnMobileGone(Mobile m)
     {
         if (m == null)

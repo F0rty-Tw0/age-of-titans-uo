@@ -152,7 +152,8 @@ namespace Server.Mobiles
 
         public void EndClaimList(Mobile from, BaseCreature pet)
         {
-            if (pet?.Deleted != false || from.Map != Map || from is not PlayerMobile pm || pm.Stabled?.Contains(pet) != true || !from.CheckAlive())
+            if (pet?.Deleted != false || from.Map != Map || from is not PlayerMobile pm
+                || pm.Stabled?.Contains(pet) != true || !from.CheckAlive())
             {
                 return;
             }
@@ -356,7 +357,7 @@ namespace Server.Mobiles
         {
             pet.SetControlMaster(from);
 
-            if (pet.Summoned)
+            if (pet.SummonMaster != null)
             {
                 pet.SummonMaster = from;
             }
